@@ -8,13 +8,16 @@ namespace InteractiveReadLine.Demo
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            Console.WindowHeight = 5;
+            Console.BufferHeight = 5;
 
-            var provider = new ConsoleReadLine("hello > ");
-            var handler = new InputHandler(provider);
-            var result = handler.ReadLine();
-            handler.Dispose();
+            for (int i = 0; i < 5; i++)
+            {
+                var provider = new ConsoleReadLine("hello > ");
+                var result = provider.ReadLine(null);
 
-            Console.WriteLine(result);
+                Console.WriteLine(result);
+            }
         }
     }
 }
