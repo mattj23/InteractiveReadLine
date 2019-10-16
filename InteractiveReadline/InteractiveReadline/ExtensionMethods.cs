@@ -4,7 +4,7 @@ namespace InteractiveReadLine
 {
     public static class ExtensionMethods
     {
-        public static string ReadLine(this IReadLine provider, HandlerConfig config=null)
+        public static string ReadLine(this IReadLine provider, ReadLineConfig config=null)
         {
             using (provider)
             {
@@ -13,10 +13,5 @@ namespace InteractiveReadLine
             }
         }
 
-        public static InputHandler Handler(this IReadLine readLine)
-        {
-            return new InputHandler(readLine);
-
-        }
     }
 }
