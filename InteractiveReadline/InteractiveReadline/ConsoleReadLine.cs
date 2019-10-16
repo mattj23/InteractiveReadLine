@@ -31,15 +31,43 @@ namespace InteractiveReadLine
 
         public void SetInputText(string text, int cursor)
         {
-            // Go back to the start
-            _console.CursorTop = _startingRow;
-            _console.CursorLeft = 0;
+            // The process of setting the input text requires us to find the difference between 
+            // the last written text and the new text, then perform the minimum amount of character
+            // writes necessary to make the two identical
 
+            // First, we should determine what the new line needs to look like. If the new line is 
+            // longer than the old line, we will write the new line exactly.  If it's shorter, we'll 
+            // need to pad it out with empty characters 
             var totalText = _prompt + text;
-            _console.Write(totalText);
+            var writeText = (totalText.Length >= _lastWrittenText.Length)
+                ? totalText
+                : totalText + new string(' ', _lastWrittenText.Length - totalText.Length);
+
+            // Sweep through each character in the text to write and, if the cursor is not at the
+            // position to edit and an edit needs to be made, move the cursor and write the new
+            // character to the console
+            for (int i = 0; i < writeText.Length; i++)
+            {
+                if (i < _lastWrittenText.Length 
+                    && writeText[i] == _lastWrittenText[i])
+                    continue;
+
+                int left = this.ColOffset(i);
+                int top = this.RowOffset(i) + _startingRow;
+
+                if (left != _console.CursorLeft)
+                    _console.CursorLeft = left;
+                if (top != _console.CursorTop)
+                    _console.CursorTop = top;
+
+                _console.Write(writeText[i]);
+            }
+
             _lastWrittenText = totalText;
 
-            // Check if we shifted down the buffer
+            // Check if we shifted down the buffer. In certain cases, if we reach the end of the buffer
+            // height and we skip a line, the System.Console shifts everything up, and our starting row
+            // will effectively be less than where we started.  It will never move down.
             var writtenRowOffset = this.RowOffset(_lastWrittenText.Length);
             if (writtenRowOffset + _startingRow >= _console.BufferHeight)
             {

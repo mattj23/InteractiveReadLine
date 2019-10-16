@@ -33,6 +33,11 @@ namespace InteractiveReadLine.Abstractions
             Console.WriteLine(text);
         }
 
+        public void Write(char c)
+        {
+            Console.Write(c);
+        }
+
         public ConsoleKeyInfo ReadKey()
         {
             return Console.ReadKey(true);

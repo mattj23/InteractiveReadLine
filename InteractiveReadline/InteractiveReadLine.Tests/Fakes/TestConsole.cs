@@ -58,6 +58,11 @@ namespace InteractiveReadLine.Tests.Fakes
             this.WriteChar('\n');
         }
 
+        public void Write(char c)
+        {
+            this.WriteChar(c);
+        }
+
         public ConsoleKeyInfo ReadKey()
         {
             return _keys.Dequeue();

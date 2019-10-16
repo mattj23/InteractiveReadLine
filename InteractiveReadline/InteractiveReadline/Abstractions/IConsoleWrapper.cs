@@ -31,6 +31,7 @@ namespace InteractiveReadLine.Abstractions
 
         void Write(string text);
         void WriteLine(string text);
+        void Write(char c);
 
         ConsoleKeyInfo ReadKey();
 
