@@ -1,4 +1,5 @@
 using System;
+using InteractiveReadLine.Tests.Fakes;
 using Xunit;
 
 namespace InteractiveReadLine.Tests
@@ -66,6 +67,33 @@ namespace InteractiveReadLine.Tests
             Assert.Equal("and the fourth", test.GetRow(2));
             Assert.Equal("but this is the last row", test.GetRow(3));
             Assert.Equal(string.Empty, test.GetRow(4));
+        }
+
+        [Fact]
+        public void FakeKeyBuilder_BuildsFromText_Simple()
+        {
+            var keys = KeyBuilder.Create().Add("aA3 _").Keys;
+            
+            Assert.Equal(new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false), keys[0]);
+            Assert.Equal(new ConsoleKeyInfo('A', ConsoleKey.A, true, false, false), keys[1]);
+            Assert.Equal(new ConsoleKeyInfo('3', ConsoleKey.D3, false, false, false), keys[2]);
+            Assert.Equal(new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false), keys[3]);
+            Assert.Equal(new ConsoleKeyInfo('_', ConsoleKey.Sleep, false, false, false), keys[4]);
+        }
+
+        [Fact]
+        public void FakeKeyBuilder_BuildsFromText_WithSpecial()
+        {
+            var keys = KeyBuilder.Create()
+                .Add("aA")
+                .Add(ConsoleKey.W, false, false, true)
+                .Add(ConsoleKey.Enter, false, true, false)
+                .Keys;
+            
+            Assert.Equal(new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false), keys[0]);
+            Assert.Equal(new ConsoleKeyInfo('A', ConsoleKey.A, true, false, false), keys[1]);
+            Assert.Equal(new ConsoleKeyInfo(char.MinValue, ConsoleKey.W, false, false, true), keys[2]);
+            Assert.Equal(new ConsoleKeyInfo(char.MinValue, ConsoleKey.Enter, false, true, false), keys[3]);
         }
     }
 }

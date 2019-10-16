@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using InteractiveReadLine.Abstractions;
 
-namespace InteractiveReadLine.Tests
+namespace InteractiveReadLine.Tests.Fakes
 {
     /// <summary>
     /// Class to simulate a System.Console text buffer
@@ -13,8 +14,9 @@ namespace InteractiveReadLine.Tests
         private readonly char[,] _buffer;
         private readonly int _height;
         private readonly int _width;
+        private readonly Queue<ConsoleKeyInfo> _keys;
 
-        public TestConsole(int height, int width)
+        public TestConsole(int height, int width, IEnumerable<ConsoleKeyInfo> keys)
         {
             _height = height;
             _width = width;
@@ -27,6 +29,13 @@ namespace InteractiveReadLine.Tests
                     _buffer[i, j] = char.MinValue;
                 }
             }
+
+            _keys = new Queue<ConsoleKeyInfo>(keys);
+        }
+
+        public TestConsole(int height, int width)
+            : this(height, width, Enumerable.Empty<ConsoleKeyInfo>())
+        {
         }
 
         public int CursorLeft { get; set; }
