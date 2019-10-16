@@ -8,7 +8,7 @@ namespace InteractiveReadLine.Demo
         {
             Console.WriteLine("Hello World!");
             
-            var testHandler = new ReadLineHandler(new SystemReadLine());
+            var testHandler = new ReadLineHandler(new ConsoleReadLine());
 
             var test = testHandler.ReadLine("hello > ");
         }

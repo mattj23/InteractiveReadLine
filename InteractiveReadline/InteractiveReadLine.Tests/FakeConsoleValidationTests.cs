@@ -95,5 +95,7 @@ namespace InteractiveReadLine.Tests
             Assert.Equal(new ConsoleKeyInfo(char.MinValue, ConsoleKey.W, false, false, true), keys[2]);
             Assert.Equal(new ConsoleKeyInfo(char.MinValue, ConsoleKey.Enter, false, true, false), keys[3]);
         }
+
+
     }
 }

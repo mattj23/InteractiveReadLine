@@ -4,20 +4,21 @@ using InteractiveReadLine.Abstractions;
 namespace InteractiveReadLine
 {
     /// <summary>
-    /// Exposes a IReadLineProvider that's wrapping the System.Console object
+    /// Exposes a IReadLineProvider that's wrapping a IConsoleProvider object, which is by default
+    /// a wrapper around the System.Console object
     /// </summary>
-    public class SystemReadLine : IReadLineProvider
+    public class ConsoleReadLine : IReadLineProvider
     {
         private readonly IConsoleProvider _console;
 
-        public SystemReadLine() : this(new SystemConsole()) { }
+        public ConsoleReadLine() : this(new SystemConsole()) { }
 
         /// <summary>
-        /// Instantiate a SystemReadLine object with an injected console provider, this mostly exists
+        /// Instantiate a ConsoleReadLine object with an injected console provider, this mostly exists
         /// for testing.
         /// </summary>
         /// <param name="console"></param>
-        public SystemReadLine(IConsoleProvider console)
+        public ConsoleReadLine(IConsoleProvider console)
         {
             _console = console;
         }
