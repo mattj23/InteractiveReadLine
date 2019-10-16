@@ -6,13 +6,25 @@ namespace InteractiveReadLine.Tests
     public class ConsoleReadLineTests
     {
         [Fact]
-        public void ConsoleProvider_ReadsBufferSizesRight()
+        public void ConsoleProvider_InitializesWithPrompt()
         {
             var fakeConsole = new TestConsole(5, 10);
-            var readLine = new ConsoleReadLine(fakeConsole);
-            readLine.SetText("hello");
+            var readLine = new ConsoleReadLine("tst>", fakeConsole);
+            
+            Assert.Equal("tst>", fakeConsole.GetRow(0));
+        }
 
-            Assert.Equal("hello", fakeConsole.GetRow(0));
+        [Fact]
+        public void ConsoleProvider_ReceivesShortTyping_Correctly()
+        {
+            var keys = KeyBuilder.Create().Add("test!").Enter().Keys;
+            var fakeConsole = new TestConsole(5, 10, keys);
+            var readLine = new ConsoleReadLine("tst>", fakeConsole);
+
+            var handler = new InputHandler(readLine);
+            var result = handler.ReadLine();
+
+            Assert.Equal("tst>test!", fakeConsole.GetRow(0));
         }
     }
 }

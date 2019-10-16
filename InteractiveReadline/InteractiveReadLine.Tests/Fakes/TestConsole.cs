@@ -9,7 +9,7 @@ namespace InteractiveReadLine.Tests.Fakes
     /// <summary>
     /// Class to simulate a System.Console text buffer
     /// </summary>
-    public class TestConsole : IConsoleProvider
+    public class TestConsole : IConsoleWrapper
     {
         private readonly char[,] _buffer;
         private readonly int _height;
@@ -60,7 +60,7 @@ namespace InteractiveReadLine.Tests.Fakes
 
         public ConsoleKeyInfo ReadKey()
         {
-            throw new NotImplementedException();
+            return _keys.Dequeue();
         }
 
         public string GetRow(int row)

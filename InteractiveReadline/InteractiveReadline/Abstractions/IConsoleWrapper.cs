@@ -3,9 +3,11 @@
 namespace InteractiveReadLine.Abstractions
 {
     /// <summary>
-    /// Defines a provider for a console-like interface
+    /// Defines a provider for a buffer backed, console-like interface.  Intended to create a seam between
+    /// the actual System.Console instance and the higher level behaviors, it can also be used to wrap
+    /// any character buffer interface with a moving cursor.
     /// </summary>
-    public interface IConsoleProvider
+    public interface IConsoleWrapper
     {
         /// <summary>
         /// Gets or sets the cursor's position from the left edge of the buffer

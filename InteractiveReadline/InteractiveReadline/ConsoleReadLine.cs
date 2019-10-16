@@ -4,23 +4,23 @@ using InteractiveReadLine.Abstractions;
 namespace InteractiveReadLine
 {
     /// <summary>
-    /// Exposes a IReadLineProvider that's wrapping a IConsoleProvider object, which is by default
+    /// Exposes a IReadLine that's wrapping a IConsoleWrapper object, which is by default
     /// a wrapper around the System.Console object
     /// </summary>
-    public class ConsoleReadLine : IReadLineProvider
+    public class ConsoleReadLine : IReadLine
     {
-        private readonly IConsoleProvider _console;
+        private readonly string _prompt;
+        private readonly IConsoleWrapper _console;
+        private string _lastInputText;
 
-        public ConsoleReadLine() : this(new SystemConsole()) { }
+        public ConsoleReadLine(string prompt = "") 
+            : this(prompt, new SystemConsoleWrapper()) { }
 
-        /// <summary>
-        /// Instantiate a ConsoleReadLine object with an injected console provider, this mostly exists
-        /// for testing.
-        /// </summary>
-        /// <param name="console"></param>
-        public ConsoleReadLine(IConsoleProvider console)
+        public ConsoleReadLine(string prompt, IConsoleWrapper console)
         {
+            _prompt = prompt;
             _console = console;
+            this.Start(_prompt);
         }
 
         public ConsoleKeyInfo ReadKey()
@@ -28,24 +28,31 @@ namespace InteractiveReadLine
             return _console.ReadKey();
         }
 
-        public void SetText(string text)
+        public void SetInputText(string text, int cursor)
         {
-
             _console.CursorLeft = 0;
+            _console.Write(_prompt);
             _console.Write(text);
-
-
+            _console.CursorLeft = cursor + _prompt.Length;
+        }
+        
+        public void Dispose()
+        {
+            this.Finish();
         }
 
-        public void Start(string prompt = "")
+        private void Start(string prompt = "")
         {
-            _console.WriteLine(string.Empty);
+            // _console.WriteLine(string.Empty);
+            _console.CursorLeft = 0;
             _console.Write(prompt);
+            _lastInputText = string.Empty;
         }
 
-        public void Finish()
+        private void Finish()
         {
             _console.WriteLine(string.Empty);
         }
+
     }
 }

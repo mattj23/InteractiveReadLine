@@ -43,6 +43,11 @@ namespace InteractiveReadLine.Tests.Fakes
             return this;
         }
 
+        public KeyBuilder Enter()
+        {
+            return this.Add(ConsoleKey.Enter, false, false, false);
+        }
+
         public ConsoleKeyInfo[] Keys => _keys.ToArray();
 
         public static KeyBuilder Create() => new KeyBuilder();

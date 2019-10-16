@@ -2,7 +2,10 @@
 
 namespace InteractiveReadLine.Abstractions
 {
-    public class SystemConsole : IConsoleProvider
+    /// <summary>
+    /// A wrapper around the System.Console object. 
+    /// </summary>
+    public class SystemConsoleWrapper : IConsoleWrapper
     {
         public int CursorLeft
         {
