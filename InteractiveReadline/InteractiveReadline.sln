@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractiveReadLine", "InteractiveReadline\InteractiveReadLine.csproj", "{8546DDCA-6845-471C-8AFB-5FCF8BA0ED94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteractiveReadLine", "InteractiveReadline\InteractiveReadLine.csproj", "{8546DDCA-6845-471C-8AFB-5FCF8BA0ED94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractiveReadLine.Demo", "InteractiveReadline.Demo\InteractiveReadLine.Demo.csproj", "{F526E382-8480-4F2C-884A-F806760F7509}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteractiveReadLine.Demo", "InteractiveReadline.Demo\InteractiveReadLine.Demo.csproj", "{F526E382-8480-4F2C-884A-F806760F7509}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractiveReadLine.Tests", "InteractiveReadLine.Tests\InteractiveReadLine.Tests.csproj", "{1D176FC0-C600-4A57-B793-F6B0EA1EEC95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F526E382-8480-4F2C-884A-F806760F7509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F526E382-8480-4F2C-884A-F806760F7509}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F526E382-8480-4F2C-884A-F806760F7509}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D176FC0-C600-4A57-B793-F6B0EA1EEC95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D176FC0-C600-4A57-B793-F6B0EA1EEC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D176FC0-C600-4A57-B793-F6B0EA1EEC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D176FC0-C600-4A57-B793-F6B0EA1EEC95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,9 @@ namespace InteractiveReadLine
 
         void SetText(string text);
 
+
+        void Start(string prompt = "");
+
         void Finish();
 
     }

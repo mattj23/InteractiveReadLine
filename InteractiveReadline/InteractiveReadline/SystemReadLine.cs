@@ -29,10 +29,17 @@ namespace InteractiveReadLine
 
         public void SetText(string text)
         {
+
             _console.CursorLeft = 0;
             _console.Write(text);
 
 
+        }
+
+        public void Start(string prompt = "")
+        {
+            _console.WriteLine(string.Empty);
+            _console.Write(prompt);
         }
 
         public void Finish()

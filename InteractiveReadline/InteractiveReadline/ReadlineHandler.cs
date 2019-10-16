@@ -15,8 +15,10 @@ namespace InteractiveReadLine
             _content = new StringBuilder();
         }
 
-        public string ReadLine(string prompt)
+        public string ReadLine(string prompt="")
         {
+
+            _provider.Start(prompt);
 
             while (true)
             {
