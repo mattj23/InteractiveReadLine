@@ -1,4 +1,7 @@
-﻿namespace InteractiveReadLine.KeyBehaviors
+﻿using System;
+using InteractiveReadLine.Tokenizing;
+
+namespace InteractiveReadLine.KeyBehaviors
 {
     public static class StandardBehaviors
     {
@@ -28,6 +31,19 @@
         {
             if (target.CursorPosition < target.TextBuffer.Length)
                 target.CursorPosition++;
+        }
+
+        /// <summary>
+        /// Uses a function to create a key behavior that uses the provider's "WriteMessage" method to insert
+        /// a message to the user. The handler will provide your function with the tokenized version of the
+        /// current text, which will be null if the configuration doesn't have a tokenizer.
+        /// </summary>
+        /// <param name="message">A function which receives a Tokens object and uses it to create a string
+        /// message, this is typically useful for providing help or hints to the user</param>
+        /// <returns>A key behavior action which can be registered with the read line configuration</returns>
+        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<Tokens, string> message)
+        {
+            return new Action<IKeyBehaviorTarget>(t => t.WriteMessage(message(t.GetTextTokens())));
         }
 
         public static void AutoCompleteNext(IKeyBehaviorTarget target) => target.AutoCompleteNext();

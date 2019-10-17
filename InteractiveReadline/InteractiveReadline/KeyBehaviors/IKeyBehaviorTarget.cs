@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.KeyBehaviors
 {
@@ -15,5 +16,19 @@ namespace InteractiveReadLine.KeyBehaviors
         void AutoCompleteNext();
 
         void AutoCompletePrevious();
+
+        /// <summary>
+        /// Writes a message out to the console out in the spot where the current read line input is, then
+        /// immediately re-displays the line input on the next row.
+        /// </summary>
+        /// <param name="text">The text to write to the console, a newline char will be added automatically</param>
+        void WriteMessage(string text);
+
+        /// <summary>
+        /// If the handler configuration has a tokenizer, this will get the tokenization result of the text
+        /// buffer
+        /// </summary>
+        /// <returns>Returns null if there is no tokenizer, otherwise a Tokens result</returns>
+        Tokens GetTextTokens();
     }
 }

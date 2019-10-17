@@ -81,17 +81,26 @@ namespace InteractiveReadLine
 
             _console.CursorTop = _startingRow + this.RowOffset(cursorPos);
             _console.CursorLeft = this.ColOffset(cursorPos);
+            _lastWrittenCursor = cursorPos;
         }
 
         /// <summary>
-        /// Writes a message out to the console out in the spot where the current readline input is, then
-        /// immediately redisplays the line input below
+        /// Writes a message out to the console out in the spot where the current read line input is, then
+        /// immediately re-displays the line input on the next row.
         /// </summary>
-        /// <param name="text">The text to write to the console. This does not need to be terminated with a
-        /// newline character, as one will be added automatically.</param>
+        /// <param name="text">The text to write to the console, a newline char will be added automatically</param>
         public void WriteMessage(string text)
         {
             var currentText = _lastWrittenText;
+            var currentCursor = _lastWrittenCursor;
+
+            SetText(text, text.Length);
+            _console.WriteLine("");
+
+            _startingRow = _console.CursorTop;
+            _lastWrittenText = "";
+            _lastWrittenCursor = 0;
+            SetText(currentText, currentCursor);
 
         }
         

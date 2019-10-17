@@ -74,6 +74,16 @@ namespace InteractiveReadLine
 
         }
 
+        public void WriteMessage(string text)
+        {
+            _provider.WriteMessage(text);
+        }
+
+        public Tokens GetTextTokens()
+        {
+            return _config.Tokenizer?.Invoke(new Tokenize(_content.ToString(), _cursorPos));
+        }
+
         public string ReadLine()
         {
             while (true)
