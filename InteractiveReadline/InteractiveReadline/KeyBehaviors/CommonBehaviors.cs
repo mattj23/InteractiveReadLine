@@ -3,7 +3,7 @@ using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.KeyBehaviors
 {
-    public static class StandardBehaviors
+    public static class CommonBehaviors
     {
         public static void Delete(IKeyBehaviorTarget target)
         {

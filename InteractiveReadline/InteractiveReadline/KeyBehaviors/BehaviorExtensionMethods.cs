@@ -30,22 +30,22 @@ namespace InteractiveReadLine.KeyBehaviors
 
         public static ReadLineConfig AddDeleteBackspace(this ReadLineConfig config)
         {
-            return config.AddKeyBehavior(ConsoleKey.Delete, StandardBehaviors.Delete)
-                .AddKeyBehavior(ConsoleKey.Backspace, StandardBehaviors.Backspace);
+            return config.AddKeyBehavior(ConsoleKey.Delete, CommonBehaviors.Delete)
+                .AddKeyBehavior(ConsoleKey.Backspace, CommonBehaviors.Backspace);
         }
 
         public static ReadLineConfig AddStandardKeys(this ReadLineConfig config)
         {
             return config.AddDeleteBackspace()
-                .AddKeyBehavior(ConsoleKey.LeftArrow, StandardBehaviors.LeftArrow)
-                .AddKeyBehavior(ConsoleKey.RightArrow, StandardBehaviors.RightArrow);
+                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonBehaviors.LeftArrow)
+                .AddKeyBehavior(ConsoleKey.RightArrow, CommonBehaviors.RightArrow);
         }
 
         public static ReadLineConfig AddTabAutoComplete(this ReadLineConfig config)
         {
             return config
-                .AddKeyBehavior(ConsoleKey.Tab, StandardBehaviors.AutoCompleteNext)
-                .AddKeyBehavior(new KeyId(ConsoleKey.Tab, false, false, true), StandardBehaviors.AutoCompletePrevious);
+                .AddKeyBehavior(ConsoleKey.Tab, CommonBehaviors.AutoCompleteNext)
+                .AddKeyBehavior(new KeyId(ConsoleKey.Tab, false, false, true), CommonBehaviors.AutoCompletePrevious);
         }
     }
 }
