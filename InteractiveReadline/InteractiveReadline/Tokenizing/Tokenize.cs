@@ -31,7 +31,7 @@ namespace InteractiveReadLine.Tokenizing
         /// <returns></returns>
         public Tokens Result()
         {
-            var tokens = new List<Token>();
+            var tokens = new Tokens();
 
             var prevSep = new StringBuilder();
             var thisToken = new StringBuilder();
@@ -95,7 +95,7 @@ namespace InteractiveReadLine.Tokenizing
                         if (!isPrev)
                         {
                             // This is the transition state described above
-                            tokens.Add(new Token(thisToken.ToString(), prevSep.ToString(), nextSep.ToString(), tokenCursor));
+                            tokens.Add(thisToken.ToString(), nextSep.ToString(), prevSep.ToString(), tokenCursor);
                             prevSep.Clear().Append(nextSep);
                             nextSep.Clear();
                             thisToken.Clear();
@@ -129,16 +129,16 @@ namespace InteractiveReadLine.Tokenizing
             }
 
             // Now that we've reached the end, we add the final token
-            tokens.Add(new Token(thisToken.ToString(), prevSep.ToString(), nextSep.ToString(), tokenCursor));
+            tokens.Add(thisToken.ToString(), nextSep.ToString(), prevSep.ToString(), tokenCursor);
 
             // If the cursor is beyond the length of the text, and the last separator wasn't empty, we add
             // a final empty token
-            if (Cursor >= Text.Length && !string.IsNullOrEmpty(tokens.Last().NextSeparator))
+            if (Cursor >= Text.Length && !string.IsNullOrEmpty(tokens.Last().NextSeparator.Text))
             {
-                tokens.Add(new Token(string.Empty, tokens.Last().NextSeparator, string.Empty, 0));
+                tokens.Add(string.Empty, null, null, 0);
             }
 
-            return new Tokens(tokens);
+            return tokens;
         }
         
     }

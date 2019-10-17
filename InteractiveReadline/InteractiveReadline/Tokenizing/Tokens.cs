@@ -9,14 +9,12 @@ namespace InteractiveReadLine.Tokenizing
     public class Tokens : IReadOnlyList<Token>
     {
         private readonly List<Token> _tokens;
+        private readonly List<Separator> _separators;
 
-        public Tokens(IEnumerable<Token> tokens=null)
+        public Tokens()
         {
-            _tokens = new List<Token>(tokens ?? Enumerable.Empty<Token>());
-            for (int i = 0; i < _tokens.Count - 1; i++)
-            {
-                _tokens[i].LinkToNext(_tokens[i+1]);
-            }
+            _tokens = new List<Token>();
+            _separators = new List<Separator>();
         }
 
         public int Count => _tokens.Count;
@@ -33,7 +31,28 @@ namespace InteractiveReadLine.Tokenizing
             return GetEnumerator();
         }
 
-        public Tokens Clone() => new Tokens(_tokens.Select(t => new Token(t.Text, t.PreviousSeparator, t.NextSeparator, t.CursorPos)));
+        public void Add(string tokenText, string nextSep, string prevSep = null, int cursorPos = Int32.MinValue)
+        {
+            Separator prevSeparator = null;
+            if (!_tokens.Any())
+            {
+                // This is the first token, so it must take the previous separator and set it
+                prevSeparator = new Separator(prevSep ?? string.Empty);
+                _separators.Add(prevSeparator);
+            }
+
+            var nextSeparator = new Separator(nextSep ?? string.Empty);
+            _separators.Add(nextSeparator);
+
+            var token = new Token(tokenText ?? string.Empty, nextSeparator, prevSeparator, cursorPos);
+
+            // If there's a previous token, we link it to this one
+            _tokens.LastOrDefault()?.LinkToNext(token);
+
+            _tokens.Add(token);
+        }
+
+        // public Tokens Clone() => new Tokens(_tokens.Select(t => new Token(t.Text, t.PreviousSeparator, t.NextSeparator, t.CursorPos)));
 
         public Tuple<string, int> Combine()
         {
@@ -43,7 +62,7 @@ namespace InteractiveReadLine.Tokenizing
             }
 
             var builder = new StringBuilder();
-            builder.Append(_tokens.First().PreviousSeparator);
+            builder.Append(_tokens.First().PrevSeparator.Text);
 
             int cursor = 0;
             foreach (var token in _tokens)

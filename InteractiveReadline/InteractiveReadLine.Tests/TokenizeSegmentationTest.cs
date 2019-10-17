@@ -38,17 +38,17 @@ namespace InteractiveReadLine.Tests
             var test = new Tokenize("this  is    a test", 15);
             var tokens = CommonTokenizers.SplitOnSpaces().Invoke(test);
             
-            Assert.Equal("", tokens[0].PreviousSeparator);
-            Assert.Equal("  ", tokens[0].NextSeparator);
+            Assert.Equal("", tokens[0].PrevSeparator.Text);
+            Assert.Equal("  ", tokens[0].NextSeparator.Text);
             
-            Assert.Equal("  ", tokens[1].PreviousSeparator);
-            Assert.Equal("    ", tokens[1].NextSeparator);
+            Assert.Equal("  ", tokens[1].PrevSeparator.Text);
+            Assert.Equal("    ", tokens[1].NextSeparator.Text);
 
-            Assert.Equal("    ", tokens[2].PreviousSeparator);
-            Assert.Equal(" ", tokens[2].NextSeparator);
+            Assert.Equal("    ", tokens[2].PrevSeparator.Text);
+            Assert.Equal(" ", tokens[2].NextSeparator.Text);
 
-            Assert.Equal(" ", tokens[3].PreviousSeparator);
-            Assert.Equal("", tokens[3].NextSeparator);
+            Assert.Equal(" ", tokens[3].PrevSeparator.Text);
+            Assert.Equal("", tokens[3].NextSeparator.Text);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace InteractiveReadLine.Tests
             var test = new Tokenize("   this is a test ", 13);
             var tokens = CommonTokenizers.SplitOnSpaces().Invoke(test);
 
-            Assert.Equal("   ", tokens.First().PreviousSeparator);
+            Assert.Equal("   ", tokens.First().PrevSeparator.Text);
             Assert.Equal(0, tokens.Last().CursorPos);
         }
     }

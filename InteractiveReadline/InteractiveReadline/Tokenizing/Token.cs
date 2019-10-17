@@ -5,11 +5,11 @@
         /// <summary>
         /// Creates a Token, not intended to be created by users, but rather generated from a Tokenize object
         /// </summary>
-        public Token(string text, string prevSep, string nextSep, int cursorPos=int.MinValue)
+        public Token(string text, Separator next, Separator prev, int cursorPos=int.MinValue)
         {
-            this.NextSeparator = nextSep ?? string.Empty;
+            this.NextSeparator = next;
+            this.PrevSeparator = prev;
             this.CursorPos = cursorPos;
-            this.PreviousSeparator = prevSep ?? string.Empty;
             this.Text = text;
         }
 
@@ -17,9 +17,10 @@
 
         public Token Previous { get; private set; }
 
-        public string NextSeparator { get; }
+        public Separator NextSeparator { get; private set; }
 
-        public string PreviousSeparator { get; }
+        public Separator PrevSeparator { get; private set; }
+
 
         public string Text { get; private set;  }
 
@@ -31,13 +32,14 @@
         {
             this.Next = next;
             next.Previous = this;
+            next.PrevSeparator = this.NextSeparator;
         }
 
         public void ReplaceText(string newText)
         {
             this.Text = newText;
-            if (this.CursorPos > this.Text.Length + this.NextSeparator.Length)
-                this.CursorPos = this.Text.Length + this.NextSeparator.Length;
+            if (this.CursorPos > this.Text.Length + this.NextSeparator.Text.Length)
+                this.CursorPos = this.Text.Length + this.NextSeparator.Text.Length;
         }
     }
 }
