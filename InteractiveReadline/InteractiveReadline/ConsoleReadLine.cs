@@ -12,6 +12,7 @@ namespace InteractiveReadLine
         private readonly string _prompt;
         private readonly IConsoleWrapper _console;
         private string _lastWrittenText;
+        private int _lastWrittenCursor;
         private int _startingRow;
 
         public ConsoleReadLine(string prompt = "") 
@@ -31,6 +32,11 @@ namespace InteractiveReadLine
 
         public void SetInputText(string text, int cursor)
         {
+            this.SetText(_prompt + text, _prompt.Length + cursor);
+        }
+
+        private void SetText(string totalText, int cursorPos)
+        {
             // The process of setting the input text requires us to find the difference between 
             // the last written text and the new text, then perform the minimum amount of character
             // writes necessary to make the two identical
@@ -38,7 +44,6 @@ namespace InteractiveReadLine
             // First, we should determine what the new line needs to look like. If the new line is 
             // longer than the old line, we will write the new line exactly.  If it's shorter, we'll 
             // need to pad it out with empty characters 
-            var totalText = _prompt + text;
             var writeText = (totalText.Length >= _lastWrittenText.Length)
                 ? totalText
                 : totalText + new string(' ', _lastWrittenText.Length - totalText.Length);
@@ -74,9 +79,20 @@ namespace InteractiveReadLine
                 _startingRow = _console.BufferHeight - writtenRowOffset - 1;
             }
 
-            var cursorPos = _prompt.Length + cursor;
             _console.CursorTop = _startingRow + this.RowOffset(cursorPos);
             _console.CursorLeft = this.ColOffset(cursorPos);
+        }
+
+        /// <summary>
+        /// Writes a message out to the console out in the spot where the current readline input is, then
+        /// immediately redisplays the line input below
+        /// </summary>
+        /// <param name="text">The text to write to the console. This does not need to be terminated with a
+        /// newline character, as one will be added automatically.</param>
+        public void WriteMessage(string text)
+        {
+            var currentText = _lastWrittenText;
+
         }
         
         public void Dispose()

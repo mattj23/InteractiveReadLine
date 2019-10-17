@@ -84,22 +84,16 @@ namespace InteractiveReadLine
                 {
                 }
 
+                _autoCompleteCalled = false;
+                var textContents = _content.ToString();
+                var cursor = _cursorPos;
+                
                 // See if there's a specific behavior which should be mapped to this key,
                 // and if so, run it instead of checking the insert/enter behaviors
                 var behavior = this.GetKeyAction(keyInfo);
                 if (behavior != null)
                 {
-                    _autoCompleteCalled = false;
-                    var textContents = _content.ToString();
-                    var cursor = _cursorPos;
-
                     behavior.Invoke(this);
-
-                    // If the text contents or the cursor have changed at all, and we weren't currently
-                    // doing autocomplete, we need to invalidate the autocompletion information
-                    if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
-                        this.InvalidateAutoComplete();
-
                 }
                 else
                 {
@@ -112,6 +106,11 @@ namespace InteractiveReadLine
                         _cursorPos++;
                     }
                 }
+
+                // If the text contents or the cursor have changed at all, and we weren't currently
+                // doing autocomplete, we need to invalidate the autocompletion information
+                if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
+                    this.InvalidateAutoComplete();
 
                 // var tokens = _config.Tokenizer(new Tokenize(_content.ToString(), _cursorPos));
                 // Debug.Print(string.Join("  ->  ", tokens.Select(t => $"{t.Text}{(t.HasCursor ? $"[{t.CursorPos}]" : "")}")));

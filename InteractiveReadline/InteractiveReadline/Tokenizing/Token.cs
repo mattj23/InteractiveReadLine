@@ -54,9 +54,9 @@ namespace InteractiveReadLine.Tokenizing
 
         public void ReplaceText(string newText)
         {
+            if (this.CursorPos > newText.Length)
+                this.CursorPos = newText.Length;
             this.Text = newText;
-            if (this.CursorPos > this.Text.Length)
-                this.CursorPos = this.Text.Length;
         }
 
         public void MoveCursorToEnd()
