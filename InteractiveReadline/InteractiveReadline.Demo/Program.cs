@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using InteractiveReadLine.Behaviors;
+using InteractiveReadLine.KeyBehaviors;
 
 namespace InteractiveReadLine.Demo
 {

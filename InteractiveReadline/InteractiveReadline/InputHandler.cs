@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using InteractiveReadLine.Behaviors;
 using InteractiveReadLine.Components;
+using InteractiveReadLine.KeyBehaviors;
 
 namespace InteractiveReadLine
 {

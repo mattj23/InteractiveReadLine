@@ -1,7 +1,7 @@
 ﻿using System;
 using InteractiveReadLine.Components;
 
-namespace InteractiveReadLine.Behaviors
+namespace InteractiveReadLine.KeyBehaviors
 {
     public static class BehaviorExtensionMethods
     {

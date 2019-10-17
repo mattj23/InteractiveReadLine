@@ -1,4 +1,4 @@
-﻿namespace InteractiveReadLine.Behaviors
+﻿namespace InteractiveReadLine.KeyBehaviors
 {
     public static class StandardBehaviors
     {

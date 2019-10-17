@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace InteractiveReadLine.Behaviors
+namespace InteractiveReadLine.KeyBehaviors
 {
     /// <summary>
     /// Provides the unified target of key behaviors, exposing a standard amount of state which the
