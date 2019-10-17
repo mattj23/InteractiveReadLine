@@ -41,5 +41,11 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddKeyBehavior(ConsoleKey.RightArrow, StandardBehaviors.RightArrow);
         }
 
+        public static ReadLineConfig AddTabAutoComplete(this ReadLineConfig config)
+        {
+            return config
+                .AddKeyBehavior(ConsoleKey.Tab, StandardBehaviors.AutoCompleteNext)
+                .AddKeyBehavior(new KeyId(ConsoleKey.Tab, false, false, true), StandardBehaviors.AutoCompletePrevious);
+        }
     }
 }

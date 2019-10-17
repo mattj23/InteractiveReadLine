@@ -29,5 +29,9 @@
             if (target.CursorPosition < target.TextBuffer.Length)
                 target.CursorPosition++;
         }
+
+        public static void AutoCompleteNext(IKeyBehaviorTarget target) => target.AutoCompleteNext();
+
+        public static void AutoCompletePrevious(IKeyBehaviorTarget target) => target.AutoCompletePrevious();
     }
 }

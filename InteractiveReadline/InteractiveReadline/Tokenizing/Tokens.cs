@@ -23,6 +23,8 @@ namespace InteractiveReadLine.Tokenizing
 
         public Token CursorToken => _tokens.FirstOrDefault(t => t.HasCursor);
 
+        public int CursorTokenIndex => _tokens.IndexOf(CursorToken);
+
         public IEnumerator<Token> GetEnumerator()
         {
             return _tokens.GetEnumerator();
