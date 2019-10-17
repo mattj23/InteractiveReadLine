@@ -125,7 +125,7 @@ namespace InteractiveReadLine
         /// </summary>
         private Action<IKeyBehaviorTarget> GetKeyAction(ConsoleKeyInfo info)
         {
-            var charKey = new KeyId(info.KeyChar);
+                var charKey = new KeyId(info.KeyChar);
             if (_config.KeyBehaviors.ContainsKey(charKey))
                 return _config.KeyBehaviors[charKey];
 

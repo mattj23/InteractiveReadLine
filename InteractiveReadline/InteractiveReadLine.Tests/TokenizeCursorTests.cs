@@ -79,6 +79,23 @@ namespace InteractiveReadLine.Tests
             Assert.Equal(position, tokens.CursorToken.CursorPos);
         }
 
+        [Theory]
+        //             0  1  2   3  4  5    6
+        //           0123 01 0 0123 01 012 012345
+        //          "this is a test of the cursor "
+        [InlineData("                      ^        ", 6, 0)]
+        [InlineData("                           ^   ", 6, 5)]
+        [InlineData("                            ^  ", 6, 6)]
+        [InlineData("                              ^", 7, 0)]
+        public void TokenizedCursor_TrailingSpace_IdentifiesCorrectToken(string cursorText, int token, int position)
+        {
+            var tokenize = FromTestText("this is a test of the cursor ", cursorText);
+            var tokens = CommonTokenizers.SplitOnSpaces(tokenize);
+
+            Assert.Equal(token, tokens.CursorTokenIndex);
+            Assert.Equal(position, tokens.CursorToken.CursorPos);
+        }
+
         public Tokenize FromTestText(string text, string curs)
         {
             int cpos = curs.IndexOf('^');

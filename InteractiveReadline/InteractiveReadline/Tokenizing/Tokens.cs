@@ -76,7 +76,7 @@ namespace InteractiveReadLine.Tokenizing
                 if (token.HasCursor)
                     cursor = len + token.CursorPos;
 
-                builder.Append(token.NextSeparator);
+                builder.Append(token.NextSeparator.Text);
             }
 
             return Tuple.Create(builder.ToString(), cursor);

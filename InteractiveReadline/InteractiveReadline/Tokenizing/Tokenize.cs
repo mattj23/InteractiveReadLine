@@ -105,6 +105,7 @@ namespace InteractiveReadLine.Tokenizing
                         else
                         {
                             isPrev = false;
+                            tokenStart = i;
                         }
                     }
 
@@ -129,6 +130,9 @@ namespace InteractiveReadLine.Tokenizing
             }
 
             // Now that we've reached the end, we add the final token
+            if (Cursor == Text.Length)
+                tokenCursor = Text.Length - tokenStart;
+
             tokens.Add(thisToken.ToString(), nextSep.ToString(), prevSep.ToString(), tokenCursor);
 
             // If the cursor is beyond the length of the text, and the last separator wasn't empty, we add
