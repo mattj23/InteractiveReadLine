@@ -68,9 +68,6 @@ namespace InteractiveReadLine.Tokenizing
             // Iterating through all of the characters in the text
             for (int i = 0; i < Text.Length; i++)
             {
-                if (i == Cursor)
-                    tokenCursor = i - tokenStart;
-
                 if (i == 0)
                 {
                     // There's a special case for the first element, which cannot be allowed to perform a 
@@ -125,6 +122,10 @@ namespace InteractiveReadLine.Tokenizing
                     }
 
                 }
+
+                if (i == Cursor)
+                    tokenCursor = i - tokenStart;
+
             }
 
             // Now that we've reached the end, we add the final token
