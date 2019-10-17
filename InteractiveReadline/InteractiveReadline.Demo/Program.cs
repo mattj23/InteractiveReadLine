@@ -10,8 +10,6 @@ namespace InteractiveReadLine.Demo
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Console.WindowHeight = 5;
-            Console.BufferHeight = 5;
 
             var config = ReadLineConfig.Empty()
                 .AddStandardKeys()

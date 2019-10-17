@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using InteractiveReadLine.KeyBehaviors;
+using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine
 {
@@ -16,6 +18,10 @@ namespace InteractiveReadLine
         private readonly StringBuilder _content;
         private readonly ReadLineConfig _config;
         private int _cursorPos;
+        private int _autoCompleteIndex;
+        private Tokens _autoCompleteTokens;
+        private bool _autoCompleteCalled = false;
+        private string[] _autoCompleteSuggestions;
 
         public InputHandler(IReadLine provider, ReadLineConfig config=null)
         {
@@ -23,6 +29,9 @@ namespace InteractiveReadLine
             _provider = provider;
             _content = new StringBuilder();
             _cursorPos = 0;
+
+            _autoCompleteIndex = Int32.MinValue;
+            _autoCompleteSuggestions = null;
         }
 
         public StringBuilder TextBuffer => _content;
@@ -31,6 +40,37 @@ namespace InteractiveReadLine
         { 
             get => _cursorPos;
             set => _cursorPos = value;
+        }
+
+        public void AutoCompleteNext()
+        {
+            if (_autoCompleteIndex >= 0)
+            {
+                // Next index
+                _autoCompleteIndex++;
+                if (_autoCompleteIndex >= _autoCompleteSuggestions.Length)
+                    _autoCompleteIndex = 0;
+
+                this.SetAutoCompleteText();
+            }
+            else
+                this.StartAutoComplete();
+        }
+
+        public void AutoCompletePrevious()
+        {
+            if (_autoCompleteIndex >= 0)
+            {
+                // Previous index
+                _autoCompleteIndex--;
+                if (_autoCompleteIndex < 0)
+                    _autoCompleteIndex = _autoCompleteSuggestions.Length - 1;
+
+                this.SetAutoCompleteText();
+            }
+            else 
+                this.StartAutoComplete();
+
         }
 
         public string ReadLine()
@@ -48,7 +88,17 @@ namespace InteractiveReadLine
                 var behavior = this.GetKeyAction(keyInfo);
                 if (behavior != null)
                 {
+                    _autoCompleteCalled = false;
+                    var textContents = _content.ToString();
+                    var cursor = _cursorPos;
+
                     behavior.Invoke(this);
+
+                    // If the text contents or the cursor have changed at all, and we weren't currently
+                    // doing autocomplete, we need to invalidate the autocompletion information
+                    if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
+                        this.InvalidateAutoComplete();
+
                 }
                 else
                 {
@@ -87,5 +137,45 @@ namespace InteractiveReadLine
             return null;
         }
 
+        private void StartAutoComplete()
+        {
+            if (!_config.CanAutoComplete)
+                return;
+
+            _autoCompleteTokens = _config.Tokenizer(new Tokenize(_content.ToString(), _cursorPos));
+            if (_autoCompleteTokens.CursorToken == null)
+                return;
+
+            _autoCompleteSuggestions = _config.AutoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
+
+            if (_autoCompleteSuggestions.Any())
+            {
+                _autoCompleteIndex = 0;
+                SetAutoCompleteText();
+            }
+
+        }
+
+        private void InvalidateAutoComplete()
+        {
+            _autoCompleteIndex = Int32.MinValue;
+            _autoCompleteTokens = null;
+            _autoCompleteSuggestions = null;
+        }
+
+        private void SetAutoCompleteText()
+        {
+            if (!_config.CanAutoComplete || _autoCompleteTokens == null || _autoCompleteIndex < 0)
+                return;
+
+            _autoCompleteCalled = true;
+            _autoCompleteTokens.CursorToken.ReplaceText(_autoCompleteSuggestions[_autoCompleteIndex]);
+
+            var result = _autoCompleteTokens.Combine();
+            _content.Clear();
+            _content.Append(result.Item1);
+            CursorPosition = result.Item2;
+
+        }
     }
 }

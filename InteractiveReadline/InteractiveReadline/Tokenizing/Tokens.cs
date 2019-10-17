@@ -21,6 +21,8 @@ namespace InteractiveReadLine.Tokenizing
 
         public Token this[int index] => _tokens[index];
 
+        public Token CursorToken => _tokens.FirstOrDefault(t => t.HasCursor);
+
         public IEnumerator<Token> GetEnumerator()
         {
             return _tokens.GetEnumerator();

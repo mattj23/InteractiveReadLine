@@ -9,7 +9,11 @@ namespace InteractiveReadLine.KeyBehaviors
     public interface IKeyBehaviorTarget
     {
         StringBuilder TextBuffer { get; }
+
         int CursorPosition { get; set; }
-        
+
+        void AutoCompleteNext();
+
+        void AutoCompletePrevious();
     }
 }
