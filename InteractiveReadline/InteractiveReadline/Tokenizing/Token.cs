@@ -4,6 +4,8 @@ namespace InteractiveReadLine.Tokenizing
 {
     public class Token
     {
+        private int _cursorPos;
+
         /// <summary>
         /// Creates a Token, not intended to be created by users, but rather generated from a Tokenize object
         /// </summary>
@@ -23,12 +25,25 @@ namespace InteractiveReadLine.Tokenizing
 
         public Separator PrevSeparator { get; private set; }
 
-
         public string Text { get; private set;  }
 
-        public int CursorPos { get; private set; }
+        public int CursorPos
+        {
+            get => this.HasCursor ? _cursorPos : Int32.MinValue;
+            private set => _cursorPos = value;
+        }
 
-        public bool HasCursor => this.CursorPos > Int32.MinValue;
+        public bool HasCursor
+        {
+            get
+            {
+                var limitValue = this.Text.Length + this.NextSeparator.Text.Length;
+                if (this.Next == null)
+                    limitValue++;
+                return _cursorPos > Int32.MinValue && _cursorPos < limitValue;
+            }
+        }
+
 
         public void LinkToNext(Token next)
         {
@@ -42,7 +57,12 @@ namespace InteractiveReadLine.Tokenizing
             this.Text = newText;
             if (this.CursorPos > this.Text.Length)
                 this.CursorPos = this.Text.Length;
+        }
 
+        public void MoveCursorToEnd()
+        {
+            if (this.HasCursor)
+                this.CursorPos = Text.Length;
         }
     }
 }

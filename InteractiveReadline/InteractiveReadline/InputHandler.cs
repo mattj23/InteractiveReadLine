@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -112,6 +113,9 @@ namespace InteractiveReadLine
                     }
                 }
 
+                // var tokens = _config.Tokenizer(new Tokenize(_content.ToString(), _cursorPos));
+                // Debug.Print(string.Join("  ->  ", tokens.Select(t => $"{t.Text}{(t.HasCursor ? $"[{t.CursorPos}]" : "")}")));
+
                 _provider.SetInputText(_content.ToString(), _cursorPos);
             }
 
@@ -170,6 +174,7 @@ namespace InteractiveReadLine
 
             _autoCompleteCalled = true;
             _autoCompleteTokens.CursorToken.ReplaceText(_autoCompleteSuggestions[_autoCompleteIndex]);
+            _autoCompleteTokens.CursorToken.MoveCursorToEnd();
 
             var result = _autoCompleteTokens.Combine();
             _content.Clear();
