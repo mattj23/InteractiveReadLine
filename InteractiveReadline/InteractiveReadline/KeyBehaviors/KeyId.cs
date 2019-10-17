@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InteractiveReadLine.Components
+namespace InteractiveReadLine.KeyBehaviors
 {
     /// <summary>
     /// An identity for a key, is equatable so that it can be used in a dictionary

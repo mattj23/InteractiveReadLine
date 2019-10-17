@@ -1,5 +1,4 @@
 ﻿using System;
-using InteractiveReadLine.Components;
 
 namespace InteractiveReadLine.KeyBehaviors
 {
