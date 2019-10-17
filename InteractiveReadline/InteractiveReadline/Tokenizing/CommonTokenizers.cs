@@ -21,10 +21,10 @@ namespace InteractiveReadLine.Tokenizing
             };
         }
 
-        public static Tokenizer SplitOnSpaces() => SplitOnCharacters(' ');
+        public static Tokenizer SplitOnSpaces => SplitOnCharacters(' ');
 
-        public static Tokenizer SplitOnCommas() => SplitOnCharacters(',');
+        public static Tokenizer SplitOnCommas => SplitOnCharacters(',');
 
-        public static Tokenizer SplitOnPunctuation() => SplitOnCharacters(' ', ',', '.', '!', '?', ':', ';');
+        public static Tokenizer SplitOnPunctuation => SplitOnCharacters(' ', ',', '.', '!', '?', ':', ';');
     }
 }

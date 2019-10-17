@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using InteractiveReadLine.KeyBehaviors;
+using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.Demo
 {
@@ -12,7 +13,9 @@ namespace InteractiveReadLine.Demo
             Console.WindowHeight = 5;
             Console.BufferHeight = 5;
 
-            var config = new ReadLineConfig().AddStandardKeys();
+            var config = ReadLineConfig.Empty()
+                .AddStandardKeys()
+                .SetTokenizer(CommonTokenizers.SplitOnSpaces);
 
             for (int i = 0; i < 5; i++)
             {
