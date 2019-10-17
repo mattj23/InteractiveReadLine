@@ -48,6 +48,22 @@ namespace InteractiveReadLine.Tests
         }
 
         [Theory]
+        //           43210
+        //          "    "
+        [InlineData("^   ", -4)]
+        [InlineData("  ^ ", -2)]
+        [InlineData("   ^", -1)]
+        [InlineData("    ^", 0)]
+        public void CursorInSeparatorText_PrefixOnly_IdentifiesCorrectly(string cursorText, int position)
+        {
+            var tokenize = FromTestText("    ", cursorText);
+            var tokens = CommonTokenizers.SplitOnSpaces(tokenize);
+
+            Assert.Equal(0, tokens.CursorTokenIndex);
+            Assert.Equal(position, tokens.CursorToken.CursorPos);
+        }
+
+        [Theory]
         //           432101234
         //          "    this "
         [InlineData("^        ", -4)]
