@@ -173,8 +173,8 @@ namespace InteractiveReadLine
 
             var result = _autoCompleteTokens.Combine();
             _content.Clear();
-            _content.Append(result.Item1);
-            CursorPosition = result.Item2;
+            _content.Append(result.Text);
+            CursorPosition = result.CursorPos;
 
         }
     }

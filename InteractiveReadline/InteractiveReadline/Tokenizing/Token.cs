@@ -1,4 +1,6 @@
-﻿namespace InteractiveReadLine.Tokenizing
+﻿using System;
+
+namespace InteractiveReadLine.Tokenizing
 {
     public class Token
     {
@@ -26,7 +28,7 @@
 
         public int CursorPos { get; private set; }
 
-        public bool HasCursor => this.CursorPos > int.MinValue;
+        public bool HasCursor => this.CursorPos > Int32.MinValue;
 
         public void LinkToNext(Token next)
         {
@@ -38,8 +40,9 @@
         public void ReplaceText(string newText)
         {
             this.Text = newText;
-            if (this.CursorPos > this.Text.Length + this.NextSeparator.Text.Length)
-                this.CursorPos = this.Text.Length + this.NextSeparator.Text.Length;
+            if (this.CursorPos > this.Text.Length)
+                this.CursorPos = this.Text.Length;
+
         }
     }
 }

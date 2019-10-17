@@ -58,11 +58,11 @@ namespace InteractiveReadLine.Tokenizing
 
         // public Tokens Clone() => new Tokens(_tokens.Select(t => new Token(t.Text, t.PreviousSeparator, t.NextSeparator, t.CursorPos)));
 
-        public Tuple<string, int> Combine()
+        public LineState Combine()
         {
             if (!_tokens.Any())
             {
-                return Tuple.Create(string.Empty, 0);
+                return new LineState(string.Empty, 0);
             }
 
             var builder = new StringBuilder();
@@ -74,12 +74,20 @@ namespace InteractiveReadLine.Tokenizing
                 var len = builder.Length;
                 builder.Append(token.Text);
                 if (token.HasCursor)
-                    cursor = len + token.CursorPos;
+                {
+                    int cpos = token.CursorPos;
+
+                    // Weird case we need to check just in case the previous separator was resized
+                    if (token.CursorPos < -token.PrevSeparator.Text.Length)
+                        cpos = -token.PrevSeparator.Text.Length;
+
+                    cursor = len + cpos;
+                }
 
                 builder.Append(token.NextSeparator.Text);
             }
 
-            return Tuple.Create(builder.ToString(), cursor);
+            return new LineState(builder.ToString(), cursor);
         }
     }
 }

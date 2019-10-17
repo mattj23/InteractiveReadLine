@@ -105,6 +105,15 @@ namespace InteractiveReadLine.Tokenizing
                         else
                         {
                             isPrev = false;
+                            
+                            // Here we need to handle the case that the cursor was in the pre-first-token text
+                            if (tokenCursor > Int32.MinValue)
+                            {
+                                // We are currently on (i) the first token character. The cursor position will
+                                // be negative from this character
+                                tokenCursor = tokenCursor - i;
+                            }
+
                             tokenStart = i;
                         }
                     }

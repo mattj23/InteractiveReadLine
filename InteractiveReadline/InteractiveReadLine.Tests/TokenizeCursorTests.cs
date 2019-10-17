@@ -35,6 +35,44 @@ namespace InteractiveReadLine.Tests
             Assert.Equal(6, tokenize.Cursor);
         }
 
+        [Fact]
+        public void CursorInSeparatorText_IdentifiesCorrectly()
+        {
+            var tokenize = FromTestText(
+                "this    is a test",
+                "      ^          ");
+            var tokens = CommonTokenizers.SplitOnSpaces(tokenize);
+            Assert.Equal(0, tokens.CursorTokenIndex);
+            Assert.Equal(6, tokens.CursorToken.CursorPos);
+
+        }
+
+        [Theory]
+        //           432101234
+        //          "    this "
+        [InlineData("^        ", -4)]
+        [InlineData("  ^      ", -2)]
+        [InlineData("   ^     ", -1)]
+        public void CursorInSeparatorText_Prefix_IdentifiesCorrectly(string cursorText, int position)
+        {
+            var tokenize = FromTestText("    this ", cursorText);
+            var tokens = CommonTokenizers.SplitOnSpaces(tokenize);
+
+            Assert.Equal(0, tokens.CursorTokenIndex);
+            Assert.Equal(position, tokens.CursorToken.CursorPos);
+        }
+
+        [Fact]
+        public void CursorInSeparatorText_MidLine_IdentifiesCorrectly()
+        {
+            var tokenize = FromTestText(
+                "this    is   a test",
+                "           ^       ");
+            var tokens = CommonTokenizers.SplitOnSpaces(tokenize);
+            Assert.Equal(1, tokens.CursorTokenIndex);
+            Assert.Equal(3, tokens.CursorToken.CursorPos);
+        }
+
         [Theory]
         //             0  1  2   3  4  5    6
         //           0123 01 0 0123 01 012 012345
