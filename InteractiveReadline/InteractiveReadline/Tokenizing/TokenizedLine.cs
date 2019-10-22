@@ -72,15 +72,22 @@ namespace InteractiveReadLine.Tokenizing
 
             public Token(string text, bool isHidden, TokenizedLine parent)
             {
-                this.Text = text;
-                IsHidden = isHidden;
                 _parent = parent;
+                _text = text;
+                this.IsHidden = isHidden;
             }
 
             public string Text
             {
                 get => _text;
-                set => _text = value;
+                set
+                {
+                    if (Cursor != null && Cursor > value.Length)
+                    {
+                        Cursor = value.Length;
+                    }
+                    _text = value;
+                }
             }
 
             public int? Cursor
