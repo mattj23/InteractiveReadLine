@@ -28,7 +28,7 @@ namespace InteractiveReadLine
             return this;
         }
 
-        public ReadLineConfig SetTokenizer(Func<LineState, TokenizedLine> lexer)
+        public ReadLineConfig SetLexer(Func<LineState, TokenizedLine> lexer)
         {
             this.Lexer = lexer;
             return this;
