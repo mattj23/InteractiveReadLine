@@ -31,6 +31,10 @@ namespace InteractiveReadLine.Tokenizing
 
         public IToken this[int index] => _tokens[index];
 
+        public IToken CursorToken => _tokens.FirstOrDefault(x => x.Cursor != null);
+
+        public int CursorTokenIndex => _tokens.IndexOf(_tokens.FirstOrDefault(x => x.Cursor != null));
+
         public int Cursor
         {
             get => _cursor;

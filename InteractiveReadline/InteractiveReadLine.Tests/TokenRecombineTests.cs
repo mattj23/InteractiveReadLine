@@ -22,7 +22,7 @@ namespace InteractiveReadLine.Tests
                 var result = tokens.Combine();
 
                 Assert.Equal(text, result.Text);
-                Assert.Equal(i, result.CursorPos);
+                Assert.Equal(i, result.Cursor);
             }
         }
     }

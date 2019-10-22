@@ -62,7 +62,7 @@ namespace InteractiveReadLine.Tokenizing
                 ignored.Clear();
             }
 
-            tokenized.Cursor = lineState.CursorPos;
+            tokenized.Cursor = lineState.Cursor;
 
             if (tokenized.Last.IsHidden && tokenized.Last.Cursor == tokenized.Last.Text.Length)
             {

@@ -7,13 +7,13 @@ namespace InteractiveReadLine
     /// </summary>
     public struct LineState
     {
-        public LineState(string text, int cursorPos)
+        public LineState(string text, int cursor)
         {
             Text = text;
-            CursorPos = cursorPos;
+            Cursor = cursor;
         }
 
-        public int CursorPos { get; }
+        public int Cursor { get; }
 
         public string Text { get; }
     }
