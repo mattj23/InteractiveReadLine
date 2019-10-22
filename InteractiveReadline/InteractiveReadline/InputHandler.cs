@@ -161,6 +161,13 @@ namespace InteractiveReadLine
 
             _autoCompleteSuggestions = _config.AutoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
 
+            if (_autoCompleteTokens.Text != _content.ToString())
+            {
+                _content.Clear();
+                _content.Append(_autoCompleteTokens.Text);
+                CursorPosition = _autoCompleteTokens.Cursor;
+            }
+
             if (_autoCompleteSuggestions.Any())
             {
                 _autoCompleteIndex = 0;
