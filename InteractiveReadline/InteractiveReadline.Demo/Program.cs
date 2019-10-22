@@ -23,7 +23,7 @@ namespace InteractiveReadLine.Demo
                 .AddTabAutoComplete()
                 .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
                 .SetAutoCompletion(AutoComplete)
-                .SetTokenizer(CommonTokenizers.SplitOnWhitespace);
+                .SetTokenizer(CommonLexers.SplitOnWhitespace);
 
             while (true)
             {

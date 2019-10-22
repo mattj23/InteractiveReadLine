@@ -81,7 +81,7 @@ namespace InteractiveReadLine
 
         public TokenizedLine GetTextTokens()
         {
-            return _config.Tokenizer?.Invoke(new LineState(_content.ToString(), _cursorPos));
+            return _config.Lexer?.Invoke(new LineState(_content.ToString(), _cursorPos));
         }
 
         public string ReadLine()
@@ -122,7 +122,7 @@ namespace InteractiveReadLine
                 if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
                     this.InvalidateAutoComplete();
 
-                // var tokens = _config.Tokenizer(new Tokenize(_content.ToString(), _cursorPos));
+                // var tokens = _config.Lexer(new Tokenize(_content.ToString(), _cursorPos));
                 // Debug.Print(string.Join("  ->  ", tokens.Select(t => $"{t.Text}{(t.HasCursor ? $"[{t.CursorPos}]" : "")}")));
 
                 _provider.SetInputText(_content.ToString(), _cursorPos);
@@ -155,7 +155,7 @@ namespace InteractiveReadLine
             if (!_config.CanAutoComplete)
                 return;
 
-            _autoCompleteTokens = _config.Tokenizer(new LineState(_content.ToString(), _cursorPos));
+            _autoCompleteTokens = _config.Lexer(new LineState(_content.ToString(), _cursorPos));
             if (_autoCompleteTokens.CursorToken == null)
                 return;
 

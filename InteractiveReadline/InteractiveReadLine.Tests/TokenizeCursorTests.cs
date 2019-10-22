@@ -41,7 +41,7 @@ namespace InteractiveReadLine.Tests
             var tokenize = FromTestText(
                 "this    is a test",
                 "      ^          ");
-            var tokens = CommonTokenizers.SplitOnWhitespace(tokenize);
+            var tokens = CommonLexers.SplitOnWhitespace(tokenize);
             Assert.Equal(1, tokens.CursorTokenIndex);
             Assert.Equal(2, tokens.CursorToken.Cursor);
 
@@ -56,7 +56,7 @@ namespace InteractiveReadLine.Tests
         public void CursorInSeparatorText_PrefixOnly_IdentifiesCorrectly(string cursorText, int position)
         {
             var tokenize = FromTestText("    ", cursorText);
-            var tokens = CommonTokenizers.SplitOnWhitespace(tokenize);
+            var tokens = CommonLexers.SplitOnWhitespace(tokenize);
 
             Assert.Equal(0, tokens.CursorTokenIndex);
             Assert.Equal(position, tokens.CursorToken.Cursor);
@@ -68,7 +68,7 @@ namespace InteractiveReadLine.Tests
             var tokenize = FromTestText(
                 "this    is   a test",
                 "           ^       ");
-            var tokens = CommonTokenizers.SplitOnWhitespace(tokenize);
+            var tokens = CommonLexers.SplitOnWhitespace(tokenize);
             Assert.Equal(3, tokens.CursorTokenIndex);
             Assert.Equal(1, tokens.CursorToken.Cursor);
         }
@@ -89,7 +89,7 @@ namespace InteractiveReadLine.Tests
         public void TokenizedCursor_SimpleCase_IdentifiesCorrectToken(string cursorText, int token, int position)
         {
             var tokenize = FromTestText("this is a test of the cursor", cursorText);
-            var tokens = CommonTokenizers.SplitOnWhitespace(tokenize);
+            var tokens = CommonLexers.SplitOnWhitespace(tokenize);
 
             Assert.Equal(token, tokens.CursorTokenIndex);
             Assert.Equal(position, tokens.CursorToken.Cursor);
@@ -111,7 +111,7 @@ namespace InteractiveReadLine.Tests
         public void TokenizedCursor_WithLeadingSpace_IdentifiesCorrectToken(string cursorText, int token, int position)
         {
             var tokenize = FromTestText(" this is a test of the cursor", cursorText);
-            var tokens = CommonTokenizers.SplitOnWhitespace(tokenize);
+            var tokens = CommonLexers.SplitOnWhitespace(tokenize);
 
             Assert.Equal(token, tokens.CursorTokenIndex);
             Assert.Equal(position, tokens.CursorToken.Cursor);
@@ -128,7 +128,7 @@ namespace InteractiveReadLine.Tests
         public void TokenizedCursor_TrailingSpace_IdentifiesCorrectToken(string cursorText, int token, int position)
         {
             var tokenize = FromTestText("this is a test of the cursor ", cursorText);
-            var tokens = CommonTokenizers.SplitOnWhitespace(tokenize);
+            var tokens = CommonLexers.SplitOnWhitespace(tokenize);
 
             Assert.Equal(token, tokens.CursorTokenIndex);
             Assert.Equal(position, tokens.CursorToken.Cursor);

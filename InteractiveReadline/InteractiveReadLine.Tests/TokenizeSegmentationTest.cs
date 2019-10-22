@@ -10,7 +10,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_HandlesEmptyString_Gracefully()
         {
             var test = new LineState("", 0);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
 
             Assert.Single(tokenized);
             Assert.Equal("", tokenized.First.Text);
@@ -20,7 +20,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_SplitOnSpaces_WorksCorrectly()
         {
             var test = new LineState("this is a test", 0);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => !x.IsHidden).ToArray();
 
             Assert.Equal("this", tokens[0].Text);
@@ -33,7 +33,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_SplitOnUnequalSpaces_WithCursor_WorksCorrectly()
         {
             var test = new LineState("this  is    a test", 15);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => !x.IsHidden).ToArray();
             
             Assert.Equal("this", tokens[0].Text);
@@ -48,7 +48,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_PreviousAndNext_Separators_Correct()
         {
             var test = new LineState("this  is    a test", 15);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => x.IsHidden).ToArray();
 
             Assert.Equal("  ", tokens[0].Text);
@@ -60,7 +60,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_SplitOnUnequalSpaces_Linking_WorksCorrectly()
         {
             var test = new LineState("this  is    a test", 15);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => !x.IsHidden).ToArray();
             
             Assert.Equal("this", tokens[0].Text);
@@ -81,7 +81,7 @@ namespace InteractiveReadLine.Tests
         public void Tokens_Linked_Correctly_Backwards()
         {
             var test = new LineState("this  is    a test", 15);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => !x.IsHidden).ToArray();
 
             var last = tokens.Last();
@@ -96,7 +96,7 @@ namespace InteractiveReadLine.Tests
         public void Tokens_Linked_Correctly_Forward()
         {
             var test = new LineState("this  is    a test", 15);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => !x.IsHidden).ToArray();
 
             var first = tokens.First();
@@ -111,7 +111,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_CursorAtEndWithEmptySep_CreatesNoEmptyToken()
         {
             var test = new LineState("this is a test", 14);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
             var tokens = tokenized.Where(x => !x.IsHidden).ToArray();
 
             Assert.Equal(4, tokens.Length);
@@ -122,7 +122,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_CursorAtEndWithNonEmptySep_CreatesEmptyToken()
         {
             var test = new LineState("this is a test ", 15);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
 
             Assert.Equal(5, tokenized.Count(x => !x.IsHidden));
             Assert.Equal("", tokenized.Last.Text);
@@ -132,7 +132,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_CursorOnSecondToken_Start_Correct()
         {
             var test = new LineState("this is a test", 5);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
 
             Assert.Equal(0, tokenized[2].Cursor);
         }
@@ -141,7 +141,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_CursorOnSecondToken_End_Correctly()
         {
             var test = new LineState("this is a test", 6);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
 
             Assert.Equal(1, tokenized[2].Cursor);
         }
@@ -150,7 +150,7 @@ namespace InteractiveReadLine.Tests
         public void Tokenizer_InitialSeparator_WithCursor_WorksCorrectly()
         {
             var test = new LineState("   this is a test ", 13);
-            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+            var tokenized = CommonLexers.SplitOnWhitespace(test);
 
             Assert.Equal("   ", tokenized.First.Text);
             Assert.Equal(0, tokenized.Last(x => !x.IsHidden).Cursor);

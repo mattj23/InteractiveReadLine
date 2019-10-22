@@ -16,11 +16,11 @@ namespace InteractiveReadLine
 
         public bool IsTesting { get; set; }
 
-        public Func<LineState, TokenizedLine> Tokenizer { get; private set; }
+        public Func<LineState, TokenizedLine> Lexer { get; private set; }
 
         public Func<TokenizedLine, string[]> AutoCompletion { get; private set; }
 
-        public bool CanAutoComplete => this.Tokenizer != null && this.AutoCompletion != null;
+        public bool CanAutoComplete => this.Lexer != null && this.AutoCompletion != null;
 
         public ReadLineConfig SetAutoCompletion(Func<TokenizedLine, string[]> handler)
         {
@@ -28,9 +28,9 @@ namespace InteractiveReadLine
             return this;
         }
 
-        public ReadLineConfig SetTokenizer(Func<LineState, TokenizedLine> tokenizer)
+        public ReadLineConfig SetTokenizer(Func<LineState, TokenizedLine> lexer)
         {
-            this.Tokenizer = tokenizer;
+            this.Lexer = lexer;
             return this;
         }
 

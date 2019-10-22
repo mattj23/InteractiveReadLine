@@ -18,7 +18,7 @@ namespace InteractiveReadLine.Tests
             for (int i = 0; i < text.Length + 1; i++)
             {
                 var tokenize = new LineState(text, i);
-                var result = CommonTokenizers.SplitOnWhitespace(tokenize);
+                var result = CommonLexers.SplitOnWhitespace(tokenize);
 
                 Assert.Equal(text, result.Text);
                 Assert.Equal(i, result.Cursor);

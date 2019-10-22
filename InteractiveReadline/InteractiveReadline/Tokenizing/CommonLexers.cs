@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Tokenizer = System.Func<InteractiveReadLine.LineState, InteractiveReadLine.Tokenizing.TokenizedLine>;
+using Lexer = System.Func<InteractiveReadLine.LineState, InteractiveReadLine.Tokenizing.TokenizedLine>;
 
 namespace InteractiveReadLine.Tokenizing
 {
-    public static class CommonTokenizers
+    public static class CommonLexers
     {
         public static TokenizedLine SplitOnWhitespace(LineState lineState)
         {
