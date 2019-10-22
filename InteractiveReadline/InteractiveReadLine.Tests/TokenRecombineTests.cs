@@ -17,9 +17,8 @@ namespace InteractiveReadLine.Tests
             // Check that the cursor is reset correctly for each position in the text
             for (int i = 0; i < text.Length + 1; i++)
             {
-                var tokenize = new Tokenize(text, i);
-                var tokens = CommonTokenizers.SplitOnSpaces(tokenize);
-                var result = tokens.Combine();
+                var tokenize = new LineState(text, i);
+                var result = CommonTokenizers.SplitOnWhitespace(tokenize);
 
                 Assert.Equal(text, result.Text);
                 Assert.Equal(i, result.Cursor);
