@@ -16,19 +16,19 @@ namespace InteractiveReadLine
 
         public bool IsTesting { get; set; }
 
-        public Func<Tokenize, Tokens> Tokenizer { get; private set; }
+        public Func<LineState, TokenizedLine> Tokenizer { get; private set; }
 
-        public Func<Tokens, string[]> AutoCompletion { get; private set; }
+        public Func<TokenizedLine, string[]> AutoCompletion { get; private set; }
 
         public bool CanAutoComplete => this.Tokenizer != null && this.AutoCompletion != null;
 
-        public ReadLineConfig SetAutoCompletion(Func<Tokens, string[]> handler)
+        public ReadLineConfig SetAutoCompletion(Func<TokenizedLine, string[]> handler)
         {
             this.AutoCompletion = handler;
             return this;
         }
 
-        public ReadLineConfig SetTokenizer(Func<Tokenize, Tokens> tokenizer)
+        public ReadLineConfig SetTokenizer(Func<LineState, TokenizedLine> tokenizer)
         {
             this.Tokenizer = tokenizer;
             return this;

@@ -9,25 +9,6 @@ namespace InteractiveReadLine.Tokenizing
 {
     public static class CommonTokenizers
     {
-        public static Tokenizer SplitOnCharacters(params char[] c)
-        {
-            return tokenize =>
-            {
-                for (int i = 0; i < tokenize.Text.Length; i++)
-                {
-                    tokenize.IsToken[i] = !c.Contains(tokenize.Text[i]);
-                }
-
-                return tokenize.Result();
-            };
-        }
-
-        public static Tokenizer SplitOnSpaces => SplitOnCharacters(' ');
-
-        public static Tokenizer SplitOnCommas => SplitOnCharacters(',');
-
-        public static Tokenizer SplitOnPunctuation => SplitOnCharacters(' ', ',', '.', '!', '?', ':', ';');
-
         public static TokenizedLine SplitOnWhitespace(LineState lineState)
         {
             var regex = new Regex(@"^\S+");
@@ -64,7 +45,8 @@ namespace InteractiveReadLine.Tokenizing
 
             tokenized.Cursor = lineState.Cursor;
 
-            if (tokenized.Last.IsHidden && tokenized.Last.Cursor == tokenized.Last.Text.Length)
+            if (!tokenized.Any() ||
+                (tokenized.Last.IsHidden && tokenized.Last.Cursor == tokenized.Last.Text.Length))
             {
                 tokenized.Add(string.Empty, false, 0);
             }

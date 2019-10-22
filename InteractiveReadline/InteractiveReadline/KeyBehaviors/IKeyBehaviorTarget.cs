@@ -29,6 +29,6 @@ namespace InteractiveReadLine.KeyBehaviors
         /// buffer
         /// </summary>
         /// <returns>Returns null if there is no tokenizer, otherwise a Tokens result</returns>
-        Tokens GetTextTokens();
+        TokenizedLine GetTextTokens();
     }
 }

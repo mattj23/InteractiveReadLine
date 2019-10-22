@@ -23,7 +23,7 @@ namespace InteractiveReadLine.Demo
                 .AddTabAutoComplete()
                 .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
                 .SetAutoCompletion(AutoComplete)
-                .SetTokenizer(CommonTokenizers.SplitOnSpaces);
+                .SetTokenizer(CommonTokenizers.SplitOnWhitespace);
 
             while (true)
             {
@@ -37,13 +37,13 @@ namespace InteractiveReadLine.Demo
             }
         }
 
-        private static string WriteHelp(Tokens tokens)
+        private static string WriteHelp(TokenizedLine tokens)
         {
             return $"matching commands: {string.Join(", ", AutoComplete(tokens))}";
 
         }
 
-        private static string[] AutoComplete(Tokens tokens)
+        private static string[] AutoComplete(TokenizedLine tokens)
         {
             var suggestions = new List<string>();
 

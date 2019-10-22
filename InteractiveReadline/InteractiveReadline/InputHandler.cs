@@ -20,7 +20,7 @@ namespace InteractiveReadLine
         private readonly ReadLineConfig _config;
         private int _cursorPos;
         private int _autoCompleteIndex;
-        private Tokens _autoCompleteTokens;
+        private TokenizedLine _autoCompleteTokens;
         private bool _autoCompleteCalled = false;
         private string[] _autoCompleteSuggestions;
 
@@ -79,9 +79,9 @@ namespace InteractiveReadLine
             _provider.WriteMessage(text);
         }
 
-        public Tokens GetTextTokens()
+        public TokenizedLine GetTextTokens()
         {
-            return _config.Tokenizer?.Invoke(new Tokenize(_content.ToString(), _cursorPos));
+            return _config.Tokenizer?.Invoke(new LineState(_content.ToString(), _cursorPos));
         }
 
         public string ReadLine()
@@ -155,7 +155,7 @@ namespace InteractiveReadLine
             if (!_config.CanAutoComplete)
                 return;
 
-            _autoCompleteTokens = _config.Tokenizer(new Tokenize(_content.ToString(), _cursorPos));
+            _autoCompleteTokens = _config.Tokenizer(new LineState(_content.ToString(), _cursorPos));
             if (_autoCompleteTokens.CursorToken == null)
                 return;
 
@@ -182,13 +182,12 @@ namespace InteractiveReadLine
                 return;
 
             _autoCompleteCalled = true;
-            _autoCompleteTokens.CursorToken.ReplaceText(_autoCompleteSuggestions[_autoCompleteIndex]);
-            _autoCompleteTokens.CursorToken.MoveCursorToEnd();
+            _autoCompleteTokens.CursorToken.Text = _autoCompleteSuggestions[_autoCompleteIndex];
+            _autoCompleteTokens.CursorToken.Cursor = _autoCompleteTokens.CursorToken.Text.Length;
 
-            var result = _autoCompleteTokens.Combine();
             _content.Clear();
-            _content.Append(result.Text);
-            CursorPosition = result.Cursor;
+            _content.Append(_autoCompleteTokens.Text);
+            CursorPosition = _autoCompleteTokens.Cursor;
 
         }
     }

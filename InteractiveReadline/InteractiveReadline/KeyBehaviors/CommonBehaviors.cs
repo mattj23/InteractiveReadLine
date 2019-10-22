@@ -41,7 +41,7 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <param name="message">A function which receives a Tokens object and uses it to create a string
         /// message, this is typically useful for providing help or hints to the user</param>
         /// <returns>A key behavior action which can be registered with the read line configuration</returns>
-        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<Tokens, string> message)
+        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine, string> message)
         {
             return new Action<IKeyBehaviorTarget>(t => t.WriteMessage(message(t.GetTextTokens())));
         }

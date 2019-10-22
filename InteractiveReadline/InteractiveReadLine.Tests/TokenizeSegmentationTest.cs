@@ -7,6 +7,16 @@ namespace InteractiveReadLine.Tests
     public class TokenizeSegmentationTest
     {
         [Fact]
+        public void Tokenizer_HandlesEmptyString_Gracefully()
+        {
+            var test = new LineState("", 0);
+            var tokenized = CommonTokenizers.SplitOnWhitespace(test);
+
+            Assert.Single(tokenized);
+            Assert.Equal("", tokenized.First.Text);
+        }
+
+        [Fact]
         public void Tokenizer_SplitOnSpaces_WorksCorrectly()
         {
             var test = new LineState("this is a test", 0);
