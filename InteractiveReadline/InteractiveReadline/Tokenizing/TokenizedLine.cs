@@ -82,11 +82,27 @@ namespace InteractiveReadLine.Tokenizing
                 get => _text;
                 set
                 {
+                    int? cursorMove = null;
+
+                    // Adjust the cursor if the cursor lies in this token
                     if (Cursor != null && Cursor > value.Length)
                     {
                         Cursor = value.Length;
                     }
+                    else
+                    {
+                        // Check if the cursor is after this token, and if so adjust it accordingly
+                        var beforeLen = TextBefore().Length;
+                        if (beforeLen + _text.Length < _parent.Cursor)
+                        {
+                            var delta = value.Length - _text.Length;
+                            cursorMove = _parent.Cursor + delta;
+                        }
+                    }
+
                     _text = value;
+                    if (cursorMove != null)
+                        _parent.Cursor = (int) cursorMove;
                 }
             }
 
