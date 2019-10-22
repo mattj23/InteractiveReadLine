@@ -64,14 +64,20 @@ namespace InteractiveReadLine.Tokenizing
         private class Token : IToken
         {
             private readonly TokenizedLine _parent;
+            private string _text;
 
             public Token(string text, bool isHidden, TokenizedLine parent)
             {
+                this.Text = text;
                 IsHidden = isHidden;
                 _parent = parent;
             }
 
-            public string Text { get; set; }
+            public string Text
+            {
+                get => _text;
+                set => _text = value;
+            }
 
             public int? Cursor
             {
@@ -82,6 +88,12 @@ namespace InteractiveReadLine.Tokenizing
                         return null;
 
                     int offset = _parent.Cursor - lengthBefore;
+
+                    if (offset == Text.Length && Next?.IsHidden == false)
+                    {
+                        return null;
+                    }
+
                     if (offset <= Text.Length)
                         return offset;
                     return null;
