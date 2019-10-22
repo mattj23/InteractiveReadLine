@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Tokenizer = System.Func<InteractiveReadLine.Tokenizing.Tokenize, InteractiveReadLine.Tokenizing.Tokens>;
+using Tokenizer = System.Func<InteractiveReadLine.LineState, InteractiveReadLine.Tokenizing.TokenizedLine>;
 
 namespace InteractiveReadLine.Tokenizing
 {
