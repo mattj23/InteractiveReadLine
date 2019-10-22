@@ -21,6 +21,8 @@ namespace InteractiveReadLine.Tokenizing
         public IToken First => _tokens.FirstOrDefault();
         public IToken Last => _tokens.LastOrDefault();
 
+        public IToken FirstNonHidden => _tokens.FirstOrDefault()?.FirstNonHidden;
+
         public string Text => Token.BuildText(_tokens);
 
         public IEnumerator<IToken> GetEnumerator() => _tokens.GetEnumerator();
@@ -63,7 +65,6 @@ namespace InteractiveReadLine.Tokenizing
             if (cursor != null)
                 newToken.Cursor = cursor;
         }
-
 
         private class Token : IToken
         {
@@ -146,7 +147,34 @@ namespace InteractiveReadLine.Tokenizing
 
             public Token First => this.Previous == null ? this : this.Previous.First;
 
+            public Token FirstNonHidden => this.First.ThisOrNextIfHidden();
+
             public bool IsHidden { get; set; }
+
+            public int? DistanceTo(IToken other, bool ignoreHidden = false)
+            {
+                var token = other as Token;
+                if (token == null)
+                    return null;
+
+                var gap = Next?.ForwardTo(token, new List<Token>());
+                if (ignoreHidden)
+                    return gap?.Where(x => !x.IsHidden).Count();
+                else 
+                    return gap?.Count;
+            }
+
+            private List<Token> ForwardTo(Token other, List<Token> gap)
+            {
+                gap.Add(this);
+
+                if (other == this)
+                    return gap;
+                else
+                {
+                    return this.Next?.ForwardTo(other, gap);
+                }
+            }
 
             private Token[] TokensBefore()
             {
@@ -162,7 +190,6 @@ namespace InteractiveReadLine.Tokenizing
 
                 return tokens.ToArray();
             }
-
 
             private string TextBefore()
             {

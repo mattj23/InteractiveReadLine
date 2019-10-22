@@ -15,5 +15,7 @@
         IToken PreviousNotHidden { get; }
 
         bool IsHidden { get; }
+
+        int? DistanceTo(IToken other, bool ignoreHidden=false);
     }
 }
