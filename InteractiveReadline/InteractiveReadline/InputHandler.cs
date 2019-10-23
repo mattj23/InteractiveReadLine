@@ -79,9 +79,11 @@ namespace InteractiveReadLine
             _provider.WriteMessage(text);
         }
 
+        public LineState LineState => new LineState(_content.ToString(), _cursorPos);
+
         public TokenizedLine GetTextTokens()
         {
-            return _config.Lexer?.Invoke(new LineState(_content.ToString(), _cursorPos));
+            return _config.Lexer?.Invoke(this.LineState);
         }
 
         public string ReadLine()
@@ -89,10 +91,6 @@ namespace InteractiveReadLine
             while (true)
             {
                 var keyInfo = _provider.ReadKey();
-
-                if (_config?.IsTesting == true)
-                {
-                }
 
                 _autoCompleteCalled = false;
                 var textContents = _content.ToString();
@@ -122,8 +120,18 @@ namespace InteractiveReadLine
                 if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
                     this.InvalidateAutoComplete();
 
-                // var tokens = _config.Lexer(new Tokenize(_content.ToString(), _cursorPos));
-                // Debug.Print(string.Join("  ->  ", tokens.Select(t => $"{t.Text}{(t.HasCursor ? $"[{t.CursorPos}]" : "")}")));
+
+                // Finally, if we have an available formatter, we can get a display format from here
+                var display = new LineDisplayState(string.Empty, _content.ToString(), string.Empty, _cursorPos);
+
+                if (_config.FormatterFromLine != null)
+                {
+                    display = _config.FormatterFromLine.Invoke(this.LineState);
+                }
+                else if (_config.FormatterFromTokens != null && _config.Lexer != null)
+                {
+                    display = _config.FormatterFromTokens(this.GetTextTokens());
+                }
 
                 _provider.SetInputText(_content.ToString(), _cursorPos);
             }

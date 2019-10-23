@@ -1,4 +1,5 @@
 ﻿using System;
+using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine
 {
@@ -12,6 +13,12 @@ namespace InteractiveReadLine
 
         void SetInputText(string text, int cursor);
 
+        void SetInputText(FormattedText text, int cursor);
+
+        void SetText(FormattedText text, int cursor);
+
+        void SetDisplay(LineDisplayState state);
+        
         /// <summary>
         /// Writes a message out to the console out in the spot where the current read line input is, then
         /// immediately re-displays the line input on the next row.

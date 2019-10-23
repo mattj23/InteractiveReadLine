@@ -15,6 +15,17 @@ namespace InteractiveReadLine
         }
 
         /// <summary>
+        /// Gets a providing function used to format the line to display based on a tokenization of the
+        /// readline content just before display. Requires a Lexer to work.
+        /// </summary>
+        public Func<TokenizedLine, LineDisplayState> FormatterFromTokens { get; private set; }
+
+        /// <summary>
+        /// Gets a format providing method which should format the line based on the raw LineState
+        /// </summary>
+        public Func<LineState, LineDisplayState> FormatterFromLine { get; private set; }
+
+        /// <summary>
         /// Gets a dictionary which maps key press information to key behavior methods
         /// </summary>
         public Dictionary<KeyId, Action<IKeyBehaviorTarget>> KeyBehaviors { get; }
@@ -56,6 +67,19 @@ namespace InteractiveReadLine
             return this;
         }
 
+        public ReadLineConfig SetFormatter(Func<TokenizedLine, LineDisplayState> formatter)
+        {
+            this.FormatterFromLine = null;
+            this.FormatterFromTokens = formatter;
+            return this;
+        }
+
+        public ReadLineConfig SetFormatter(Func<LineState, LineDisplayState> formatter)
+        {
+            this.FormatterFromLine = formatter;
+            this.FormatterFromTokens = null;
+            return this;
+        }
 
         public static ReadLineConfig Empty() => new ReadLineConfig();
 
