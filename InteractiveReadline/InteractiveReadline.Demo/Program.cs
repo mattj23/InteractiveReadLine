@@ -29,8 +29,7 @@ namespace InteractiveReadLine.Demo
 
             while (true)
             {
-                _provider = new ConsoleReadLine();
-                var result = _provider.ReadLine(config);
+                var result = ConsoleReadLine.ReadLine(config);
 
                 Console.WriteLine(result);
 
