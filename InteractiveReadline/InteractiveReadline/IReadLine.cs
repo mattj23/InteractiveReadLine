@@ -11,12 +11,6 @@ namespace InteractiveReadLine
 
         ConsoleKeyInfo ReadKey();
 
-        void SetInputText(string text, int cursor);
-
-        void SetInputText(FormattedText text, int cursor);
-
-        void SetText(FormattedText text, int cursor);
-
         void SetDisplay(LineDisplayState state);
         
         /// <summary>

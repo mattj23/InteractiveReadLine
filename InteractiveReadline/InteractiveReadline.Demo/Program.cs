@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
 
@@ -22,12 +23,13 @@ namespace InteractiveReadLine.Demo
                 .AddStandardKeys()
                 .AddTabAutoComplete()
                 .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
+                .SetFormatter(CommonFormatters.FixedPrompt("prompt > "))
                 .SetAutoCompletion(AutoComplete)
                 .SetLexer(CommonLexers.SplitOnWhitespace);
 
             while (true)
             {
-                _provider = new ConsoleReadLine("prompt > ");
+                _provider = new ConsoleReadLine();
                 var result = _provider.ReadLine(config);
 
                 Console.WriteLine(result);

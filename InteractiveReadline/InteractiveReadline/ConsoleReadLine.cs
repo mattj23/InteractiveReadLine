@@ -1,5 +1,6 @@
 ﻿using System;
 using InteractiveReadLine.Abstractions;
+using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine
 {
@@ -9,20 +10,15 @@ namespace InteractiveReadLine
     /// </summary>
     public class ConsoleReadLine : IReadLine
     {
-        private readonly string _prompt;
         private readonly IConsoleWrapper _console;
-        private string _lastWrittenText;
+        private FormattedText _lastWrittenText;
         private int _lastWrittenCursor;
         private int _startingRow;
 
-        public ConsoleReadLine(string prompt = "") 
-            : this(prompt, new SystemConsoleWrapper()) { }
-
-        public ConsoleReadLine(string prompt, IConsoleWrapper console)
+        public ConsoleReadLine(IConsoleWrapper console=null)
         {
-            _prompt = prompt;
-            _console = console;
-            this.Start(_prompt);
+            _console = console ?? new SystemConsoleWrapper();
+            this.Start();
         }
 
         public ConsoleKeyInfo ReadKey()
@@ -30,12 +26,14 @@ namespace InteractiveReadLine
             return _console.ReadKey();
         }
 
-        public void SetInputText(string text, int cursor)
+        public void SetDisplay(LineDisplayState state)
         {
-            this.SetText(_prompt + text, _prompt.Length + cursor);
+            var totalText = state.Prefix + state.LineBody + state.Suffix;
+            var cursor = state.Prefix.Length + state.Cursor;
+            this.SetText(totalText, cursor);
         }
 
-        private void SetText(string totalText, int cursorPos)
+        private void SetText(FormattedText totalText, int cursorPos)
         {
             // The process of setting the input text requires us to find the difference between 
             // the last written text and the new text, then perform the minimum amount of character
@@ -54,7 +52,7 @@ namespace InteractiveReadLine
             for (int i = 0; i < writeText.Length; i++)
             {
                 if (i < _lastWrittenText.Length 
-                    && writeText[i] == _lastWrittenText[i])
+                    && writeText[i].Equals(_lastWrittenText[i]))
                     continue;
 
                 int left = this.ColOffset(i);
@@ -65,7 +63,8 @@ namespace InteractiveReadLine
                 if (top != _console.CursorTop)
                     _console.CursorTop = top;
 
-                _console.Write(writeText[i]);
+                // TODO: formatting
+                _console.Write(writeText[i].Char);
             }
 
             _lastWrittenText = totalText;
@@ -109,13 +108,12 @@ namespace InteractiveReadLine
             this.Finish();
         }
 
-        private void Start(string prompt = "")
+        private void Start()
         {
             // _console.WriteLine(string.Empty);
             _startingRow = _console.CursorTop;
             _console.CursorLeft = 0;
-            _console.Write(prompt);
-            _lastWrittenText = prompt;
+            _lastWrittenText = string.Empty;
         }
 
         private void Finish()

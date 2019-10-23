@@ -88,6 +88,8 @@ namespace InteractiveReadLine
 
         public string ReadLine()
         {
+            this.UpdateDisplay();
+
             while (true)
             {
                 var keyInfo = _provider.ReadKey();
@@ -120,23 +122,23 @@ namespace InteractiveReadLine
                 if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
                     this.InvalidateAutoComplete();
 
-
-                // Finally, if we have an available formatter, we can get a display format from here
-                var display = new LineDisplayState(string.Empty, _content.ToString(), string.Empty, _cursorPos);
-
-                if (_config.FormatterFromLine != null)
-                {
-                    display = _config.FormatterFromLine.Invoke(this.LineState);
-                }
-                else if (_config.FormatterFromTokens != null && _config.Lexer != null)
-                {
-                    display = _config.FormatterFromTokens(this.GetTextTokens());
-                }
-
-                _provider.SetInputText(_content.ToString(), _cursorPos);
+                this.UpdateDisplay();
             }
 
             return _content.ToString();
+        }
+
+        private void UpdateDisplay()
+        {
+            // Finally, if we have an available formatter, we can get a display format from here
+            var display = new LineDisplayState(string.Empty, _content.ToString(), string.Empty, _cursorPos);
+
+            if (_config.FormatterFromLine != null)
+                display = _config.FormatterFromLine.Invoke(LineState);
+            else if (_config.FormatterFromTokens != null && _config.Lexer != null)
+                display = _config.FormatterFromTokens(GetTextTokens());
+
+            _provider.SetDisplay(display);
         }
 
         /// <summary>
