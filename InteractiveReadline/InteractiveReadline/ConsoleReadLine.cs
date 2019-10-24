@@ -63,8 +63,7 @@ namespace InteractiveReadLine
                 if (top != _console.CursorTop)
                     _console.CursorTop = top;
 
-                // TODO: formatting
-                _console.Write(writeText[i].Char);
+                _console.Write(writeText[i]);
             }
 
             _lastWrittenText = totalText;

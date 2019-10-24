@@ -1,4 +1,5 @@
 ﻿using System;
+using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Abstractions
 {
@@ -29,9 +30,9 @@ namespace InteractiveReadLine.Abstractions
         /// </summary>
         int BufferWidth { get; }
 
-        void Write(string text);
-        void WriteLine(string text);
-        void Write(char c);
+        void Write(FormattedText text);
+        void WriteLine(FormattedText text);
+        void Write(FormattedText.FormattedChar c);
 
         ConsoleKeyInfo ReadKey();
 

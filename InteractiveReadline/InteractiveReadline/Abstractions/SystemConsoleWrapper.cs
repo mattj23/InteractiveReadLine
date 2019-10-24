@@ -1,4 +1,5 @@
 ﻿using System;
+using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Abstractions
 {
@@ -23,19 +24,32 @@ namespace InteractiveReadLine.Abstractions
 
         public int BufferWidth => Console.BufferWidth;
 
-        public void Write(string text)
+        public void Write(FormattedText text)
         {
-            Console.Write(text);
+            for (int i = 0; i < text.Length; i++)
+            {
+                this.Write(text[i]);
+            }
         }
 
-        public void WriteLine(string text)
+        public void WriteLine(FormattedText text)
         {
-            Console.WriteLine(text);
+            this.Write(text);
+            this.Write("\n");
         }
 
-        public void Write(char c)
+        public void Write(FormattedText.FormattedChar c)
         {
-            Console.Write(c);
+            // TODO: Is there a more efficient way of dealing with this?
+            Console.ResetColor();
+
+            if (c.Foreground != null)
+                Console.ForegroundColor = (ConsoleColor) c.Foreground;
+
+            if (c.Background != null)
+                Console.BackgroundColor = (ConsoleColor) c.Background;
+
+            Console.Write(c.Char);
         }
 
         public ConsoleKeyInfo ReadKey()
