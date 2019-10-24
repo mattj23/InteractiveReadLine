@@ -28,47 +28,44 @@ namespace InteractiveReadLine.Formatting
         /// <summary>
         /// A formatter that blanks out the entered characters, and has no prefix or suffix
         /// </summary>
-        public static LineDisplayState PasswordBlank(LineState state) => new LineDisplayState(string.Empty, string.Empty, string.Empty, 0);
+        public static LineFormatter PasswordBlank => 
+            state => new LineDisplayState(string.Empty, string.Empty, string.Empty, 0);
 
         /// <summary>
         /// A formatter that puts out a variable length bar based on the first byte in a SHA256 hash
         /// of the entered password. Provides visual feedback without revealing anything about the
         /// password itself
         /// </summary>
-        public static LineDisplayState PasswordBar(LineState state)
-        {
-            var hash = SHA256.Create();
-            var result = hash.ComputeHash(Encoding.ASCII.GetBytes(state.Text));
-            var l1 = (int) Math.Round(20.0 * ((float) result[0]) / 255.0);
-            var l2 = (int) Math.Round(20.0 * ((float) result[10]) / 255.0);
-            var builder = new StringBuilder("[");
-            for (int i = 0; i < 20; i++)
+        public static LineFormatter PasswordBar =>
+            state =>
             {
-                if ((i < l1 && i < l2) || (i > l1 && i > l2))
-                    builder.Append(' ');
-                else
-                    builder.Append('=');
-            }
+                var hash = SHA256.Create();
+                var result = hash.ComputeHash(Encoding.ASCII.GetBytes(state.Text));
+                var l1 = (int) Math.Round(20.0 * result[0] / 255.0);
+                var l2 = (int) Math.Round(20.0 * result[10] / 255.0);
+                var builder = new StringBuilder("[");
+                for (var i = 0; i < 20; i++)
+                    if (i < l1 && i < l2 || i > l1 && i > l2)
+                        builder.Append(' ');
+                    else
+                        builder.Append('=');
 
-            builder.Append(']');
+                builder.Append(']');
 
-            return new LineDisplayState(string.Empty, builder.ToString(), string.Empty, builder.Length);
-        }
+                return new LineDisplayState(string.Empty, builder.ToString(), string.Empty, builder.Length);
+            };
 
-        public static LineFormatter Password => PasswordBar;
 
         /// <summary>
         /// A formatter that converts the password characters to stars
         /// </summary>
-        public static LineDisplayState PasswordStars(LineState state)
-        {
-            return new LineDisplayState(string.Empty, new string('*', state.Text.Length), string.Empty, state.Cursor);
-        }
+        public static LineFormatter PasswordStars =>
+            state => new LineDisplayState(string.Empty, new string('*', state.Text.Length), string.Empty, state.Cursor);
 
 
         /// <summary>
         /// Adds a fixed prompt to the given formatter, overwriting the prefix
         /// </summary>
-        public static LineFormatter FixedPrompt(this LineFormatter formatter, FormattedText prompt) => FixedPrompt(prompt, formatter);
+        public static LineFormatter WithFixedPrompt(this LineFormatter formatter, FormattedText prompt) => FixedPrompt(prompt, formatter);
     }
 }

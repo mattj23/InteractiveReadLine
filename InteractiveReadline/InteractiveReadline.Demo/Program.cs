@@ -18,7 +18,7 @@ namespace InteractiveReadLine.Demo
             // Basic readline 
             Console.WriteLine("This is the basic readline config");
             var cfg = ReadLineConfig.Basic
-                .SetFormatter(CommonFormatters.Password.FixedPrompt("password: "));
+                .SetFormatter(CommonFormatters.PasswordStars.WithFixedPrompt("enter password"));
 
             var text = ConsoleReadLine.ReadLine(cfg);
             Console.WriteLine(text);
