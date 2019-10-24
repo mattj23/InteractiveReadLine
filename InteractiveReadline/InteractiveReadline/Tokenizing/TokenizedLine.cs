@@ -15,7 +15,6 @@ namespace InteractiveReadLine.Tokenizing
         public TokenizedLine()
         {
             _tokens = new List<Token>();
-
         }
 
         public IToken First => _tokens.FirstOrDefault();
@@ -50,9 +49,9 @@ namespace InteractiveReadLine.Tokenizing
             }
         }
 
-        public void Add(string text, bool isHidden, int? cursor=null)
+        public void Add(string text, bool isHidden, int? cursor=null, int typeCode=0)
         {
-            var newToken = new Token(text, isHidden, this);
+            var newToken = new Token(text, isHidden, this, typeCode);
 
             if (_tokens.Any())
             {
@@ -71,12 +70,15 @@ namespace InteractiveReadLine.Tokenizing
             private readonly TokenizedLine _parent;
             private string _text;
 
-            public Token(string text, bool isHidden, TokenizedLine parent)
+            public Token(string text, bool isHidden, TokenizedLine parent, int typeCode)
             {
                 _parent = parent;
+                TypeCode = typeCode;
                 _text = text;
                 this.IsHidden = isHidden;
             }
+
+            public int TypeCode { get; }
 
             public string Text
             {
