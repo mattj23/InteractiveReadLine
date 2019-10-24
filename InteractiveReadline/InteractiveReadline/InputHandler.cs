@@ -17,7 +17,6 @@ namespace InteractiveReadLine
     public class InputHandler : IKeyBehaviorTarget
     {
         private readonly IReadLine _provider;
-        private readonly StringBuilder _content;
         private readonly ReadLineConfig _config;
         private int _cursorPos;
         private int _autoCompleteIndex;
@@ -25,25 +24,45 @@ namespace InteractiveReadLine
         private bool _autoCompleteCalled = false;
         private string[] _autoCompleteSuggestions;
 
+        private bool _finishTrigger = false;
+
         public InputHandler(IReadLine provider, ReadLineConfig config=null)
         {
-            _config = config ?? ReadLineConfig.Empty();
+            _config = config ?? ReadLineConfig.Basic;
             _provider = provider;
-            _content = new StringBuilder();
+            TextBuffer = new StringBuilder();
             _cursorPos = 0;
 
-            _autoCompleteIndex = Int32.MinValue;
+            _autoCompleteIndex = int.MinValue;
             _autoCompleteSuggestions = null;
         }
 
-        public StringBuilder TextBuffer => _content;
+        /// <summary>
+        /// Gets the current LineState representation of the text and the cursor position
+        /// </summary>
+        public LineState LineState => new LineState(TextBuffer.ToString(), _cursorPos);
 
-        public int CursorPosition 
-        { 
+        /// <inheritdoc />
+        public StringBuilder TextBuffer { get; }
+
+        /// <inheritdoc />
+        public int CursorPosition
+        {
             get => _cursorPos;
-            set => _cursorPos = value;
+            set
+            {
+                _cursorPos = value;
+                if (_cursorPos > TextBuffer.Length)
+                    _cursorPos = TextBuffer.Length;
+                if (_cursorPos < 0)
+                    _cursorPos = 0;
+            }
         }
 
+        /// <inheritdoc />
+        public ConsoleKeyInfo ReceivedKey { get; private set; }
+
+        /// <inheritdoc />
         public void AutoCompleteNext()
         {
             if (_autoCompleteIndex >= 0)
@@ -59,6 +78,7 @@ namespace InteractiveReadLine
                 this.StartAutoComplete();
         }
 
+        /// <inheritdoc />
         public void AutoCompletePrevious()
         {
             if (_autoCompleteIndex >= 0)
@@ -75,64 +95,73 @@ namespace InteractiveReadLine
 
         }
 
+        /// <inheritdoc />
         public void WriteMessage(FormattedText text)
         {
             _provider.WriteMessage(text);
         }
 
-        public LineState LineState => new LineState(_content.ToString(), _cursorPos);
-
+        /// <inheritdoc />
         public TokenizedLine GetTextTokens()
         {
             return _config.Lexer?.Invoke(this.LineState);
         }
 
+        /// <summary>
+        /// Interactively manage the user input of a line of text at the console, returning the contents
+        /// of the text when finished.
+        /// </summary>
         public string ReadLine()
         {
+            // The display must be updated at the beginning if any prompts or other prefix/suffix text
+            // is to be displayed 
             this.UpdateDisplay();
 
+            // The main processing loop of the handler, this loop will block until it receives a single key from the
+            // console. It will then attempt to look up a key behavior for that key, and if it finds one it will 
+            // invoke it, otherwise it will invoke the default behavior if there is one. After that it will check
+            // if the condition to finish the input has been set, and if not it will update the display and wait
+            // for the next key.
             while (true)
             {
-                var keyInfo = _provider.ReadKey();
+                ReceivedKey = _provider.ReadKey();
 
                 _autoCompleteCalled = false;
-                var textContents = _content.ToString();
+                var textContents = TextBuffer.ToString();
                 var cursor = _cursorPos;
                 
                 // See if there's a specific behavior which should be mapped to this key,
                 // and if so, run it instead of checking the insert/enter behaviors
-                var behavior = this.GetKeyAction(keyInfo);
+                var behavior = this.GetKeyAction(ReceivedKey);
                 if (behavior != null)
                 {
                     behavior.Invoke(this);
                 }
                 else
                 {
-                    if (keyInfo.Key == ConsoleKey.Enter)
-                        break;
-
-                    if (keyInfo.Key != ConsoleKey.Backspace)
-                    {
-                        _content.Insert(_cursorPos, keyInfo.KeyChar);
-                        _cursorPos++;
-                    }
+                    _config.DefaultKeyBehavior?.Invoke(this);
                 }
 
+                // Check if the Finish behavior was called, indicating that we can exit this method
+                // and return the contents of the text buffer to the caller
+                if (_finishTrigger)
+                    break;
+
                 // If the text contents or the cursor have changed at all, and we weren't currently
-                // doing autocomplete, we need to invalidate the autocompletion information
-                if ((textContents != _content.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
+                // doing autocomplete, we need to invalidate the auto-completion information
+                if ((textContents != TextBuffer.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
                     this.InvalidateAutoComplete();
 
                 this.UpdateDisplay();
             }
 
-            return _content.ToString();
+            return TextBuffer.ToString();
         }
 
         private void UpdateDisplay()
         {
             // Finally, if we have an available formatter, we can get a display format from here
-            var display = new LineDisplayState(string.Empty, _content.ToString(), string.Empty, _cursorPos);
+            var display = new LineDisplayState(string.Empty, TextBuffer.ToString(), string.Empty, _cursorPos);
 
             if (_config.FormatterFromLine != null)
                 display = _config.FormatterFromLine.Invoke(LineState);
@@ -166,16 +195,16 @@ namespace InteractiveReadLine
             if (!_config.CanAutoComplete)
                 return;
 
-            _autoCompleteTokens = _config.Lexer(new LineState(_content.ToString(), _cursorPos));
+            _autoCompleteTokens = _config.Lexer(new LineState(TextBuffer.ToString(), _cursorPos));
             if (_autoCompleteTokens.CursorToken == null)
                 return;
 
             _autoCompleteSuggestions = _config.AutoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
 
-            if (_autoCompleteTokens.Text != _content.ToString())
+            if (_autoCompleteTokens.Text != TextBuffer.ToString())
             {
-                _content.Clear();
-                _content.Append(_autoCompleteTokens.Text);
+                TextBuffer.Clear();
+                TextBuffer.Append(_autoCompleteTokens.Text);
                 CursorPosition = _autoCompleteTokens.Cursor;
             }
 
@@ -203,10 +232,15 @@ namespace InteractiveReadLine
             _autoCompleteTokens.CursorToken.Text = _autoCompleteSuggestions[_autoCompleteIndex];
             _autoCompleteTokens.CursorToken.Cursor = _autoCompleteTokens.CursorToken.Text.Length;
 
-            _content.Clear();
-            _content.Append(_autoCompleteTokens.Text);
+            TextBuffer.Clear();
+            TextBuffer.Append(_autoCompleteTokens.Text);
             CursorPosition = _autoCompleteTokens.Cursor;
 
         }
+
+        /// <summary>
+        /// Causes the ReadLine handler to finish, returning the contents of the text buffer
+        /// </summary>
+        public void Finish() => _finishTrigger = true;
     }
 }

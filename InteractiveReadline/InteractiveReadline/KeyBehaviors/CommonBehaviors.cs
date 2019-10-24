@@ -21,13 +21,13 @@ namespace InteractiveReadLine.KeyBehaviors
             }
         }
 
-        public static void LeftArrow(IKeyBehaviorTarget target)
+        public static void MoveCursorLeft(IKeyBehaviorTarget target)
         {
             if (target.CursorPosition > 0)
                 target.CursorPosition--;
         }
 
-        public static void RightArrow(IKeyBehaviorTarget target)
+        public static void MoveCursorRight(IKeyBehaviorTarget target)
         {
             if (target.CursorPosition < target.TextBuffer.Length)
                 target.CursorPosition++;
@@ -49,5 +49,26 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void AutoCompleteNext(IKeyBehaviorTarget target) => target.AutoCompleteNext();
 
         public static void AutoCompletePrevious(IKeyBehaviorTarget target) => target.AutoCompletePrevious();
+
+        /// <summary>
+        /// Finishes the ReadLine input, instructing the handler to return the text as it is
+        /// </summary>
+        public static void Finish(IKeyBehaviorTarget target) => target.Finish();
+
+        /// <summary>
+        /// Inserts the received character at the cursor position if the character is a letter, digit, whitespace,
+        /// punctuation, or symbol. Advances the cursor by one.
+        /// </summary>
+        public static void InsertCharacter(IKeyBehaviorTarget target)
+        {
+            if (char.IsLetterOrDigit(target.ReceivedKey.KeyChar) ||
+                char.IsWhiteSpace(target.ReceivedKey.KeyChar) ||
+                char.IsPunctuation(target.ReceivedKey.KeyChar) ||
+                char.IsSymbol(target.ReceivedKey.KeyChar))
+            {
+                target.TextBuffer.Insert(target.CursorPosition, target.ReceivedKey.KeyChar);
+                target.CursorPosition++;
+            }
+        }
     }
 }

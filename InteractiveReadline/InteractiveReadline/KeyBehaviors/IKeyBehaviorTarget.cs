@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.Tokenizing;
 
@@ -10,12 +11,30 @@ namespace InteractiveReadLine.KeyBehaviors
     /// </summary>
     public interface IKeyBehaviorTarget
     {
+        /// <summary>
+        /// Gets the ConsoleKey which was received for the current request
+        /// </summary>
+        ConsoleKeyInfo ReceivedKey { get; }
+
+        /// <summary>
+        /// Gets the string buffer which holds the current readline text which is being edited by the user
+        /// </summary>
         StringBuilder TextBuffer { get; }
 
+        /// <summary>
+        /// Gets or sets the integer position of the cursor. Cannot be set before the beginning or after the end
+        /// of the TextBuffer.
+        /// </summary>
         int CursorPosition { get; set; }
 
+        /// <summary>
+        /// Invokes the auto-complete's "next" functionality, which substitutes in the next suggestion
+        /// </summary>
         void AutoCompleteNext();
 
+        /// <summary>
+        /// Invokes the auto-complete's "previons" functionality, which substitutes in the previous suggestion
+        /// </summary>
         void AutoCompletePrevious();
 
         /// <summary>
@@ -31,5 +50,10 @@ namespace InteractiveReadLine.KeyBehaviors
         /// </summary>
         /// <returns>Returns null if there is no tokenizer, otherwise a Tokens result</returns>
         TokenizedLine GetTextTokens();
+
+        /// <summary>
+        /// Tells the readline handler to finish this line of input and return it
+        /// </summary>
+        void Finish();
     }
 }
