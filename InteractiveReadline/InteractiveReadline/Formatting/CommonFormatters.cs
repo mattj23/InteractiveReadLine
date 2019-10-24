@@ -32,8 +32,8 @@ namespace InteractiveReadLine.Formatting
             state => new LineDisplayState(string.Empty, string.Empty, string.Empty, 0);
 
         /// <summary>
-        /// A formatter that puts out a variable length bar based on the first byte in a SHA256 hash
-        /// of the entered password. Provides visual feedback without revealing anything about the
+        /// A formatter that puts out a variable length bar based on the 1st and 10th bytes in a SHA256 hash
+        /// of the entered password. Provides repeatable visual feedback without revealing anything about the
         /// password itself
         /// </summary>
         public static LineFormatter PasswordBar =>

@@ -124,11 +124,12 @@ namespace InteractiveReadLine
             // for the next key.
             while (true)
             {
-                ReceivedKey = _provider.ReadKey();
+                this.ReceivedKey = _provider.ReadKey();
 
+                // We will need to check if the line state (text & cursor position) is altered by the
+                // key behavior which will be run, so we store the current state now
+                var previousState = this.LineState;
                 _autoCompleteCalled = false;
-                var textContents = TextBuffer.ToString();
-                var cursor = _cursorPos;
                 
                 // See if there's a specific behavior which should be mapped to this key,
                 // and if so, run it instead of checking the insert/enter behaviors
@@ -149,7 +150,7 @@ namespace InteractiveReadLine
 
                 // If the text contents or the cursor have changed at all, and we weren't currently
                 // doing autocomplete, we need to invalidate the auto-completion information
-                if ((textContents != TextBuffer.ToString() || cursor != _cursorPos) && !_autoCompleteCalled)
+                if ((!previousState.Equals(this.LineState)) && !_autoCompleteCalled)
                     this.InvalidateAutoComplete();
 
                 this.UpdateDisplay();
