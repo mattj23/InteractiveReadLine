@@ -9,8 +9,7 @@ ___
 This library provides a GNU Readline-like functionality for interactive C# programs that use either the `System.Console` or (in the future) a similar console-like UI component. 
 
 ```csharp
-var config = ReadLineConfig.Empty();
-var text = ConsoleReadline.ReadLine(config);
+var text = ConsoleReadline.ReadLine();
 ```
 
 However, practically every aspect of the system's behavior is configurable.  Configuration falls into the following categories:
@@ -25,7 +24,7 @@ However, practically every aspect of the system's behavior is configurable.  Con
 All of these above configurations are done by providing `Action<..>` and `Func<..>` style delegates to a configuration object, rather than use a zoo of custom interfaces.
 
 ```csharp
-var config = ReadLineConfig.Empty()
+var config = ReadLineConfig.Empty
     .AddStandardKeys()
     .AddTabAutoComplete()
     .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
@@ -45,13 +44,13 @@ var text = ConsoleReadline.ReadLine(config);
 The design of this library's API was based on an attempt to do two things:
 1. Have one obviously correct way of doing each thing
 2. Construct the API in such a way that it's difficult to produce invalid data
+3. Have as few 'special' or hard-coded features as possible, rather use the same customization mechanisms to implement even the basic functionality
 
 #### Delegates instead of Objects
 For the most part, this library makes every attempt to avoid creating a huge taxonomy of objects and interfaces for all of the pluggable components.  Because the various actions (like key behaviors, tokenizing, formatting, etc) are simple and have minimal inputs and outputs, this library instead favors the use of delegates. 
 
 This approach was selected for the following benefits:
 1. It allows for quicker, easier composition of code, especially via lambdas where possible
-1. It prevents a common dependency headache where a shared component would force an otherwise independent project to include a reference to this one
 1. It discourages the preservation of state in mechanisms that should primarily exist to perform actions or transformations, but does not preclude an object from exposing a method that can be used instead while still maintaining access to the object state
 
 #### Testing

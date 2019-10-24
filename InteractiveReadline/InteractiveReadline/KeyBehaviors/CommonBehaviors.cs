@@ -3,15 +3,31 @@ using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.KeyBehaviors
 {
+    /// <summary>
+    /// These are common "behaviors" which are invoked by keys being pressed, and can be added to the handler
+    /// either as the default behavior or to be invoked when a special key or character is pressed. They are given
+    /// to the handler in the form of Action delegates which receive an IKeyBehaviorTarget, which they can operate
+    /// on in order to affect some change on the line of text being written.
+    ///
+    /// The behaviors provided in this static class are all simple ones, they can be used directly or they can be
+    /// composed together or wrapped in other methods which allow access to external state, or any other use
+    /// case that can be imagined.
+    /// </summary>
     public static class CommonBehaviors
     {
+        /// <summary>
+        /// Deletes the character after the cursor
+        /// </summary>
+        /// <param name="target"></param>
         public static void Delete(IKeyBehaviorTarget target)
         {
             if (target.CursorPosition < target.TextBuffer.Length)
                 target.TextBuffer.Remove(target.CursorPosition, 1);
-
         }
 
+        /// <summary>
+        /// Deletes the character before the cursor
+        /// </summary>
         public static void Backspace(IKeyBehaviorTarget target)
         {
             if (target.CursorPosition > 0)
@@ -21,12 +37,34 @@ namespace InteractiveReadLine.KeyBehaviors
             }
         }
 
+        /// <summary>
+        /// Immediately moves the cursor to the end of the line
+        /// </summary>
+        public static void MoveCursorToEnd(IKeyBehaviorTarget target)
+        {
+            target.CursorPosition = target.TextBuffer.Length;
+        }
+
+        /// <summary>
+        /// Immediately moves the cursor to the beginning of the line 
+        /// </summary>
+        public static void MoveCursorToStart(IKeyBehaviorTarget target)
+        {
+            target.CursorPosition = 0;
+        }
+
+        /// <summary>
+        /// Moves the cursor left (towards the start) of the line, but will not move it past the first character
+        /// </summary>
         public static void MoveCursorLeft(IKeyBehaviorTarget target)
         {
             if (target.CursorPosition > 0)
                 target.CursorPosition--;
         }
 
+        /// <summary>
+        /// Moves the cursor right (towards the end) of the line, but will not move it beyond the end of the line
+        /// </summary>
         public static void MoveCursorRight(IKeyBehaviorTarget target)
         {
             if (target.CursorPosition < target.TextBuffer.Length)
@@ -46,8 +84,16 @@ namespace InteractiveReadLine.KeyBehaviors
             return new Action<IKeyBehaviorTarget>(t => t.WriteMessage(message(t.GetTextTokens())));
         }
 
+        /// <summary>
+        /// Invokes the target's auto-complete next behavior, which substitutes in the next suggestion
+        /// at the token where the cursor is currently residing
+        /// </summary>
         public static void AutoCompleteNext(IKeyBehaviorTarget target) => target.AutoCompleteNext();
 
+        /// <summary>
+        /// Invokes the target's auto-complete previous behavior, which substitutes in the previous suggestion
+        /// at the token where the cursor is currently residing
+        /// </summary>
         public static void AutoCompletePrevious(IKeyBehaviorTarget target) => target.AutoCompletePrevious();
 
         /// <summary>

@@ -15,11 +15,13 @@ namespace InteractiveReadLine.Demo
 
         static void Main(string[] args)
         {
+            // Basic readline 
+            Console.WriteLine("This is the basic readline config");
+            var text = ConsoleReadLine.ReadLine();
             
             _options = new string[] {"docker", "docker-compose", "git", "vim", "find", "hello", "grep", "exit"};
-            Console.WriteLine("Hello World!");
 
-            var config = ReadLineConfig.Empty()
+            var config = ReadLineConfig.Empty
                 .AddStandardKeys()
                 .AddTabAutoComplete()
                 .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 

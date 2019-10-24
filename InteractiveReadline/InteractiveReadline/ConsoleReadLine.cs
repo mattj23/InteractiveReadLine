@@ -124,10 +124,10 @@ namespace InteractiveReadLine
 
         private int RowOffset(int length) => (length - this.ColOffset(length)) / _console.BufferWidth;
 
-        public static string ReadLine(ReadLineConfig config)
+        public static string ReadLine(ReadLineConfig config=null)
         {
             var provider = new ConsoleReadLine();
-            return provider.ReadLine(config);
+            return provider.ReadLine(config ?? ReadLineConfig.Basic);
         }
     }
 }
