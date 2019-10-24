@@ -31,7 +31,10 @@ namespace InteractiveReadLine.Demo
                 .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
                 .SetFormatter(Formatter)
                 .SetAutoCompletion(AutoComplete)
-                .SetLexer(CommonLexers.SplitOnWhitespace);
+                .SetLexer(CommonLexers.Regex
+                    .AddDoubleQuoteStringLiterals()
+                    .AddAnyNonWhitespace()
+                    .ToLexer());
 
             while (true)
             {
