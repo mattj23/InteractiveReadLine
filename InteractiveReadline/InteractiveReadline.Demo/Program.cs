@@ -17,7 +17,11 @@ namespace InteractiveReadLine.Demo
         {
             // Basic readline 
             Console.WriteLine("This is the basic readline config");
-            var text = ConsoleReadLine.ReadLine();
+            var cfg = ReadLineConfig.Basic
+                .SetFormatter(CommonFormatters.Password.FixedPrompt("password: "));
+
+            var text = ConsoleReadLine.ReadLine(cfg);
+            Console.WriteLine(text);
             
             _options = new string[] {"docker", "docker-compose", "git", "vim", "find", "hello", "grep", "exit"};
 
