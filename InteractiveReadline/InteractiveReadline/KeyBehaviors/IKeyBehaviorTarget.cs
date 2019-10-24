@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using InteractiveReadLine.Formatting;
 using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.KeyBehaviors
@@ -22,7 +23,7 @@ namespace InteractiveReadLine.KeyBehaviors
         /// immediately re-displays the line input on the next row.
         /// </summary>
         /// <param name="text">The text to write to the console, a newline char will be added automatically</param>
-        void WriteMessage(string text);
+        void WriteMessage(FormattedText text);
 
         /// <summary>
         /// If the handler configuration has a tokenizer, this will get the tokenization result of the text

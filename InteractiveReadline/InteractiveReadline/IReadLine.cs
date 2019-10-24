@@ -18,7 +18,7 @@ namespace InteractiveReadLine
         /// immediately re-displays the line input on the next row.
         /// </summary>
         /// <param name="text">The text to write to the console, a newline char will be added automatically</param>
-        void WriteMessage(string text);
+        void WriteMessage(FormattedText text);
 
     }
 }

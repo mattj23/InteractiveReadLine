@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
 
@@ -74,7 +75,7 @@ namespace InteractiveReadLine
 
         }
 
-        public void WriteMessage(string text)
+        public void WriteMessage(FormattedText text)
         {
             _provider.WriteMessage(text);
         }
