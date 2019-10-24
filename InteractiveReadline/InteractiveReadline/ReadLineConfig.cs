@@ -83,5 +83,6 @@ namespace InteractiveReadLine
 
         public static ReadLineConfig Empty() => new ReadLineConfig();
 
+        public static ReadLineConfig Basic => new ReadLineConfig().AddStandardKeys();
     }
 }

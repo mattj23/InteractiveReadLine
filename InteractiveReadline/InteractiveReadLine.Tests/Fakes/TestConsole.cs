@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using InteractiveReadLine.Abstractions;
+using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Tests.Fakes
 {
@@ -45,6 +46,20 @@ namespace InteractiveReadLine.Tests.Fakes
         public int BufferHeight => _height;
 
         public int BufferWidth => _width;
+        public void Write(FormattedText text)
+        {
+            this.Write(text.Text);
+        }
+
+        public void WriteLine(FormattedText text)
+        {
+            this.WriteLine(text.Text);
+        }
+
+        public void Write(FormattedText.FormattedChar c)
+        {
+            this.WriteChar(c.Char);
+        }
 
         public void Write(string text)
         {
