@@ -1,5 +1,5 @@
 # Interactive Readline
-An extensible, composable readline library written in pure C# for creating interactive text-base interfaces with System.Console and other console-like UI components.
+An extensible, composable readline library written in pure C# for creating interactive text-based interfaces with System.Console and other console-like UI components.
 
 Targets .NET Standard 2.0 and has no external dependencies.
 
@@ -35,24 +35,93 @@ var config = ReadLineConfig.Empty
 var text = ConsoleReadline.ReadLine(config);
 ```
 
-## Code Samples
+## Code Examples
+Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadline` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
+
+The most trivial version of reading a line of input from the console is:
+
+```csharp
+var text = ConsoleReadLine.ReadLine();
+```
+This will produce a prompt-less console input that allows for basic typing, delete, backspace, and arrow keys.
+
+This simple example hides the fact that a handler object (`InputHandler`) is created behind the scenes in the `ConsoleReadLine.ReadLine()` method.  The `InputHandler` receives both an `IReadline` provider and a `ReadLineConfig` configuration object in its constructor. If no configuration object is provided, it creates a basic configuration (`ReadLineConfig.Basic`) behind the scenes which provides character insertion, enter, and the basic editing keys.
+
+We can create a configuration object manually to pass in to the provider.
+
+```csharp
+var config = ReadLineConfig.Basic
+    .AddKeyBehavior(ConsoleKey.DownArrow, CommonBehaviors.ClearAll);
+
+var text = ConsoleReadLine.ReadLine(config);
+```
+In this case we've added a new key behavior: when the down arrow key is pressed we clear the entire line of text.  This takes advantage of a pre-written behavior (the `ClearAll` method), but we could just as easily write our own.
+
+```csharp
+var config = ReadLineConfig.Basic
+    .AddKeyBehavior(ConsoleKey.DownArrow, target =>
+    {
+        target.TextBuffer.Clear();
+        target.TextBuffer.Append("I have replaced all of your text");
+        target.CursorPosition = target.TextBuffer.Length;
+    });
+
+var text = ConsoleReadLine.ReadLine(config);
+```
+In this case, whenever the user presses the down arrow key, their text is replaced with our unhelpful message. See the [section on Key Behaviors](#key-behaviors) for more information on how they work.
+
+Formatters are another easy example of configuration.  Formatters intercept the handler object's request to display the text and allow you to make changes to it. We can trivially use them to do things like display a prompt, or hide password characters.
+
+```csharp
+var config = ReadLineConfig.Basic
+    .SetFormatter(CommonFormatters.FixedPrompt("enter text here > "))
+
+var text = ConsoleReadLine.ReadLine(config);
+```
+The code above gives us a fixed prompt that appears in front of our text input.
+
+```csharp
+var config = ReadLineConfig.Basic
+    .SetFormatter(CommonFormatters.PasswordBar);
+
+var text = ConsoleReadLine.ReadLine(config);
+```
+There are three built in formatters intended for hiding passwords while they're being typed.  The first, `PasswordBlank`, simply displays an empty string instead of the input text.  The second `PasswordStars` replaces the password characters with stars.  The one above, `PasswordBar`, displays a bar based on the SHA256 hash of the input text.  The bar moves around as you type, revealing no information about your password or its length, but it will always produce the same visual effect for the same input text.
+
+```csharp
+var config = ReadLineConfig.Basic
+    .SetFormatter(CommonFormatters.PasswordBar.WithFixedPrompt("Enter password: "));
+
+var text = ConsoleReadLine.ReadLine(config);
+```
+Finally, formatters can be composed together as well. The above code produces a fixed prompt in front of the password display, and works with all of the password formatters.  See the [section on Formatters](#formatters) for more information on how they work and what can be done with them.
 
 
 ## Design Philosopy
 
-#### Obviousness and Correctness
+### Obviousness and Correctness
 The design of this library's API was based on an attempt to do two things:
 1. Have one obviously correct way of doing each thing
 2. Construct the API in such a way that it's difficult to produce invalid data
 3. Have as few 'special' or hard-coded features as possible, rather use the same customization mechanisms to implement even the basic functionality
 
-#### Delegates instead of Objects
+### Delegates instead of Objects
 For the most part, this library makes every attempt to avoid creating a huge taxonomy of objects and interfaces for all of the pluggable components.  Because the various actions (like key behaviors, tokenizing, formatting, etc) are simple and have minimal inputs and outputs, this library instead favors the use of delegates. 
 
 This approach was selected for the following benefits:
 1. It allows for quicker, easier composition of code, especially via lambdas where possible
 1. It discourages the preservation of state in mechanisms that should primarily exist to perform actions or transformations, but does not preclude an object from exposing a method that can be used instead while still maintaining access to the object state
 
-#### Testing
+### Testing
 
-#### Documentation
+### Documentation
+
+## Code Documentation
+
+### Key Behaviors
+
+### Formatters
+
+### Lexers 
+
+### Auto-Complete

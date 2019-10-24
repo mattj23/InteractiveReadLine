@@ -72,6 +72,15 @@ namespace InteractiveReadLine.KeyBehaviors
         }
 
         /// <summary>
+        /// Clears the entire contents of the text buffer
+        /// </summary>
+        public static void ClearAll(IKeyBehaviorTarget target)
+        {
+            target.TextBuffer.Clear();
+            target.CursorPosition = 0;
+        }
+
+        /// <summary>
         /// Uses a function to create a key behavior that uses the provider's "WriteMessage" method to insert
         /// a message to the user. The handler will provide your function with the tokenized version of the
         /// current text, which will be null if the configuration doesn't have a tokenizer.
