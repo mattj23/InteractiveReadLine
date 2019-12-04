@@ -47,6 +47,17 @@ namespace InteractiveReadLine.Tests.Fakes
         {
             return this.Add(ConsoleKey.Enter, false, false, false);
         }
+
+        public KeyBuilder DownArrow()
+        {
+            return this.Add(ConsoleKey.DownArrow, false, false, false);
+        }
+
+        public KeyBuilder UpArrow()
+        {
+            return this.Add(ConsoleKey.UpArrow, false, false, false);
+        }
+
         public KeyBuilder Escape()
         {
             return this.Add(ConsoleKey.Escape, false, false, false);
