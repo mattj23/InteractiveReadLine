@@ -37,30 +37,44 @@ namespace InteractiveReadLine.Tests.Fakes
             return this;
         }
 
-        public KeyBuilder Add(ConsoleKey key, bool shift, bool alt, bool control)
+        public KeyBuilder Add(ConsoleKey key, bool shift, bool alt, bool control, int count=1)
         {
-            _keys.Add(new ConsoleKeyInfo(char.MinValue, key, shift, alt, control));
+            for (int i = 0; i < count; i++)
+            {
+                _keys.Add(new ConsoleKeyInfo(char.MinValue, key, shift, alt, control));
+            }
+
             return this;
         }
 
-        public KeyBuilder Enter()
+        public KeyBuilder Enter(int count=1)
         {
-            return this.Add(ConsoleKey.Enter, false, false, false);
+            return this.Add(ConsoleKey.Enter, false, false, false, count);
         }
 
-        public KeyBuilder DownArrow()
+        public KeyBuilder LeftArrow(int count=1)
         {
-            return this.Add(ConsoleKey.DownArrow, false, false, false);
+            return this.Add(ConsoleKey.LeftArrow, false, false, false, count);
         }
 
-        public KeyBuilder UpArrow()
+        public KeyBuilder RightArrow(int count=1)
         {
-            return this.Add(ConsoleKey.UpArrow, false, false, false);
+            return this.Add(ConsoleKey.RightArrow, false, false, false, count);
         }
 
-        public KeyBuilder Escape()
+        public KeyBuilder DownArrow(int count=1)
         {
-            return this.Add(ConsoleKey.Escape, false, false, false);
+            return this.Add(ConsoleKey.DownArrow, false, false, false, count);
+        }
+
+        public KeyBuilder UpArrow(int count=1)
+        {
+            return this.Add(ConsoleKey.UpArrow, false, false, false, count);
+        }
+
+        public KeyBuilder Escape(int count=1)
+        {
+            return this.Add(ConsoleKey.Escape, false, false, false, count);
         }
 
 

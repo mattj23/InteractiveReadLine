@@ -115,12 +115,50 @@ namespace InteractiveReadLine
 
         public void HistoryNext()
         {
-            throw new NotImplementedException();
+            // If there is no history, we don't need to do anything
+            if (_config.History?.Any() != true)
+                return;
+
+            // If we're at the end of the history (including the entered text) we do nothing
+            if (_historyIndex == _config.History.Count)
+                return; 
+
+            // Otherwise we increment the history index and set the current text buffer based 
+            // on whether or not we still have another history element
+            _historyIndex++;
+            this.TextBuffer.Clear();
+            if (_historyIndex == _config.History.Count)
+            {
+                this.TextBuffer.Append(_preHistoryState.Text);
+                this.CursorPosition = _preHistoryState.Cursor;
+            }
+            else
+            {
+                this.TextBuffer.Append(_config.History[_historyIndex]);
+                this.CursorPosition = this.TextBuffer.Length;
+            }
         }
 
         public void HistoryPrevious()
         {
-            throw new NotImplementedException();
+            // If there is no history, we don't need to do anything
+            if (_config.History?.Any() != true)
+                return;
+
+            if (_historyIndex == 0)
+                return;
+
+            // Check if we're about to leave entered text to go backwards in the history. If so
+            // we want to store it first.
+            if (_historyIndex == _config.History.Count)
+            {
+                _preHistoryState = new LineState(this.LineState.Text, this.LineState.Cursor);
+            }
+
+            _historyIndex--;
+            this.TextBuffer.Clear();
+            this.TextBuffer.Append(_config.History[_historyIndex]);
+            this.CursorPosition = this.TextBuffer.Length;
         }
 
         /// <summary>
@@ -171,6 +209,9 @@ namespace InteractiveReadLine
 
                 this.UpdateDisplay();
             }
+
+            // If there is a delegate to update the history, invoke it now
+            _config.UpdateHistory?.Invoke(TextBuffer.ToString());
 
             return TextBuffer.ToString();
         }

@@ -46,6 +46,13 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddKeyBehavior(ConsoleKey.End, CommonBehaviors.MoveCursorToEnd);
         }
 
+        public static ReadLineConfig AddArrowMovesCursor(this ReadLineConfig config)
+        {
+            return config
+                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonBehaviors.MoveCursorLeft)
+                .AddKeyBehavior(ConsoleKey.RightArrow, CommonBehaviors.MoveCursorRight);
+        }
+
         /// <summary>
         /// Adds a set of standard keys to the configuration, including the default of inserting printable
         /// characters, enter to finish the line, delete, backspace, and the left and right arrow keys.
@@ -57,8 +64,7 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddEnterToFinish()
                 .AddDeleteBackspace()
                 .AddHomeAndEndKeys()
-                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonBehaviors.MoveCursorLeft)
-                .AddKeyBehavior(ConsoleKey.RightArrow, CommonBehaviors.MoveCursorRight);
+                .AddArrowMovesCursor();
         }
 
         public static ReadLineConfig AddTabAutoComplete(this ReadLineConfig config)
