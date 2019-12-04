@@ -10,6 +10,12 @@ namespace InteractiveReadLine.KeyBehaviors
             return config;
         }
 
+        public static ReadLineConfig AddKeyBehavior(this ReadLineConfig config, ConsoleKey key,
+            bool control, bool alt, bool shift, Action<IKeyBehaviorTarget> action)
+        {
+            return config.AddKeyBehavior(new KeyId(key, false, false, false), action);
+        }
+
         public static ReadLineConfig AddKeyBehavior(this ReadLineConfig config, char key,
             Action<IKeyBehaviorTarget> action)
         {
@@ -52,6 +58,12 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddKeyBehavior(ConsoleKey.LeftArrow, CommonBehaviors.MoveCursorLeft)
                 .AddKeyBehavior(ConsoleKey.RightArrow, CommonBehaviors.MoveCursorRight);
         }
+        public static ReadLineConfig AddUpDownHistoryNavigation(this ReadLineConfig config)
+        {
+            return config
+                .AddKeyBehavior(ConsoleKey.UpArrow, CommonBehaviors.HistoryPrevious)
+                .AddKeyBehavior(ConsoleKey.DownArrow, CommonBehaviors.HistoryNext);
+        }
 
         /// <summary>
         /// Adds a set of standard keys to the configuration, including the default of inserting printable
@@ -64,6 +76,7 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddEnterToFinish()
                 .AddDeleteBackspace()
                 .AddHomeAndEndKeys()
+                .AddUpDownHistoryNavigation()
                 .AddArrowMovesCursor();
         }
 

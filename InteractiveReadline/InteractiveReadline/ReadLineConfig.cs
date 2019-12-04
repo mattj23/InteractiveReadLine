@@ -136,6 +136,12 @@ namespace InteractiveReadLine
             return this.SetHistorySource(history);
         }
 
+        public ReadLineConfig SetHistoryUpdateAction(Action<string> action)
+        {
+            this.UpdateHistory = action;
+            return this;
+        }
+
         public ReadLineConfig SetDefaultKeyBehavior(Action<IKeyBehaviorTarget> defaultBehavior)
         {
             this.DefaultKeyBehavior = defaultBehavior;
