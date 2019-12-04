@@ -65,6 +65,25 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddKeyBehavior(ConsoleKey.DownArrow, CommonBehaviors.HistoryNext);
         }
 
+        public static ReadLineConfig AddCtrlNavKeys(this ReadLineConfig config)
+        {
+            return config
+                .AddCtrlKeyBehavior(ConsoleKey.A, CommonBehaviors.MoveCursorToStart)
+                .AddCtrlKeyBehavior(ConsoleKey.B, CommonBehaviors.MoveCursorLeft)
+                .AddCtrlKeyBehavior(ConsoleKey.E, CommonBehaviors.MoveCursorToEnd)
+                .AddCtrlKeyBehavior(ConsoleKey.F, CommonBehaviors.MoveCursorRight)
+                .AddCtrlKeyBehavior(ConsoleKey.H, CommonBehaviors.Backspace)
+                .AddCtrlKeyBehavior(ConsoleKey.L, CommonBehaviors.Finish)
+                .AddCtrlKeyBehavior(ConsoleKey.K, CommonBehaviors.CutToEnd)
+                .AddCtrlKeyBehavior(ConsoleKey.U, CommonBehaviors.CutToStart)
+                .AddCtrlKeyBehavior(ConsoleKey.L, CommonBehaviors.ClearAll)
+                .AddCtrlKeyBehavior(ConsoleKey.M, CommonBehaviors.Finish)
+                .AddCtrlKeyBehavior(ConsoleKey.N, CommonBehaviors.HistoryNext)
+                .AddCtrlKeyBehavior(ConsoleKey.P, CommonBehaviors.HistoryPrevious)
+                .AddCtrlKeyBehavior(ConsoleKey.D, CommonBehaviors.Delete)
+                .AddCtrlKeyBehavior(ConsoleKey.W, CommonBehaviors.CutPreviousWord);
+        }
+
         /// <summary>
         /// Adds a set of standard keys to the configuration, including the default of inserting printable
         /// characters, enter to finish the line, delete, backspace, and the left and right arrow keys.

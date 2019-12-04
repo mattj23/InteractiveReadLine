@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.KeyBehaviors
@@ -125,6 +126,46 @@ namespace InteractiveReadLine.KeyBehaviors
         /// Finishes the ReadLine input, instructing the handler to return the text as it is
         /// </summary>
         public static void Finish(IKeyBehaviorTarget target) => target.Finish();
+
+        public static void CutToEnd(IKeyBehaviorTarget target)
+        {
+            var cursor = target.CursorPosition;
+            var captured = target.TextBuffer.ToString().Substring(0, cursor);
+            target.TextBuffer.Clear();
+            target.TextBuffer.Append(captured);
+            target.CursorPosition = cursor;
+        }
+
+        public static void CutToStart(IKeyBehaviorTarget target)
+        {
+            var cursor = target.CursorPosition;
+            var captured = target.TextBuffer.ToString()
+                .Substring(cursor, target.TextBuffer.Length - cursor);
+            target.TextBuffer.Clear();
+            target.TextBuffer.Append(captured);
+            target.CursorPosition = 0;
+        }
+
+        public static void CutPreviousWord(IKeyBehaviorTarget target)
+        {
+            if (target.GetTextTokens() == null)
+            {
+                // No lexer, go by spaces
+                if (target.CursorPosition == 0)
+                    return;
+                
+                while (true)
+                {
+                    var next = target.CursorPosition - 1;
+                    if (target.TextBuffer[next] == ' ' || next == 0)
+                        return;
+                    target.TextBuffer.Remove(next, 1);
+                    target.CursorPosition = next;
+                }
+
+            }
+
+        }
 
         /// <summary>
         /// Inserts the received character at the cursor position if the character is a letter, digit, whitespace,
