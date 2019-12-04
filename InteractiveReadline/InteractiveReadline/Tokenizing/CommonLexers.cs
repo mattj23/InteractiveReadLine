@@ -31,13 +31,13 @@ namespace InteractiveReadLine.Tokenizing
         }
 
         public static RegexList AddAnyNonWhitespace(this RegexList list, int typeCode = 0) =>
-            list.AddTokenType(@"\S+", typeCode);
+            list.AddTokenType(@"^\S+", typeCode);
 
         public static RegexList AddDoubleQuoteStringLiterals(this RegexList list, int typeCode = 0) =>
-            list.AddTokenType(@"""(?:[^""\\]|\\.)*""", typeCode);
+            list.AddTokenType(@"^""(?:[^""\\]|\\.)*""", typeCode);
 
         public static RegexList AddSingleQuoteStringLiterals(this RegexList list, int typeCode = 0) =>
-            list.AddTokenType(@"'(?:[^'\\]|\\.)*'", typeCode);
+            list.AddTokenType(@"^'(?:[^'\\]|\\.)*'", typeCode);
 
         /// <summary>
         /// From a list of RegexTokenDefs, produce a function that will tokenize a LineState according to

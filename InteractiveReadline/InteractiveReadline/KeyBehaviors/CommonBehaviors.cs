@@ -106,6 +106,22 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void AutoCompletePrevious(IKeyBehaviorTarget target) => target.AutoCompletePrevious();
 
         /// <summary>
+        /// Invokes the target's next history behavior, which replaces the line with the next element
+        /// in the history collection. Will do nothing if no history has been provided, or replace the line
+        /// with the last entered line state if the end of the history has been reached.
+        /// </summary>
+        /// <param name="target"></param>
+        public static void HistoryNext(IKeyBehaviorTarget target) => target.HistoryNext();
+
+        /// <summary>
+        /// Invokes the target's previous history behavior, which replaces the entire line with the previous
+        /// element in the history collection. Will do nothing if no history has been provided, or if the oldest
+        /// element in the collection has been reached.
+        /// </summary>
+        /// <param name="target"></param>
+        public static void HistoryPrevious(IKeyBehaviorTarget target) => target.HistoryPrevious();
+
+        /// <summary>
         /// Finishes the ReadLine input, instructing the handler to return the text as it is
         /// </summary>
         public static void Finish(IKeyBehaviorTarget target) => target.Finish();

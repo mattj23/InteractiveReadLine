@@ -15,6 +15,18 @@ namespace InteractiveReadLine
         }
 
         /// <summary>
+        /// Gets an Action which can be used to update the history. This is automatically set when the
+        /// 
+        /// </summary>
+        public Action<string> UpdateHistory { get; private set; }
+
+        /// <summary>
+        /// Gets a list which contains the history of entered text, used for any behaviors which interact
+        /// with the entered history.
+        /// </summary>
+        public IReadOnlyList<string> History { get; private set; }
+
+        /// <summary>
         /// Gets a providing function used to format the line to display based on a tokenization of the
         /// readline content just before display. Requires a Lexer to work.
         /// </summary>
@@ -73,6 +85,12 @@ namespace InteractiveReadLine
             return this;
         }
 
+        /// <summary>
+        /// Sets the formatter for the configuration using a formatter based on a tokenized line. This will
+        /// require that a lexer be provided for the configuration.
+        /// </summary>
+        /// <param name="formatter"></param>
+        /// <returns></returns>
         public ReadLineConfig SetFormatter(Func<TokenizedLine, LineDisplayState> formatter)
         {
             this.FormatterFromLine = null;
@@ -80,11 +98,42 @@ namespace InteractiveReadLine
             return this;
         }
 
+        /// <summary>
+        /// Sets the formatter for the configuration using a formatter which only needs a simple LineState.
+        /// </summary>
+        /// <param name="formatter"></param>
+        /// <returns></returns>
         public ReadLineConfig SetFormatter(Func<LineState, LineDisplayState> formatter)
         {
             this.FormatterFromLine = formatter;
             this.FormatterFromTokens = null;
             return this;
+        }
+
+        /// <summary>
+        /// Sets the collection of previously entered lines to be used as the command history. Use this setter
+        /// if you do not want the history to be automatically updated. Also, make sure to set some key behavior
+        /// which will make use of the history.
+        /// </summary>
+        /// <param name="history"></param>
+        /// <returns></returns>
+        public ReadLineConfig SetHistorySource(IReadOnlyList<string> history)
+        {
+            this.History = history;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the collection of previously entered lines to be used as the command history. This setter will
+        /// cause the history list to be automatically updated. Also, make sure to set some key behavior which
+        /// will make use of the history.
+        /// </summary>
+        /// <param name="history"></param>
+        /// <returns></returns>
+        public ReadLineConfig SetUpdatingHistorySource(List<string> history)
+        {
+            this.UpdateHistory = history.Add;
+            return this.SetHistorySource(history);
         }
 
         public ReadLineConfig SetDefaultKeyBehavior(Action<IKeyBehaviorTarget> defaultBehavior)
@@ -93,8 +142,10 @@ namespace InteractiveReadLine
             return this;
         }
 
+
         public static ReadLineConfig Empty => new ReadLineConfig();
 
         public static ReadLineConfig Basic => new ReadLineConfig().AddStandardKeys();
+
     }
 }

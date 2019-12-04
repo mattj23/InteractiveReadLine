@@ -24,6 +24,9 @@ namespace InteractiveReadLine
         private bool _autoCompleteCalled = false;
         private string[] _autoCompleteSuggestions;
 
+        private int _historyIndex;
+        private LineState _preHistoryState;
+
         private bool _finishTrigger = false;
 
         public InputHandler(IReadLine provider, ReadLineConfig config=null)
@@ -35,6 +38,9 @@ namespace InteractiveReadLine
 
             _autoCompleteIndex = int.MinValue;
             _autoCompleteSuggestions = null;
+
+            // The history index should start one element past the length of the current history
+            _historyIndex = config?.History?.Any() == true ? config.History.Count : 0;
         }
 
         /// <summary>
@@ -105,6 +111,16 @@ namespace InteractiveReadLine
         public TokenizedLine GetTextTokens()
         {
             return _config.Lexer?.Invoke(this.LineState);
+        }
+
+        public void HistoryNext()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HistoryPrevious()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

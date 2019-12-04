@@ -33,7 +33,7 @@ namespace InteractiveReadLine.KeyBehaviors
         void AutoCompleteNext();
 
         /// <summary>
-        /// Invokes the auto-complete's "previons" functionality, which substitutes in the previous suggestion
+        /// Invokes the auto-complete's "previous" functionality, which substitutes in the previous suggestion
         /// </summary>
         void AutoCompletePrevious();
 
@@ -50,6 +50,19 @@ namespace InteractiveReadLine.KeyBehaviors
         /// </summary>
         /// <returns>Returns null if there is no tokenizer, otherwise a Tokens result</returns>
         TokenizedLine GetTextTokens();
+
+        /// <summary>
+        /// Invokes the history's "next" functionality, which replaces the entire line with the next element
+        /// in the history collection. If the last history element has been reached, the previously entered
+        /// LineState will be reverted.
+        /// </summary>
+        void HistoryNext();
+
+        /// <summary>
+        /// Invokes the history's "previous" functionality, which replaces the entire line with the previous
+        /// element in the history collection.
+        /// </summary>
+        void HistoryPrevious();
 
         /// <summary>
         /// Tells the readline handler to finish this line of input and return it
