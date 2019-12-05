@@ -198,7 +198,11 @@ namespace InteractiveReadLine.Tests
         [Theory]
         [InlineData(0, "test data here ", 0)]
         [InlineData(2, "st data here ", 0)]
-        [InlineData(4, "data here ", 0)]
+        [InlineData(4, " data here ", 0)]
+        [InlineData(5, "data here ", 0)]
+        [InlineData(7, "test ta here ", 5)]
+        [InlineData(10, "test here ", 5)]
+        [InlineData(15, "test data ", 10)]
         public void CutPreviousWord_WithNoTokens_Works(int cursor, string expected, int expectedCursor)
         {
             //                              0123456789012345
@@ -212,7 +216,6 @@ namespace InteractiveReadLine.Tests
 
             Assert.Equal(expected, buffer.ToString());
             Assert.Equal(expectedCursor, mock.Object.CursorPosition);
-
         }
     }
 }

@@ -148,23 +148,39 @@ namespace InteractiveReadLine.KeyBehaviors
 
         public static void CutPreviousWord(IKeyBehaviorTarget target)
         {
-            if (target.GetTextTokens() == null)
-            {
-                // No lexer, go by spaces
-                if (target.CursorPosition == 0)
-                    return;
-                
-                while (true)
-                {
-                    var next = target.CursorPosition - 1;
-                    if (target.TextBuffer[next] == ' ' || next == 0)
-                        return;
-                    target.TextBuffer.Remove(next, 1);
-                    target.CursorPosition = next;
-                }
+            var tokens =
+                CommonLexers.SplitOnWhitespace(new LineState(target.TextBuffer.ToString(), target.CursorPosition));
+            int cursor = (int) tokens.CursorToken.Cursor;
 
+            var token = tokens.CursorToken;
+            var previous = tokens.CursorToken.Previous;
+
+            if (cursor == 0 && previous?.IsHidden == true)
+            {
+                // Example for "test data here", which should delete back to the beginning
+                //                   ↑  
+
+                previous.Text = "";
+                if (previous.Previous != null)
+                {
+                    previous.Previous.Text = "";
+                }
+            }
+            else
+            {
+                var captured = token.Text.Substring(cursor, token.Text.Length - cursor);
+                token.Cursor = 0;
+                token.Text = captured;
+
+                if (token.IsHidden && previous != null)
+                {
+                    previous.Text = "";
+                }
             }
 
+            target.TextBuffer.Clear();
+            target.TextBuffer.Append(tokens.Text);
+            target.CursorPosition = tokens.Cursor;
         }
 
         /// <summary>

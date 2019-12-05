@@ -36,6 +36,9 @@ namespace InteractiveReadLine.Tokenizing
 
         public int CursorTokenIndex => _tokens.IndexOf(_tokens.FirstOrDefault(x => x.Cursor != null));
 
+        /// <summary>
+        /// Gets the overall index of the cursor in the combined text
+        /// </summary>
         public int Cursor
         {
             get => _cursor;
@@ -96,7 +99,7 @@ namespace InteractiveReadLine.Tokenizing
                     {
                         // Check if the cursor is after this token, and if so adjust it accordingly
                         var beforeLen = TextBefore().Length;
-                        if (beforeLen + _text.Length < _parent.Cursor)
+                        if (beforeLen + _text.Length - 1 < _parent.Cursor)
                         {
                             var delta = value.Length - _text.Length;
                             cursorMove = _parent.Cursor + delta;

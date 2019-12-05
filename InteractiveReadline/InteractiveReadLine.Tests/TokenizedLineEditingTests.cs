@@ -25,6 +25,21 @@ namespace InteractiveReadLine.Tests
         }
 
         [Fact]
+        public void ShrinkTokenBeforeCursor_OneBefore_MovesCursorCorrectly()
+        {
+            // This tests for an issue discovered when shrinking a token right before
+            // the cursor
+            var line = SimpleLine();
+            line[2].Cursor = 0;
+            var edit = line[2].Previous;
+
+            Assert.Equal(5, line.Cursor);
+            edit.Text = "";
+
+            Assert.Equal(4, line.Cursor);
+        }
+
+        [Fact]
         public void ShrinkTokenBeforeCursor_MovesCursorCorrectly()
         {
             var line = SimpleLine();
