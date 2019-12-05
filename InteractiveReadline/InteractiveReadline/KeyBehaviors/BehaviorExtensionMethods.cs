@@ -73,7 +73,6 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddCtrlKeyBehavior(ConsoleKey.E, CommonBehaviors.MoveCursorToEnd)
                 .AddCtrlKeyBehavior(ConsoleKey.F, CommonBehaviors.MoveCursorRight)
                 .AddCtrlKeyBehavior(ConsoleKey.H, CommonBehaviors.Backspace)
-                .AddCtrlKeyBehavior(ConsoleKey.L, CommonBehaviors.Finish)
                 .AddCtrlKeyBehavior(ConsoleKey.K, CommonBehaviors.CutToEnd)
                 .AddCtrlKeyBehavior(ConsoleKey.U, CommonBehaviors.CutToStart)
                 .AddCtrlKeyBehavior(ConsoleKey.L, CommonBehaviors.ClearAll)

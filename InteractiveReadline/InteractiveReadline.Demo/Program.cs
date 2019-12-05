@@ -29,6 +29,7 @@ namespace InteractiveReadLine.Demo
                 .AddStandardKeys()
                 .AddTabAutoComplete()
                 .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
+                .AddCtrlNavKeys()
                 .SetFormatter(Formatter)
                 .SetAutoCompletion(AutoComplete)
                 .SetLexer(CommonLexers.Regex

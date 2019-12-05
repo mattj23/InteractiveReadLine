@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace InteractiveReadLine.KeyBehaviors
 {
@@ -31,6 +32,23 @@ namespace InteractiveReadLine.KeyBehaviors
         public bool HasCtrl { get; set; }
         public bool HasAlt { get; set; }
         public bool HasShift { get; set; }
+
+        public override string ToString()
+        {
+            var repr = new List<string>();
+            if (HasCtrl)
+                repr.Add("Ctrl");
+            if (HasAlt)
+                repr.Add("Alt");
+            if (HasShift)
+                repr.Add("Shift");
+            if (Key != null)
+                repr.Add(Key.ToString());
+            else 
+                repr.Add("'" + Char + "'");
+
+            return string.Join("+", repr);
+        }
 
         public bool Equals(KeyId other)
         {
