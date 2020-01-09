@@ -1,6 +1,6 @@
-name: .NET Core
+name: CI .NET Core
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -9,9 +9,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
+
+    - name: Build and test with dotnet
+      run: dotnet test InteractiveReadLine/InteractiveReadLine.sln --configuration Release
