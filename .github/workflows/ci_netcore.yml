@@ -16,4 +16,7 @@ jobs:
         dotnet-version: 3.1.100
 
     - name: Build and test with dotnet
-      run: dotnet test --configuration Release
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --configuration Release
+
+    - name: Publish coverage
+      run: curl -s https://codecov.io/bash | bash -s -- -f InteractiveReadLine.Tests/TestResults/coverage.info -t ${{secrets.CODECOV_UPLOAD_TOKEN}} -Z
