@@ -1,5 +1,6 @@
 ![](https://github.com/mattj23/InteractiveReadLine/workflows/CI%20netcore/badge.svg)
-
+[![Coverage](https://codecov.io/gh/mattj23/InteractiveReadLine/branch/master/graph/badge.svg)](https://codecov.io/gh/mattj23/InteractiveReadLine)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Interactive ReadLine
 An extensible, composable readline library written in pure C# for creating interactive text-based interfaces with System.Console and other console-like UI components.
