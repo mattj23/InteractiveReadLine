@@ -56,7 +56,7 @@ namespace InteractiveReadLine.Tests.Fakes
             this.WriteLine(text.Text);
         }
 
-        public void Write(FormattedText.FormattedChar c)
+        public void Write(FormattedChar c)
         {
             this.WriteChar(c.Char);
         }

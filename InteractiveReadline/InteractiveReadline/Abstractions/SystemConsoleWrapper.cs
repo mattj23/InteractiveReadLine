@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Abstractions
@@ -26,9 +27,25 @@ namespace InteractiveReadLine.Abstractions
 
         public void Write(FormattedText text)
         {
-            for (int i = 0; i < text.Length; i++)
+            // Break the text into pieces which have the same foreground and background colors, then write them
+            // to the Console object 
+            var pieces = text.SplitByFormatting();
+
+            foreach (var piece in pieces)
             {
-                this.Write(text[i]);
+                if (piece.Length <= 0)
+                    continue;
+                
+                if (piece[0].Foreground == null || piece[0].Background == null)
+                    Console.ResetColor();
+
+                if (piece[0].Foreground != null)
+                    Console.ForegroundColor = (ConsoleColor) piece[0].Foreground;
+                
+                if (piece[0].Background != null)
+                    Console.BackgroundColor = (ConsoleColor) piece[0].Background;
+                
+                Console.Write(piece.Text);
             }
         }
 
@@ -38,7 +55,7 @@ namespace InteractiveReadLine.Abstractions
             this.Write("\n");
         }
 
-        public void Write(FormattedText.FormattedChar c)
+        public void Write(FormattedChar c)
         {
             // TODO: Is there a more efficient way of dealing with this?
             Console.ResetColor();

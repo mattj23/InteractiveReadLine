@@ -32,7 +32,7 @@ namespace InteractiveReadLine.Abstractions
 
         void Write(FormattedText text);
         void WriteLine(FormattedText text);
-        void Write(FormattedText.FormattedChar c);
+        void Write(FormattedChar c);
 
         ConsoleKeyInfo ReadKey();
 

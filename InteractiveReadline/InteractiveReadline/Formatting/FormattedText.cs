@@ -2,13 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using System.Net.Mime;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 
 namespace InteractiveReadLine.Formatting
 {
-    public class FormattedText 
+    /// <summary>
+    /// Represents a formatted string, where each character has a potentially unique foreground and background
+    /// color assigned to it.
+    /// </summary>
+    public class FormattedText : IEquatable<FormattedText>
     {
-        public FormattedText(string text)
+        public FormattedText(string text, ConsoleColor? foreground = null, ConsoleColor? background = null)
         {
             this.Text = text;
             this.Foreground = new ConsoleColor?[this.Text.Length];
@@ -16,21 +23,41 @@ namespace InteractiveReadLine.Formatting
 
             for (int i = 0; i < this.Text.Length; i++)
             {
-                this.Foreground[i] = null;
-                this.Background[i] = null;
+                this.Foreground[i] = foreground;
+                this.Background[i] = background;
             }
         }
 
+        /// <summary>
+        /// Gets the characters in the text as a string without any formatting
+        /// </summary>
         public string Text { get; }
 
+        /// <summary>
+        /// Gets the length of the text 
+        /// </summary>
         public int Length => Text.Length;
 
+        /// <summary>
+        /// Gets the character and its formatting at position i in the text
+        /// </summary>
+        /// <param name="index"></param>
         public FormattedChar this[int index] => new FormattedChar(this.Text[index], this.Foreground[index], this.Background[index]);
         
+        /// <summary>
+        /// Gets the foreground color array of the text 
+        /// </summary>
         public ConsoleColor?[] Foreground { get; }
 
+        /// <summary>
+        /// Gets the background color array of the text
+        /// </summary>
         public ConsoleColor?[] Background { get; }
 
+        /// <summary>
+        /// Sets the foreground color for every character in the text 
+        /// </summary>
+        /// <param name="color"></param>
         public void SetForeground(ConsoleColor? color)
         {
             for (int i = 0; i < this.Text.Length; i++)
@@ -39,12 +66,60 @@ namespace InteractiveReadLine.Formatting
             }
         }
 
+        /// <summary>
+        /// Sets the background color for every character in the text 
+        /// </summary>
+        /// <param name="color"></param>
         public void SetBackground(ConsoleColor? color)
         {
             for (int i = 0; i < this.Text.Length; i++)
             {
                 Background[i] = color;
             }
+        }
+
+        /// <summary>
+        /// Splits the formatted text object into an array of FormattedText objects, in which each element of the array
+        /// consists of text where every character has the same foreground and background colors.
+        /// </summary>
+        /// <returns></returns>
+        public FormattedText[] SplitByFormatting()
+        {
+            if (this.Text == string.Empty)
+            {
+                return Array.Empty<FormattedText>();
+            }
+            
+            var result = new List<FormattedText>();
+            
+            var buffer = new StringBuilder();
+            ConsoleColor? fore = null;
+            ConsoleColor? back = null;
+
+            buffer.Append(this.Text[0]);
+            fore = this.Foreground[0];
+            back = this.Background[0];
+
+            for (int i = 1; i < this.Text.Length; i++)
+            {
+                if (fore != this.Foreground[i] || back != this.Background[i])
+                {
+                    // Either the foreground or the background has changed, so we need to 
+                    // finish the existing buffer and start a new one
+                    result.Add(new FormattedText(buffer.ToString(), fore, back));
+
+                    buffer.Clear();
+                    fore = this.Foreground[i];
+                    back = this.Background[i];
+                }
+                
+                buffer.Append(this.Text[i]);
+            }
+            
+            // Add the final buffer
+            result.Add(new FormattedText(buffer.ToString(), fore, back));
+
+            return result.ToArray();
         }
 
         public static implicit operator FormattedText(string s) => new FormattedText(s);
@@ -67,41 +142,21 @@ namespace InteractiveReadLine.Formatting
             return product;
         }
 
-        public struct FormattedChar : IEquatable<FormattedChar>
+        public bool Equals(FormattedText other)
         {
+            if (other == null || this.Text != other.Text)
+                return false;
 
-            public FormattedChar(char c, ConsoleColor? foreground, ConsoleColor? background)
+            for (int i = 0; i < this.Length; i++)
             {
-                Char = c;
-                Foreground = foreground;
-                Background = background;
+                if (this.Foreground[i] != other.Foreground[i])
+                    return false;
+
+                if (this.Background[i] != other.Background[i])
+                    return false;
             }
 
-            public char Char { get; }
-            public ConsoleColor? Foreground { get; }
-            public ConsoleColor? Background { get; }
-
-            public bool Equals(FormattedChar other)
-            {
-                return Char == other.Char && Foreground == other.Foreground && Background == other.Background;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is FormattedChar other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    var hashCode = Char.GetHashCode();
-                    hashCode = (hashCode * 397) ^ Foreground.GetHashCode();
-                    hashCode = (hashCode * 397) ^ Background.GetHashCode();
-                    return hashCode;
-                }
-            }
+            return true;
         }
-
     }
 }
