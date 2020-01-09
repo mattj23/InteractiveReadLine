@@ -1,4 +1,4 @@
-name: CI .NET Core
+name: CI netcore
 
 on: [push, pull_request]
 

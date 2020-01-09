@@ -1,4 +1,7 @@
-# Interactive Readline
+![](https://github.com/mattj23/InteractiveReadLine/workflows/CI%20netcore/badge.svg)
+
+
+# Interactive ReadLine
 An extensible, composable readline library written in pure C# for creating interactive text-based interfaces with System.Console and other console-like UI components.
 
 Targets .NET Standard 2.0 and has no external dependencies.
@@ -9,7 +12,7 @@ ___
 This library provides a GNU Readline-like functionality for interactive C# programs that use either the `System.Console` or (in the future) a similar console-like UI component. 
 
 ```csharp
-var text = ConsoleReadline.ReadLine();
+var text = ConsoleReadLine.ReadLine();
 ```
 
 However, practically every aspect of the system's behavior is configurable.  Configuration falls into the following categories:
