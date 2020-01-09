@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using InteractiveReadLine.Abstractions;
 using InteractiveReadLine.Formatting;
 
@@ -21,11 +22,20 @@ namespace InteractiveReadLine
             this.Start();
         }
 
+        /// <summary>
+        /// Reads a console key from the underlying provider. This method blocks until a key is received.
+        /// </summary>
+        /// <returns></returns>
         public ConsoleKeyInfo ReadKey()
         {
             return _console.ReadKey();
         }
 
+        /// <summary>
+        /// Sets the display state on the underlying console, consisting of a prefix, body, suffix, and cursor
+        /// position.
+        /// </summary>
+        /// <param name="state"></param>
         public void SetDisplay(LineDisplayState state)
         {
             var totalText = state.Prefix + state.LineBody + state.Suffix;
@@ -33,6 +43,11 @@ namespace InteractiveReadLine
             this.SetText(totalText, cursor);
         }
 
+        /// <summary>
+        /// Sets the read line to contain the specified text and cursor position.
+        /// </summary>
+        /// <param name="totalText"></param>
+        /// <param name="cursorPos"></param>
         private void SetText(FormattedText totalText, int cursorPos)
         {
             // The process of setting the input text requires us to find the difference between 
@@ -46,15 +61,36 @@ namespace InteractiveReadLine
                 ? totalText
                 : totalText + new string(' ', _lastWrittenText.Length - totalText.Length);
 
-            // Sweep through each character in the text to write and, if the cursor is not at the
-            // position to edit and an edit needs to be made, move the cursor and write the new
-            // character to the console
+            // Sweep through each character in the text to write and determine if an edit needs to be 
+            // made (or does the FormattedChar match what was last written at this position?)
+            // Cluster the edits into contiguous FormattedText objects, each with a cursor start position.
+            var edits = new List<Tuple<int, FormattedText>>();
+
+            Tuple<int, FormattedText> edit = null;
+            
             for (int i = 0; i < writeText.Length; i++)
             {
-                if (i < _lastWrittenText.Length 
-                    && writeText[i].Equals(_lastWrittenText[i]))
-                    continue;
+                if (i < _lastWrittenText.Length && writeText[i].Equals(_lastWrittenText[i]))
+                {
+                    if (edit != null)
+                    {
+                        edits.Add(edit);
+                        edit = null;
+                    }
 
+                    continue;
+                }
+
+                if (edit == null)
+                {
+                    edit = new Tuple<int, FormattedText>(i, writeText[i]);
+                }
+                else
+                {
+                    edit = new Tuple<int, FormattedText>(edit.Item1, edit.Item2 + writeText[i]);
+                }
+
+                /*
                 int left = this.ColOffset(i);
                 int top = this.RowOffset(i) + _startingRow;
 
@@ -64,8 +100,25 @@ namespace InteractiveReadLine
                     _console.CursorTop = top;
 
                 _console.Write(writeText[i]);
+            */
             }
+            if (edit != null)
+                edits.Add(edit);
 
+            foreach (var e in edits)
+            {
+                
+                int left = this.ColOffset(e.Item1);
+                int top = this.RowOffset(e.Item1) + _startingRow;
+
+                if (left != _console.CursorLeft)
+                    _console.CursorLeft = left;
+                if (top != _console.CursorTop)
+                    _console.CursorTop = top;
+
+                _console.Write(e.Item2);
+            }
+            
             _lastWrittenText = totalText;
 
             // Check if we shifted down the buffer. In certain cases, if we reach the end of the buffer

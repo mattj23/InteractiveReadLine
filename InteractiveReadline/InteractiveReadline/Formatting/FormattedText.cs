@@ -28,6 +28,11 @@ namespace InteractiveReadLine.Formatting
             }
         }
 
+        public FormattedText(FormattedChar c)
+            : this(c.Char.ToString(), c.Foreground, c.Background)
+        {
+        }
+
         /// <summary>
         /// Gets the characters in the text as a string without any formatting
         /// </summary>
@@ -123,6 +128,8 @@ namespace InteractiveReadLine.Formatting
         }
 
         public static implicit operator FormattedText(string s) => new FormattedText(s);
+        
+        public static implicit operator FormattedText(FormattedChar c) => new FormattedText(c);
 
         public static FormattedText operator +(FormattedText lhs, FormattedText rhs)
         {
