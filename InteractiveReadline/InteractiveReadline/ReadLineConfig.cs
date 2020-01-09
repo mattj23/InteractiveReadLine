@@ -132,16 +132,28 @@ namespace InteractiveReadLine
         /// <returns></returns>
         public ReadLineConfig SetUpdatingHistorySource(List<string> history)
         {
-            this.UpdateHistory = history.Add;
+            this.SetHistoryUpdateAction(history.Add);
             return this.SetHistorySource(history);
         }
 
+        /// <summary>
+        /// Sets the action delegate which will get call when the readline is finalized and the history would otherwise
+        /// update itself.  Use this to provide a custom update action.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public ReadLineConfig SetHistoryUpdateAction(Action<string> action)
         {
             this.UpdateHistory = action;
             return this;
         }
 
+        /// <summary>
+        /// Set the default KeyBehavior which is called when no other special action for a key has been registered
+        /// in the configuration. Typically this will be used to insert the key character into the input line.
+        /// </summary>
+        /// <param name="defaultBehavior"></param>
+        /// <returns></returns>
         public ReadLineConfig SetDefaultKeyBehavior(Action<IKeyBehaviorTarget> defaultBehavior)
         {
             this.DefaultKeyBehavior = defaultBehavior;
@@ -149,8 +161,14 @@ namespace InteractiveReadLine
         }
 
 
+        /// <summary>
+        /// Gets an empty configuration with absolutely nothing set
+        /// </summary>
         public static ReadLineConfig Empty => new ReadLineConfig();
 
+        /// <summary>
+        /// Gets a configuration that has the standard key behaviors added to it 
+        /// </summary>
         public static ReadLineConfig Basic => new ReadLineConfig().AddStandardKeys();
 
     }

@@ -216,6 +216,10 @@ namespace InteractiveReadLine
             return TextBuffer.ToString();
         }
 
+        /// <summary>
+        /// Updates the display on the underlying provider. This is where any formatter is called, immediately
+        /// prior to the display being set.
+        /// </summary>
         private void UpdateDisplay()
         {
             // Finally, if we have an available formatter, we can get a display format from here
@@ -248,6 +252,13 @@ namespace InteractiveReadLine
             return null;
         }
 
+        /// <summary>
+        /// Initializes and begins the AutoComplete functionality. AutoComplete is its own special state of interaction,
+        /// and must be initialized before the next/previous functions will work. It then can continue until an action
+        /// other than next/previous occurs, after which it will have to be reinitialized to be used again. The
+        /// initialization process involves fetching the valid suggestions for the currently entered text and cursor
+        /// position.
+        /// </summary>
         private void StartAutoComplete()
         {
             if (!_config.CanAutoComplete)
@@ -274,6 +285,11 @@ namespace InteractiveReadLine
 
         }
 
+        /// <summary>
+        /// If AutoComplete is currently active, the only allowable actions are next/previous. If any other
+        /// modification is made to the line, the current AutoComplete suggestions are invalidated and any attempt
+        /// to use the next/previous functionality will require a reinitialization of the AutoComplete mechanism.
+        /// </summary>
         private void InvalidateAutoComplete()
         {
             _autoCompleteIndex = Int32.MinValue;
@@ -281,6 +297,10 @@ namespace InteractiveReadLine
             _autoCompleteSuggestions = null;
         }
 
+        /// <summary>
+        /// Inserts the text from the currently selected auto complete suggestion into the token under the cursor. Only
+        /// works if the system is currently in autocomplete mode.
+        /// </summary>
         private void SetAutoCompleteText()
         {
             if (!_config.CanAutoComplete || _autoCompleteTokens == null || _autoCompleteIndex < 0)

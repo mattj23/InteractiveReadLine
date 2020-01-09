@@ -177,6 +177,11 @@ namespace InteractiveReadLine
 
         private int RowOffset(int length) => (length - this.ColOffset(length)) / _console.BufferWidth;
 
+        /// <summary>
+        /// Provides a convenient static method of calling the ReadLine method on the System.Console
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public static string ReadLine(ReadLineConfig config=null)
         {
             var provider = new ConsoleReadLine();

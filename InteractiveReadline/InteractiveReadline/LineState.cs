@@ -3,7 +3,8 @@
 namespace InteractiveReadLine
 {
     /// <summary>
-    /// Represents all of the state information in a readline view
+    /// Represents the data produced by the user's interaction with the readline provider: the text and the current
+    /// cursor position.
     /// </summary>
     public class LineState : IEquatable<LineState>
     {
