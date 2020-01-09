@@ -102,9 +102,9 @@ namespace InteractiveReadLine
         }
 
         /// <inheritdoc />
-        public void WriteMessage(FormattedText text)
+        public void InsertText(FormattedText text)
         {
-            _provider.WriteMessage(text);
+            _provider.InsertText(text);
         }
 
         /// <inheritdoc />

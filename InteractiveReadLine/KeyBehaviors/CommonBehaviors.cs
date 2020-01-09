@@ -82,7 +82,7 @@ namespace InteractiveReadLine.KeyBehaviors
         }
 
         /// <summary>
-        /// Uses a function to create a key behavior that uses the provider's "WriteMessage" method to insert
+        /// Uses a function to create a key behavior that uses the provider's "InsertText" method to insert
         /// a message to the user. The handler will provide your function with the tokenized version of the
         /// current text, which will be null if the configuration doesn't have a tokenizer.
         /// </summary>
@@ -91,7 +91,7 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <returns>A key behavior action which can be registered with the read line configuration</returns>
         public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine, string> message)
         {
-            return new Action<IKeyBehaviorTarget>(t => t.WriteMessage(message(t.GetTextTokens())));
+            return new Action<IKeyBehaviorTarget>(t => t.InsertText(message(t.GetTextTokens())));
         }
 
         /// <summary>
