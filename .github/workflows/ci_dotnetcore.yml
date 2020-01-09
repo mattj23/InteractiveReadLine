@@ -16,4 +16,4 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Build and test with dotnet
-      run: dotnet test InteractiveReadLine/InteractiveReadLine.sln --configuration Release
+      run: dotnet test --configuration Release
