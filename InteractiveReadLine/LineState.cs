@@ -3,8 +3,7 @@
 namespace InteractiveReadLine
 {
     /// <summary>
-    /// Represents the data produced by the user's interaction with the readline provider: the text and the current
-    /// cursor position.
+    /// Contains the text and cursor position data produced by a user's interaction with the IReadLineProvider.
     /// </summary>
     public class LineState : IEquatable<LineState>
     {
@@ -14,8 +13,14 @@ namespace InteractiveReadLine
             Cursor = cursor;
         }
 
+        /// <summary>
+        /// Gets the cursor position as an integer offset from the first character
+        /// </summary>
         public int Cursor { get; }
 
+        /// <summary>
+        /// Gets the string contents of the line of text
+        /// </summary>
         public string Text { get; }
 
         public bool Equals(LineState other)

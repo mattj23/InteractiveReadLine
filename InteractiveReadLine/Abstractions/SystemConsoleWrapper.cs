@@ -5,9 +5,9 @@ using InteractiveReadLine.Formatting;
 namespace InteractiveReadLine.Abstractions
 {
     /// <summary>
-    /// A wrapper around the System.Console object. 
+    /// A wrapper around the System.Console object. This currently only exists to allow unit testing.
     /// </summary>
-    public class SystemConsoleWrapper : IConsoleWrapper
+    internal class SystemConsoleWrapper : IConsole
     {
         public int CursorLeft
         {

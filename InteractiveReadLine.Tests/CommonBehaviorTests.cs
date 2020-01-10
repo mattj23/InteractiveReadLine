@@ -22,7 +22,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.Delete(mock.Object);
+            CommonKeyBehaviors.Delete(mock.Object);
 
             Assert.Equal(cursor, mock.Object.CursorPosition);
             Assert.Equal(expected, buffer.ToString());
@@ -43,7 +43,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.Backspace(mock.Object);
+            CommonKeyBehaviors.Backspace(mock.Object);
 
             Assert.Equal(expectedCursor, mock.Object.CursorPosition);
             Assert.Equal(expected, buffer.ToString());
@@ -58,7 +58,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = 4;
 
-            CommonBehaviors.MoveCursorToEnd(mock.Object);
+            CommonKeyBehaviors.MoveCursorToEnd(mock.Object);
 
             Assert.Equal(14, mock.Object.CursorPosition);
         }
@@ -72,7 +72,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = 14;
 
-            CommonBehaviors.MoveCursorToStart(mock.Object);
+            CommonKeyBehaviors.MoveCursorToStart(mock.Object);
 
             Assert.Equal(0, mock.Object.CursorPosition);
         }
@@ -89,7 +89,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.MoveCursorLeft(mock.Object);
+            CommonKeyBehaviors.MoveCursorLeft(mock.Object);
 
             Assert.Equal(expected, mock.Object.CursorPosition);
         }
@@ -107,7 +107,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.MoveCursorRight(mock.Object);
+            CommonKeyBehaviors.MoveCursorRight(mock.Object);
 
             Assert.Equal(expected, mock.Object.CursorPosition);
         }
@@ -121,7 +121,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = 4;
 
-            CommonBehaviors.ClearAll(mock.Object);
+            CommonKeyBehaviors.ClearAll(mock.Object);
 
             Assert.Equal("", buffer.ToString());
             Assert.Equal(0, mock.Object.CursorPosition);
@@ -149,7 +149,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupGet(x => x.ReceivedKey).Returns(new ConsoleKeyInfo(c, ConsoleKey.Oem1, false, false, false));
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.InsertCharacter(mock.Object);
+            CommonKeyBehaviors.InsertCharacter(mock.Object);
 
             Assert.Equal(expected, buffer.ToString());
             Assert.Equal(cursor + 1, mock.Object.CursorPosition);
@@ -169,7 +169,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.CutToEnd(mock.Object);
+            CommonKeyBehaviors.CutToEnd(mock.Object);
 
             Assert.Equal(expected, buffer.ToString());
             Assert.Equal(cursor, mock.Object.CursorPosition);
@@ -189,7 +189,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.CutToStart(mock.Object);
+            CommonKeyBehaviors.CutToStart(mock.Object);
 
             Assert.Equal(expected, buffer.ToString());
             Assert.Equal(0, mock.Object.CursorPosition);
@@ -212,7 +212,7 @@ namespace InteractiveReadLine.Tests
             mock.SetupProperty(x => x.CursorPosition);
             mock.Object.CursorPosition = cursor;
 
-            CommonBehaviors.CutPreviousWord(mock.Object);
+            CommonKeyBehaviors.CutPreviousWord(mock.Object);
 
             Assert.Equal(expected, buffer.ToString());
             Assert.Equal(expectedCursor, mock.Object.CursorPosition);

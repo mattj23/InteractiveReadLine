@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using LineFormatter = System.Func<InteractiveReadLine.LineState, InteractiveReadLine.LineDisplayState>;
-using TokenFormatter = System.Func<InteractiveReadLine.Tokenizing.TokenizedLine, InteractiveReadLine.LineDisplayState>;
+using LineFormatter = System.Func<InteractiveReadLine.LineState, InteractiveReadLine.Formatting.LineDisplayState>;
+using TokenFormatter = System.Func<InteractiveReadLine.Tokenizing.TokenizedLine, InteractiveReadLine.Formatting.LineDisplayState>;
 
 namespace InteractiveReadLine.Formatting
 {

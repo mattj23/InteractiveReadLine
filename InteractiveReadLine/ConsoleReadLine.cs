@@ -6,17 +6,17 @@ using InteractiveReadLine.Formatting;
 namespace InteractiveReadLine
 {
     /// <summary>
-    /// Exposes a IReadLine that's wrapping a IConsoleWrapper object, which is by default
-    /// a wrapper around the System.Console object
+    /// Exposes a IReadLineProvider that's wrapping a IConsole object, which by default is a wrapper around the System.Console.
+    /// This class is the standard implementation of a ReadLine provider, intended for use with console applications.
     /// </summary>
-    public class ConsoleReadLine : IReadLine
+    public class ConsoleReadLine : IReadLineProvider
     {
-        private readonly IConsoleWrapper _console;
+        private readonly IConsole _console;
         private FormattedText _lastWrittenText;
         private int _lastWrittenCursor;
         private int _startingRow;
 
-        public ConsoleReadLine(IConsoleWrapper console=null)
+        public ConsoleReadLine(IConsole console=null)
         {
             _console = console ?? new SystemConsoleWrapper();
             this.Start();

@@ -8,7 +8,7 @@ namespace InteractiveReadLine.Abstractions
     /// the actual System.Console instance and the higher level behaviors, it can also be used to wrap
     /// any character buffer interface with a moving cursor.
     /// </summary>
-    public interface IConsoleWrapper
+    public interface IConsole
     {
         /// <summary>
         /// Gets or sets the cursor's position from the left edge of the buffer
@@ -35,7 +35,5 @@ namespace InteractiveReadLine.Abstractions
         void Write(FormattedChar c);
 
         ConsoleKeyInfo ReadKey();
-
-
     }
 }

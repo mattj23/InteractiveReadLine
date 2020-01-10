@@ -28,7 +28,7 @@ namespace InteractiveReadLine.Demo
             var config = ReadLineConfig.Empty
                 .AddStandardKeys()
                 .AddTabAutoComplete()
-                .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
+                .AddKeyBehavior('?', CommonKeyBehaviors.WriteMessageFromTokens(WriteHelp)) 
                 .AddCtrlNavKeys()
                 .SetFormatter(Formatter)
                 .SetAutoCompletion(AutoComplete)
