@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Interactive ReadLine
-An extensible, composable readline library written in pure C# for creating interactive text-based interfaces with System.Console and other console-like UI components.
+An extensible, composable readline library written in pure C# for creating interactive text-based interfaces with System.Console and other console-like UI components.  Includes customizable key behaviors, formatting, auto-complete, and a navigable history, with many composable pre-made components included.
 
 Targets .NET Standard 2.0 and has no external dependencies.
 
@@ -31,7 +31,7 @@ All of these above configurations are done by providing `Action<..>` and `Func<.
 var config = ReadLineConfig.Empty
     .AddStandardKeys()
     .AddTabAutoComplete()
-    .AddKeyBehavior('?', CommonBehaviors.WriteMessageFromTokens(WriteHelp)) 
+    .AddKeyBehavior('?', CommonKeyBehaviors.WriteMessageFromTokens(WriteHelp)) 
     .SetFormatter(CommonFormatters.FixedPrompt("prompt > "))
     .SetAutoCompletion(AutoComplete)
     .SetLexer(CommonLexers.SplitOnWhitespace);
@@ -55,7 +55,7 @@ We can create a configuration object manually to pass in to the provider.
 
 ```csharp
 var config = ReadLineConfig.Basic
-    .AddKeyBehavior(ConsoleKey.DownArrow, CommonBehaviors.ClearAll);
+    .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.ClearAll);
 
 var text = ConsoleReadLine.ReadLine(config);
 ```
@@ -116,9 +116,13 @@ This approach was selected for the following benefits:
 1. It allows for quicker, easier composition of code, especially via lambdas where possible
 1. It discourages the preservation of state in mechanisms that should primarily exist to perform actions or transformations, but does not preclude an object from exposing a method that can be used instead while still maintaining access to the object state
 
-### Testing
-
 ### Documentation
+A large part of the motivation for creating this library was my frustration with a dearth of documented alternatives.  In the absence of good documentation, it's often true that it takes less time to re-implement a piece of software than it does to understand how the original author intended it to work.
+
+I've made it a priority to provide as many code examples as possible for all of the different library features, as well as heavily comment the internals of the library for anyone who finds themselves having to work with its guts.
+
+### Testing
+In conjunction with documentation, unit testing is a priority to ensure that the code works as intended even through changes.  Most of the complex parts of the library were developed directly through test writing, and my goal has been to cover all of the internal machinery of the library (the readline handler, the console provider, the regex lexing engine, and the token/sequence) with tests immediately.  The built-in behaviors, like the various key and formatting behaviors, will be covered by tests as time permits.
 
 ## Code Documentation
 
