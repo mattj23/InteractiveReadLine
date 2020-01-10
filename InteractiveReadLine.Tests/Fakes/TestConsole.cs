@@ -10,7 +10,7 @@ namespace InteractiveReadLine.Tests.Fakes
     /// <summary>
     /// Class to simulate a System.Console text buffer
     /// </summary>
-    public class TestConsole : IConsoleWrapper
+    public class TestConsole : IConsole
     {
         private readonly char[,] _buffer;
         private readonly int _height;

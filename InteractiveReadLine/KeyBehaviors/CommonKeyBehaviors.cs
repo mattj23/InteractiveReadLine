@@ -14,7 +14,7 @@ namespace InteractiveReadLine.KeyBehaviors
     /// composed together or wrapped in other methods which allow access to external state, or any other use
     /// case that can be imagined.
     /// </summary>
-    public static class CommonBehaviors
+    public static class CommonKeyBehaviors
     {
         /// <summary>
         /// Deletes the character after the cursor
@@ -82,7 +82,7 @@ namespace InteractiveReadLine.KeyBehaviors
         }
 
         /// <summary>
-        /// Uses a function to create a key behavior that uses the provider's "WriteMessage" method to insert
+        /// Uses a function to create a key behavior that uses the provider's "InsertText" method to insert
         /// a message to the user. The handler will provide your function with the tokenized version of the
         /// current text, which will be null if the configuration doesn't have a tokenizer.
         /// </summary>
@@ -91,7 +91,7 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <returns>A key behavior action which can be registered with the read line configuration</returns>
         public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine, string> message)
         {
-            return new Action<IKeyBehaviorTarget>(t => t.WriteMessage(message(t.GetTextTokens())));
+            return new Action<IKeyBehaviorTarget>(t => t.InsertText(message(t.GetTextTokens())));
         }
 
         /// <summary>
@@ -127,6 +127,10 @@ namespace InteractiveReadLine.KeyBehaviors
         /// </summary>
         public static void Finish(IKeyBehaviorTarget target) => target.Finish();
 
+        /// <summary>
+        /// Removes all of the text between the cursor and the end of the line
+        /// </summary>
+        /// <param name="target"></param>
         public static void CutToEnd(IKeyBehaviorTarget target)
         {
             var cursor = target.CursorPosition;
@@ -136,6 +140,10 @@ namespace InteractiveReadLine.KeyBehaviors
             target.CursorPosition = cursor;
         }
 
+        /// <summary>
+        /// Removes all of the text between the cursor and the start of the line
+        /// </summary>
+        /// <param name="target"></param>
         public static void CutToStart(IKeyBehaviorTarget target)
         {
             var cursor = target.CursorPosition;
@@ -146,6 +154,11 @@ namespace InteractiveReadLine.KeyBehaviors
             target.CursorPosition = 0;
         }
 
+        /// <summary>
+        /// Using a basic split on whitespace strategy, this removes all of the text between the cursor
+        /// and the end of the previous word
+        /// </summary>
+        /// <param name="target"></param>
         public static void CutPreviousWord(IKeyBehaviorTarget target)
         {
             var tokens =

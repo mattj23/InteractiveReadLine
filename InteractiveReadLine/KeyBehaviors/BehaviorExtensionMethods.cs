@@ -36,51 +36,51 @@ namespace InteractiveReadLine.KeyBehaviors
 
         public static ReadLineConfig AddDeleteBackspace(this ReadLineConfig config)
         {
-            return config.AddKeyBehavior(ConsoleKey.Delete, CommonBehaviors.Delete)
-                .AddKeyBehavior(ConsoleKey.Backspace, CommonBehaviors.Backspace);
+            return config.AddKeyBehavior(ConsoleKey.Delete, CommonKeyBehaviors.Delete)
+                .AddKeyBehavior(ConsoleKey.Backspace, CommonKeyBehaviors.Backspace);
         }
 
         public static ReadLineConfig AddEnterToFinish(this ReadLineConfig config)
         {
-            return config.AddKeyBehavior(ConsoleKey.Enter, CommonBehaviors.Finish);
+            return config.AddKeyBehavior(ConsoleKey.Enter, CommonKeyBehaviors.Finish);
         }
 
         public static ReadLineConfig AddHomeAndEndKeys(this ReadLineConfig config)
         {
             return config
-                .AddKeyBehavior(ConsoleKey.Home, CommonBehaviors.MoveCursorToStart)
-                .AddKeyBehavior(ConsoleKey.End, CommonBehaviors.MoveCursorToEnd);
+                .AddKeyBehavior(ConsoleKey.Home, CommonKeyBehaviors.MoveCursorToStart)
+                .AddKeyBehavior(ConsoleKey.End, CommonKeyBehaviors.MoveCursorToEnd);
         }
 
         public static ReadLineConfig AddArrowMovesCursor(this ReadLineConfig config)
         {
             return config
-                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonBehaviors.MoveCursorLeft)
-                .AddKeyBehavior(ConsoleKey.RightArrow, CommonBehaviors.MoveCursorRight);
+                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonKeyBehaviors.MoveCursorLeft)
+                .AddKeyBehavior(ConsoleKey.RightArrow, CommonKeyBehaviors.MoveCursorRight);
         }
         public static ReadLineConfig AddUpDownHistoryNavigation(this ReadLineConfig config)
         {
             return config
-                .AddKeyBehavior(ConsoleKey.UpArrow, CommonBehaviors.HistoryPrevious)
-                .AddKeyBehavior(ConsoleKey.DownArrow, CommonBehaviors.HistoryNext);
+                .AddKeyBehavior(ConsoleKey.UpArrow, CommonKeyBehaviors.HistoryPrevious)
+                .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.HistoryNext);
         }
 
         public static ReadLineConfig AddCtrlNavKeys(this ReadLineConfig config)
         {
             return config
-                .AddCtrlKeyBehavior(ConsoleKey.A, CommonBehaviors.MoveCursorToStart)
-                .AddCtrlKeyBehavior(ConsoleKey.B, CommonBehaviors.MoveCursorLeft)
-                .AddCtrlKeyBehavior(ConsoleKey.E, CommonBehaviors.MoveCursorToEnd)
-                .AddCtrlKeyBehavior(ConsoleKey.F, CommonBehaviors.MoveCursorRight)
-                .AddCtrlKeyBehavior(ConsoleKey.H, CommonBehaviors.Backspace)
-                .AddCtrlKeyBehavior(ConsoleKey.K, CommonBehaviors.CutToEnd)
-                .AddCtrlKeyBehavior(ConsoleKey.U, CommonBehaviors.CutToStart)
-                .AddCtrlKeyBehavior(ConsoleKey.L, CommonBehaviors.ClearAll)
-                .AddCtrlKeyBehavior(ConsoleKey.M, CommonBehaviors.Finish)
-                .AddCtrlKeyBehavior(ConsoleKey.N, CommonBehaviors.HistoryNext)
-                .AddCtrlKeyBehavior(ConsoleKey.P, CommonBehaviors.HistoryPrevious)
-                .AddCtrlKeyBehavior(ConsoleKey.D, CommonBehaviors.Delete)
-                .AddCtrlKeyBehavior(ConsoleKey.W, CommonBehaviors.CutPreviousWord);
+                .AddCtrlKeyBehavior(ConsoleKey.A, CommonKeyBehaviors.MoveCursorToStart)
+                .AddCtrlKeyBehavior(ConsoleKey.B, CommonKeyBehaviors.MoveCursorLeft)
+                .AddCtrlKeyBehavior(ConsoleKey.E, CommonKeyBehaviors.MoveCursorToEnd)
+                .AddCtrlKeyBehavior(ConsoleKey.F, CommonKeyBehaviors.MoveCursorRight)
+                .AddCtrlKeyBehavior(ConsoleKey.H, CommonKeyBehaviors.Backspace)
+                .AddCtrlKeyBehavior(ConsoleKey.K, CommonKeyBehaviors.CutToEnd)
+                .AddCtrlKeyBehavior(ConsoleKey.U, CommonKeyBehaviors.CutToStart)
+                .AddCtrlKeyBehavior(ConsoleKey.L, CommonKeyBehaviors.ClearAll)
+                .AddCtrlKeyBehavior(ConsoleKey.M, CommonKeyBehaviors.Finish)
+                .AddCtrlKeyBehavior(ConsoleKey.N, CommonKeyBehaviors.HistoryNext)
+                .AddCtrlKeyBehavior(ConsoleKey.P, CommonKeyBehaviors.HistoryPrevious)
+                .AddCtrlKeyBehavior(ConsoleKey.D, CommonKeyBehaviors.Delete)
+                .AddCtrlKeyBehavior(ConsoleKey.W, CommonKeyBehaviors.CutPreviousWord);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace InteractiveReadLine.KeyBehaviors
         public static ReadLineConfig AddStandardKeys(this ReadLineConfig config)
         {
             return config
-                .SetDefaultKeyBehavior(CommonBehaviors.InsertCharacter)
+                .SetDefaultKeyBehavior(CommonKeyBehaviors.InsertCharacter)
                 .AddEnterToFinish()
                 .AddDeleteBackspace()
                 .AddHomeAndEndKeys()
@@ -101,8 +101,8 @@ namespace InteractiveReadLine.KeyBehaviors
         public static ReadLineConfig AddTabAutoComplete(this ReadLineConfig config)
         {
             return config
-                .AddKeyBehavior(ConsoleKey.Tab, CommonBehaviors.AutoCompleteNext)
-                .AddKeyBehavior(new KeyId(ConsoleKey.Tab, false, false, true), CommonBehaviors.AutoCompletePrevious);
+                .AddKeyBehavior(ConsoleKey.Tab, CommonKeyBehaviors.AutoCompleteNext)
+                .AddKeyBehavior(new KeyId(ConsoleKey.Tab, false, false, true), CommonKeyBehaviors.AutoCompletePrevious);
         }
     }
 }

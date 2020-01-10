@@ -159,22 +159,22 @@ namespace InteractiveReadLine.Tests
             Assert.Equal(19, handler.LineState.Cursor);
         }
 
-        private InputHandler FixtureWithHistory(ConsoleKeyInfo[] keys, bool update = false)
+        private ReadLineHandler FixtureWithHistory(ConsoleKeyInfo[] keys, bool update = false)
         {
             var history = new List<string> {"history0", "histor1", "histo2", "hist3"};
             return this.Fixture(keys, history, update);
         }
 
-        private InputHandler Fixture(ConsoleKeyInfo[] keys, List<string> history, bool update=false)
+        private ReadLineHandler Fixture(ConsoleKeyInfo[] keys, List<string> history, bool update=false)
         {
             var console = new TestConsole(500, 200, keys);
             var config = ReadLineConfig.Empty
-                .SetDefaultKeyBehavior(CommonBehaviors.InsertCharacter)
+                .SetDefaultKeyBehavior(CommonKeyBehaviors.InsertCharacter)
                 .AddEnterToFinish()
-                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonBehaviors.MoveCursorLeft)
-                .AddKeyBehavior(ConsoleKey.RightArrow, CommonBehaviors.MoveCursorRight)
-                .AddKeyBehavior(ConsoleKey.DownArrow, CommonBehaviors.HistoryNext)
-                .AddKeyBehavior(ConsoleKey.UpArrow, CommonBehaviors.HistoryPrevious);
+                .AddKeyBehavior(ConsoleKey.LeftArrow, CommonKeyBehaviors.MoveCursorLeft)
+                .AddKeyBehavior(ConsoleKey.RightArrow, CommonKeyBehaviors.MoveCursorRight)
+                .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.HistoryNext)
+                .AddKeyBehavior(ConsoleKey.UpArrow, CommonKeyBehaviors.HistoryPrevious);
 
             if (history != null)
             {
@@ -184,7 +184,7 @@ namespace InteractiveReadLine.Tests
                     config.SetHistorySource(history);
             }
 
-            return new InputHandler(new ConsoleReadLine(console), config);
+            return new ReadLineHandler(new ConsoleReadLine(console), config);
         }
     }
 }

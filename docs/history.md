@@ -32,7 +32,7 @@ Like all other configuration, setting up the `ReadLine()` method to use a collec
 
 ### Setting Key Behaviors
 #### How History Navigation Works
-Navigating through the history is performed by two methods of the input handler, and thus to the `IKeyBehaviorTarget` given to key behaviors.  They are, simply, `HistoryPrevious()` and `HistoryNext()`.  They are wrapped for convenience by `CommonBehaviors.HistoryPrevious` and `CommonBehaviors.HistoryNext`, respectively.
+Navigating through the history is performed by two methods of the input handler, and thus to the `IKeyBehaviorTarget` given to key behaviors.  They are, simply, `HistoryPrevious()` and `HistoryNext()`.  They are wrapped for convenience by `CommonKeyBehaviors.HistoryPrevious` and `CommonKeyBehaviors.HistoryNext`, respectively.
 
 When the input handler starts, it has an empty 'original' text buffer.  This can be thought of as the last entry in the history, and the user can navigate back to it no matter how they step through the history.
 
@@ -55,13 +55,13 @@ var config = ReadLineConfig.Empty
 
 ##### Adding Custom Keys
 
-Starting from a configuration that doesn't have navigation mapped, the next/previous history navigation behaviors can be mapped using the wrappers in `CommonBehaviors`.
+Starting from a configuration that doesn't have navigation mapped, the next/previous history navigation behaviors can be mapped using the wrappers in `CommonKeyBehaviors`.
 For example, the following code maps `HistoryNext` to Ctrl+Shift+Tab, and `HistoryPrevious` to the minus character.
 
 ```csharp
 var config = ReadLineConfig.Empty
-    .AddKeyBehavior(ConsoleKey.Tab, true, true, false, CommonBehaviors.HistoryNext)
-    .AddKeyBehavior('-', CommonBehaviors.HistoryPrevious);
+    .AddKeyBehavior(ConsoleKey.Tab, true, true, false, CommonKeyBehaviors.HistoryNext)
+    .AddKeyBehavior('-', CommonKeyBehaviors.HistoryPrevious);
 ```
 
 ### Providing History Values
@@ -124,4 +124,6 @@ var config = ReadLineConfig.Basic
             history.RemoveAt(0);
         history.Add(s);
     });
+
+var result = ConsoleReadLine.ReadLine(config);
 ```

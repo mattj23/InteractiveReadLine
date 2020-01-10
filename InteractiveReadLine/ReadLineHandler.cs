@@ -10,13 +10,13 @@ using InteractiveReadLine.Tokenizing;
 namespace InteractiveReadLine
 {
     /// <summary>
-    /// This class handles getting a single line of input from the underlying ReadLine provider. It reads keys from the
+    /// This class handles getting a single line of input from the underlying IReadLineProvider. It reads keys from the
     /// provider, determines what the current line of text being edited should be and where the cursor should be positioned.
     /// It pushes out the text to the provider, which also serves as the view.
     /// </summary>
-    public class InputHandler : IKeyBehaviorTarget
+    public class ReadLineHandler : IKeyBehaviorTarget
     {
-        private readonly IReadLine _provider;
+        private readonly IReadLineProvider _provider;
         private readonly ReadLineConfig _config;
         private int _cursorPos;
         private int _autoCompleteIndex;
@@ -29,7 +29,7 @@ namespace InteractiveReadLine
 
         private bool _finishTrigger = false;
 
-        public InputHandler(IReadLine provider, ReadLineConfig config=null)
+        public ReadLineHandler(IReadLineProvider provider, ReadLineConfig config=null)
         {
             _config = config ?? ReadLineConfig.Basic;
             _provider = provider;
@@ -102,9 +102,9 @@ namespace InteractiveReadLine
         }
 
         /// <inheritdoc />
-        public void WriteMessage(FormattedText text)
+        public void InsertText(FormattedText text)
         {
-            _provider.WriteMessage(text);
+            _provider.InsertText(text);
         }
 
         /// <inheritdoc />

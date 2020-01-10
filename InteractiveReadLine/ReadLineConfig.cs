@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine
 {
+    /// <summary>
+    /// The main configuration object for the ReadLineHandler, instances of this class carry all of the objects
+    /// which customize and control every aspect of the ReadLineHandler's behavior. Many standard behaviors are
+    /// provided through the CommonFormatters/CommonKeyBehaviors/CommonLexers tools, but custom behaviors can
+    /// be attached to this object instead.
+    /// </summary>
     public class ReadLineConfig
     {
-
         private ReadLineConfig()
         {
             this.KeyBehaviors = new Dictionary<KeyId, Action<IKeyBehaviorTarget>>();
