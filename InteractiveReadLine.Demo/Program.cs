@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using InteractiveReadLine.Demo.Demos;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
@@ -13,40 +14,30 @@ namespace InteractiveReadLine.Demo
         private static ConsoleReadLine _provider;
         private static string[] _options;
 
+        private static DemoNode _demoHome;
+
+
         static void Main(string[] args)
         {
-            // Basic readline 
-            Console.WriteLine("This is the basic readline config");
-            var cfg = ReadLineConfig.Basic
-                .SetFormatter(CommonFormatters.PasswordStars.WithFixedPrompt("enter password"));
+            Console.WriteLine("InteractiveReadLine Demo Program");
+            Console.WriteLine("\nThis executable is a demonstration to showcase some of the features of this library.\nYou can exit at any time with the command 'exit'.''");
 
-            var text = ConsoleReadLine.ReadLine(cfg);
-            Console.WriteLine(text);
-            
-            _options = new string[] {"docker", "docker-compose", "git", "vim", "find", "hello", "grep", "exit"};
+            _demoHome = new DemoNode(null, "Demo Home");
+            _demoHome.AddChild("basic", new BasicConfig());
+            var keyNode = _demoHome.AddChild("keys", "Key Behaviors and Customization");
 
-            var config = ReadLineConfig.Empty
-                .AddStandardKeys()
-                .AddTabAutoComplete()
-                .AddKeyBehavior('?', CommonKeyBehaviors.WriteMessageFromTokens(WriteHelp)) 
-                .AddCtrlNavKeys()
-                .SetFormatter(Formatter)
-                .SetAutoCompletion(AutoComplete)
-                .SetLexer(CommonLexers.Regex
-                    .AddDoubleQuoteStringLiterals()
-                    .AddAnyNonWhitespace()
-                    .ToLexer());
-
-            while (true)
-            {
-                var result = ConsoleReadLine.ReadLine(config);
-
-                Console.WriteLine(result);
-
-                if (result == "exit")
-                    break;
-            }
         }
+
+        private static void Home()
+        {
+
+        }
+
+        private static void BasicSettings()
+        {
+
+        }
+
 
         private static string WriteHelp(TokenizedLine tokens)
         {
