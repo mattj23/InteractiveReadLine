@@ -4,8 +4,6 @@ namespace InteractiveReadLine.Demo.Demos
 {
     public class BasicConfig : IDemo
     {
-        public string Path => "basic";
-
         public string Description => "Demonstrates a default configuration";
 
         public void Action()
