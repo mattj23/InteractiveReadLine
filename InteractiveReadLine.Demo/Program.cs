@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using InteractiveReadLine.Demo.Demos;
+using InteractiveReadLine.Demo.Demos.Formatters;
 using InteractiveReadLine.Demo.Demos.Keys;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace InteractiveReadLine.Demo
 {
@@ -30,21 +32,21 @@ namespace InteractiveReadLine.Demo
             var keyNode = _demoHome.AddChild("keys", "Key Behaviors and Customization");
             keyNode.AddChild("bare", new BareKeys());
 
+            var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
+            formatNode.AddChild("fixed-prompt", new Prompt());
+
             _activeNode = _demoHome;
             bool isRunning = true;
 
             while (isRunning)
             {
-                var options = new Dictionary<string, Action>
-                {
-                    {"exit", () => isRunning = false },
-                    {"home", () => _activeNode = _demoHome }
-                };
+                var options = new OptionSet();
 
                 if (_activeNode.Demo != null)
                 {
                     // This is a demo node
-                    options.Add("run", () => _activeNode.Demo.Action());
+                    Console.WriteLine($"Demo: {_activeNode.Name} ({_activeNode.Description})");
+                    options.AddToStart("run", "Run this demo", () => _activeNode.Demo.Action());
                 }
                 else
                 {
@@ -52,16 +54,19 @@ namespace InteractiveReadLine.Demo
                     Console.WriteLine($" {_activeNode.Description}");
 
                     var names = _activeNode.OrderedChildKeys;
-                    var padding = names.Select(n => " ").ToArray();
-                    var descriptions = names.Select(k => _activeNode.Children[k].Description).ToArray();
-                    Console.WriteLine(FormatTable(false, padding, names, descriptions));
-
                     foreach (var name in names)
                     {
-                        options.Add(name, () => _activeNode = _activeNode.Children[name]);
+                        options.Add(name, _activeNode.Children[name].Description, () => _activeNode = _activeNode.Children[name]);
                     }
-
                 }
+
+                options.Add("home", "Return to demo home", () => _activeNode = _demoHome);
+                options.Add("exit", "Exit the demo program", () => isRunning = false);
+
+                
+                var padding = options.Keys.Select(n => " ").ToArray();
+                Console.WriteLine(FormatTable(false, padding, options.Keys, options.Descriptions));
+
 
                 var config = ReadLineConfig.Basic
                     .AddCtrlNavKeys()
@@ -74,7 +79,7 @@ namespace InteractiveReadLine.Demo
 
                 if (options.ContainsKey(result))
                 {
-                    options[result].Invoke();
+                    options.GetAction(result).Invoke();
                 }
             }
         }
