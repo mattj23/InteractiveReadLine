@@ -40,7 +40,7 @@ var text = ConsoleReadline.ReadLine(config);
 ```
 
 ## Code Examples
-Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadline` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
+> Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
 
 The most trivial version of reading a line of input from the console is:
 
@@ -49,7 +49,7 @@ var text = ConsoleReadLine.ReadLine();
 ```
 This will produce a prompt-less console input that allows for basic typing, delete, backspace, and arrow keys.
 
-This simple example hides the fact that a handler object (`InputHandler`) is created behind the scenes in the `ConsoleReadLine.ReadLine()` method.  The `InputHandler` receives both an `IReadline` provider and a `ReadLineConfig` configuration object in its constructor. If no configuration object is provided, it creates a basic configuration (`ReadLineConfig.Basic`) behind the scenes which provides character insertion, enter, and the basic editing keys.
+This simple example hides the fact that a handler object (`ReadLineHandler`) is created behind the scenes in the `ConsoleReadLine.ReadLine()` method.  The `ReadLineHandler` receives both an `IReadLineProvider` and a `ReadLineConfig` configuration object in its constructor. If no configuration object is provided, it creates a basic configuration (`ReadLineConfig.Basic`) behind the scenes which provides character insertion, enter, and the basic editing keys.
 
 We can create a configuration object manually to pass in to the provider.
 
