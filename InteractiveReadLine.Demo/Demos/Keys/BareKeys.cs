@@ -1,4 +1,7 @@
-﻿namespace InteractiveReadLine.Demo.Demos.Keys
+﻿using System;
+using InteractiveReadLine.KeyBehaviors;
+
+namespace InteractiveReadLine.Demo.Demos.Keys
 {
     public class BareKeys : IDemo
     {
@@ -6,7 +9,13 @@
 
         public void Action()
         {
-            
+            Console.WriteLine("This is a bare key configuration with only the enter key and default insert behavior.");
+
+            var config = ReadLineConfig.Empty
+                .SetDefaultKeyBehavior(CommonKeyBehaviors.InsertCharacter)
+                .AddEnterToFinish();
+
+            var result = ConsoleReadLine.ReadLine(config);
         }
     }
 }

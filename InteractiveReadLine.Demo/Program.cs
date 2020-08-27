@@ -33,7 +33,9 @@ namespace InteractiveReadLine.Demo
             keyNode.AddChild("bare", new BareKeys());
 
             var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
-            formatNode.AddChild("fixed-prompt", new Prompt());
+            formatNode.AddChild("fixed-prompt", new FixedPrompt());
+            formatNode.AddChild("passwd-stars", new PasswordStarPrompt());
+            formatNode.AddChild("passwd-bars", new PasswordBarPrompt());
 
             _activeNode = _demoHome;
             bool isRunning = true;
@@ -41,12 +43,17 @@ namespace InteractiveReadLine.Demo
             while (isRunning)
             {
                 var options = new OptionSet();
+                Console.Clear();
 
                 if (_activeNode.Demo != null)
                 {
                     // This is a demo node
                     Console.WriteLine($"Demo: {_activeNode.Name} ({_activeNode.Description})");
-                    options.AddToStart("run", "Run this demo", () => _activeNode.Demo.Action());
+                    options.AddToStart("run", "Run this demo", () =>
+                    {
+                        Console.Clear();
+                        _activeNode.Demo.Action();
+                    });
                 }
                 else
                 {
