@@ -74,11 +74,15 @@ namespace InteractiveReadLine.Demo
                 
                 options.Add("home", "Return to demo home", () => _activeNode = _demoHome);
                 options.Add("exit", "Exit the demo program", () => isRunning = false);
-
                 
                 var padding = options.Keys.Select(n => " ").ToArray();
+                if (_activeNode.Demo != null)
+                {
+                    var link = GetGithubLink(_activeNode.Demo);
+                    if (link != null)
+                        Console.WriteLine($" * {link}");
+                }
                 Console.WriteLine(FormatTable(false, padding, options.Keys, options.Descriptions));
-
 
                 var config = ReadLineConfig.Basic
                     .AddCtrlNavKeys()
@@ -96,6 +100,19 @@ namespace InteractiveReadLine.Demo
             }
         }
 
+        private static string GetGithubLink(IDemo demo)
+        {
+            const string rootUrl = "https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/";
+            var typeInfo = demo.GetType();
+            var path = typeInfo.FullName?.Replace("InteractiveReadLine.Demo.", "").Split(".");
+            if (path != null)
+            {
+                return rootUrl + string.Join("/", path) + ".cs";
+            }
+
+            return null;
+        }
+
         private static Func<TokenizedLine, LineDisplayState> NodeFormatter(IReadOnlyList<string> options)
         {
             var path = _activeNode.Path;
@@ -109,6 +126,8 @@ namespace InteractiveReadLine.Demo
                     suffix = new FormattedText(" [exits the demo program]", ConsoleColor.Red);
                 else if (line.FirstNonHidden.Text == "home")
                     suffix = new FormattedText(" [returns to demo root]", ConsoleColor.Blue);
+                else if (line.FirstNonHidden.Text == "back" && _activeNode.Parent != null)
+                    suffix = new FormattedText($" [return to {_activeNode.Parent.Name}]", ConsoleColor.Blue);
 
                 return new LineDisplayState(prefix, line.Text, suffix, line.Cursor);
 
@@ -140,59 +159,6 @@ namespace InteractiveReadLine.Demo
             return string.Join("\n", rows);
 
         }
-
-/*
-        private static string WriteHelp(TokenizedLine tokens)
-        {
-            return $"matching commands: {string.Join(", ", AutoComplete(tokens))}";
-
-        }
-
-        private static LineDisplayState Formatter(TokenizedLine tokenized)
-        {
-            var prompt = new FormattedText("(prompt)> ");
-            var nonHidden = tokenized.Where(x => !x.IsHidden).ToArray();
-
-            if (nonHidden.Length % 2 == 0)
-                prompt.SetForeground(ConsoleColor.Red);
-            else 
-                prompt.SetForeground(ConsoleColor.Blue);
-
-            FormattedText output = string.Empty;
-            int color = 0;
-            foreach (var token in tokenized)
-            {
-                var text = new FormattedText(token.Text);
-
-                if (!token.IsHidden)
-                {
-                    color = (++color) % 3;
-                    if (color == 1)
-                        text.SetForeground(ConsoleColor.Green);
-                    else if (color == 2)
-                        text.SetBackground(ConsoleColor.DarkBlue);
-                    else
-                        text.SetForeground(ConsoleColor.Blue);
-                }
-
-                output += text;
-            }
-
-            var suffix = new FormattedText($"   [{tokenized.Count} tokens]");
-            suffix.SetForeground(ConsoleColor.Gray);
-            return new LineDisplayState(prompt, output, suffix, tokenized.Cursor);
-        }
-
-        private static string[] AutoComplete(TokenizedLine tokens)
-        {
-            var suggestions = new List<string>();
-
-            if (tokens.CursorToken != null)
-                suggestions.AddRange(_options.Where(x => x.StartsWith(tokens.CursorToken.Text)));
-
-            return suggestions.ToArray();
-        }
-        */
 
     }
 }
