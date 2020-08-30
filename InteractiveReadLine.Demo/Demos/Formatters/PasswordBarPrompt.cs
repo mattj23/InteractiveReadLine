@@ -10,7 +10,7 @@ namespace InteractiveReadLine.Demo.Demos.Formatters
         public void Action()
         {
             Console.WriteLine("This shows a special password prompt which replaces the entered text with");
-            Console.WriteLine("a unique visual representation.");
+            Console.WriteLine("a unique visual representation.\n");
 
             var config = ReadLineConfig.Basic
                 .SetFormatter(CommonFormatters.PasswordBar.WithFixedPrompt("Enter Password:"));

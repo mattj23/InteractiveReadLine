@@ -8,9 +8,7 @@ namespace InteractiveReadLine.Demo.Demos
 
         public void Action()
         {
-            var message = @"This is a basic, default configuration for the handler without any customizations.";
-            Console.WriteLine(message);
-            Console.WriteLine();
+            Console.WriteLine("This is a basic, default configuration for the handler without any customizations.\n");
 
             ConsoleReadLine.ReadLine();
         }

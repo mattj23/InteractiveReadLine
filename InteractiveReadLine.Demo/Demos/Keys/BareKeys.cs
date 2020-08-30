@@ -9,7 +9,7 @@ namespace InteractiveReadLine.Demo.Demos.Keys
 
         public void Action()
         {
-            Console.WriteLine("This is a bare key configuration with only the enter key and default insert behavior.");
+            Console.WriteLine("This is a bare key configuration with only the enter key and default insert behavior.\n");
 
             var config = ReadLineConfig.Empty
                 .SetDefaultKeyBehavior(CommonKeyBehaviors.InsertCharacter)

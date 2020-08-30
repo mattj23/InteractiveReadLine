@@ -20,7 +20,15 @@ namespace InteractiveReadLine.Demo
 
         public string[] Keys => _keys.ToArray();
 
+        public string[] NonBlankKeys => _keys.Where(k => !string.IsNullOrEmpty(k)).ToArray();
+        
         public string[] Descriptions => _keys.Select(GetDescription).ToArray();
+
+        public void AddSpace()
+        {
+            _keys.Add(string.Empty);
+            _descriptions[string.Empty] = "";
+        }
 
         public void Add(string key, string description, Action action)
         {

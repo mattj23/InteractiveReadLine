@@ -66,7 +66,12 @@ namespace InteractiveReadLine.Demo
                         options.Add(name, _activeNode.Children[name].Description, () => _activeNode = _activeNode.Children[name]);
                     }
                 }
+                
+                options.AddSpace();
 
+                if (_activeNode.Parent != null)
+                    options.Add("back", "Go back", () => _activeNode = _activeNode.Parent);
+                
                 options.Add("home", "Return to demo home", () => _activeNode = _demoHome);
                 options.Add("exit", "Exit the demo program", () => isRunning = false);
 
@@ -79,8 +84,8 @@ namespace InteractiveReadLine.Demo
                     .AddCtrlNavKeys()
                     .AddTabAutoComplete()
                     .SetLexer(CommonLexers.SplitOnWhitespace)
-                    .SetAutoCompletion(t => options.Keys.Where(o => o.StartsWith(t.CursorToken.Text)).ToArray())
-                    .SetFormatter(NodeFormatter(options.Keys.ToArray()));
+                    .SetAutoCompletion(t => options.NonBlankKeys.Where(o => o.StartsWith(t.CursorToken.Text)).ToArray())
+                    .SetFormatter(NodeFormatter(options.NonBlankKeys.ToArray()));
 
                 var result = ConsoleReadLine.ReadLine(config);
 
@@ -111,7 +116,7 @@ namespace InteractiveReadLine.Demo
         }
 
 
-        public static string FormatTable(bool header, params IReadOnlyList<string>[] columns)
+        private static string FormatTable(bool header, params IReadOnlyList<string>[] columns)
         {
             var rows = new List<string>();
             var colWidths = columns.Select(c => c.Max(x => x.Length)).ToArray();
@@ -136,7 +141,7 @@ namespace InteractiveReadLine.Demo
 
         }
 
-
+/*
         private static string WriteHelp(TokenizedLine tokens)
         {
             return $"matching commands: {string.Join(", ", AutoComplete(tokens))}";
@@ -187,6 +192,7 @@ namespace InteractiveReadLine.Demo
 
             return suggestions.ToArray();
         }
+        */
 
     }
 }
