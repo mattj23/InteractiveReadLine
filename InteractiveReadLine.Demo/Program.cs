@@ -103,6 +103,7 @@ namespace InteractiveReadLine.Demo
             // Key behavior demos
             var keyNode = _demoHome.AddChild("keys", "Key Behaviors and Customization");
             keyNode.AddChild("bare", new BareKeys());
+            keyNode.AddChild("default-behavior", new CustomInsertCharacter());
 
             // Formatting demos
             var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
