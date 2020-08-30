@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="terminal" baseProfile="full" viewBox="0 0 960 87" width="960" version="1.1">
+    <defs>
+        <termtosvg:template_settings xmlns:termtosvg="https://github.com/nbedos/termtosvg">
+            <termtosvg:screen_geometry columns="120" rows="5"/>
+            <termtosvg:animation type="css"/>
+        </termtosvg:template_settings>
+        <style type="text/css" id="generated-style"><![CDATA[#screen {
+                font-family: 'DejaVu Sans Mono', monospace;
+                font-style: normal;
+                font-size: 14px;
+            }
+
+        text {
+            dominant-baseline: text-before-edge;
+            white-space: pre;
+        }
+    
+            :root {
+                --animation-duration: 10103ms;
+            }
+
+            @keyframes roll {
+                0.000%{transform:translateY(0px)}
+10.749%{transform:translateY(-102px)}
+11.432%{transform:translateY(-204px)}
+12.353%{transform:translateY(-306px)}
+12.877%{transform:translateY(-408px)}
+13.768%{transform:translateY(-510px)}
+15.827%{transform:translateY(-612px)}
+16.748%{transform:translateY(-714px)}
+17.312%{transform:translateY(-816px)}
+23.053%{transform:translateY(-918px)}
+24.102%{transform:translateY(-1020px)}
+25.567%{transform:translateY(-1122px)}
+27.249%{transform:translateY(-1224px)}
+27.932%{transform:translateY(-1326px)}
+28.625%{transform:translateY(-1428px)}
+29.536%{transform:translateY(-1530px)}
+30.258%{transform:translateY(-1632px)}
+31.337%{transform:translateY(-1734px)}
+32.278%{transform:translateY(-1836px)}
+33.564%{transform:translateY(-1938px)}
+34.416%{transform:translateY(-2040px)}
+36.771%{transform:translateY(-2142px)}
+37.326%{transform:translateY(-2244px)}
+38.424%{transform:translateY(-2346px)}
+42.374%{transform:translateY(-2448px)}
+43.838%{transform:translateY(-2550px)}
+44.611%{transform:translateY(-2652px)}
+45.531%{transform:translateY(-2754px)}
+46.610%{transform:translateY(-2856px)}
+47.303%{transform:translateY(-2958px)}
+48.807%{transform:translateY(-3060px)}
+49.767%{transform:translateY(-3162px)}
+51.856%{transform:translateY(-3264px)}
+52.470%{transform:translateY(-3366px)}
+53.073%{transform:translateY(-3468px)}
+54.311%{transform:translateY(-3570px)}
+55.350%{transform:translateY(-3672px)}
+56.548%{transform:translateY(-3774px)}
+57.478%{transform:translateY(-3876px)}
+58.022%{transform:translateY(-3978px)}
+59.240%{transform:translateY(-4080px)}
+66.941%{transform:translateY(-4182px)}
+68.683%{transform:translateY(-4284px)}
+70.385%{transform:translateY(-4386px)}
+71.909%{transform:translateY(-4488px)}
+71.929%{transform:translateY(-4590px)}
+73.483%{transform:translateY(-4692px)}
+73.493%{transform:translateY(-4794px)}
+75.067%{transform:translateY(-4896px)}
+76.225%{transform:translateY(-4998px)}
+76.749%{transform:translateY(-5100px)}
+77.818%{transform:translateY(-5202px)}
+79.105%{transform:translateY(-5304px)}
+80.293%{transform:translateY(-5406px)}
+80.827%{transform:translateY(-5508px)}
+82.362%{transform:translateY(-5610px)}
+84.321%{transform:translateY(-5712px)}
+86.855%{transform:translateY(-5814px)}
+90.102%{transform:translateY(-5916px)}
+100.000%{transform:translateY(-5916px)}
+            }
+
+            #screen_view {
+                animation-duration: 10103ms;
+                animation-iteration-count:infinite;
+                animation-name:roll;
+                animation-timing-function: steps(1,end);
+                animation-fill-mode: forwards;
+            }
+        ]]></style>
+        <style type="text/css" id="user-style">
+            /* The colors defined below are the default 16 colors used for rendering text of the terminal. Adjust
+               them as needed.
+               PowerShell colors based on https://en.wikipedia.org/wiki/ANSI_escape_code#Colors */
+            .foreground {fill: #cccccc;}
+            .background {fill: #0c0c0c;}
+            .color0 {fill: #0c0c0c;}
+            .color1 {fill: #c50f1f;}
+            .color2 {fill: #13a10e;}
+            .color3 {fill: #c19c00;}
+            .color4 {fill: #0037da;}
+            .color5 {fill: #881798;}
+            .color6 {fill: #3a96dd;}
+            .color7 {fill: #cccccc;}
+            .color8 {fill: #767676;}
+            .color9 {fill: #e74856;}
+            .color10 {fill: #16c60c;}
+            .color11 {fill: #f9f1a5;}
+            .color12 {fill: #3b78ff;}
+            .color13 {fill: #b4009e;}
+            .color14 {fill: #61d6d6;}
+            .color15 {fill: #f2f2f2;}
+        </style>
+    </defs>
+    <svg id="screen" width="960" height="85" viewBox="0 0 960 85" preserveAspectRatio="xMidYMin slice">
+    <rect class="background" height="100%" width="100%" x="0" y="0"/><defs><g id="g1"><text x="0" textLength="656" class="foreground">This is a basic, default configuration for the handler without any customizations.</text></g><g id="g2"><text x="0" textLength="8" class="background"> </text></g><g id="g3"><text x="0" textLength="8" class="foreground">t</text><text x="8" textLength="8" class="background"> </text></g><g id="g4"><text x="0" textLength="16" class="foreground">th</text><text x="16" textLength="8" class="background"> </text></g><g id="g5"><text x="0" textLength="24" class="foreground">thi</text><text x="24" textLength="8" class="background"> </text></g><g id="g6"><text x="0" textLength="32" class="foreground">this</text><text x="32" textLength="8" class="background"> </text></g><g id="g7"><text x="0" textLength="40" class="foreground">this </text><text x="40" textLength="8" class="background"> </text></g><g id="g8"><text x="0" textLength="48" class="foreground">this i</text><text x="48" textLength="8" class="background"> </text></g><g id="g9"><text x="0" textLength="56" class="foreground">this is</text><text x="56" textLength="8" class="background"> </text></g><g id="g10"><text x="0" textLength="64" class="foreground">this is </text><text x="64" textLength="8" class="background"> </text></g><g id="g11"><text x="0" textLength="72" class="foreground">this is a</text><text x="72" textLength="8" class="background"> </text></g><g id="g12"><text x="0" textLength="80" class="foreground">this is a </text><text x="80" textLength="8" class="background"> </text></g><g id="g13"><text x="0" textLength="88" class="foreground">this is a l</text><text x="88" textLength="8" class="background"> </text></g><g id="g14"><text x="0" textLength="96" class="foreground">this is a li</text><text x="96" textLength="8" class="background"> </text></g><g id="g15"><text x="0" textLength="104" class="foreground">this is a lin</text><text x="104" textLength="8" class="background"> </text></g><g id="g16"><text x="0" textLength="112" class="foreground">this is a line</text><text x="112" textLength="8" class="background"> </text></g><g id="g17"><text x="0" textLength="120" class="foreground">this is a line </text><text x="120" textLength="8" class="background"> </text></g><g id="g18"><text x="0" textLength="128" class="foreground">this is a line o</text><text x="128" textLength="8" class="background"> </text></g><g id="g19"><text x="0" textLength="136" class="foreground">this is a line of</text><text x="136" textLength="8" class="background"> </text></g><g id="g20"><text x="0" textLength="144" class="foreground">this is a line of </text><text x="144" textLength="8" class="background"> </text></g><g id="g21"><text x="0" textLength="152" class="foreground">this is a line of t</text><text x="152" textLength="8" class="background"> </text></g><g id="g22"><text x="0" textLength="160" class="foreground">this is a line of te</text><text x="160" textLength="8" class="background"> </text></g><g id="g23"><text x="0" textLength="168" class="foreground">this is a line of tex</text><text x="168" textLength="8" class="background"> </text></g><g id="g24"><text x="0" textLength="176" class="foreground">this is a line of text</text><text x="176" textLength="8" class="background"> </text></g><g id="g25"><text x="0" textLength="184" class="foreground">this is a line of text </text><text x="184" textLength="8" class="background"> </text></g><g id="g26"><text x="0" textLength="192" class="foreground">this is a line of text e</text><text x="192" textLength="8" class="background"> </text></g><g id="g27"><text x="0" textLength="200" class="foreground">this is a line of text en</text><text x="200" textLength="8" class="background"> </text></g><g id="g28"><text x="0" textLength="208" class="foreground">this is a line of text ent</text><text x="208" textLength="8" class="background"> </text></g><g id="g29"><text x="0" textLength="216" class="foreground">this is a line of text ente</text><text x="216" textLength="8" class="background"> </text></g><g id="g30"><text x="0" textLength="224" class="foreground">this is a line of text enter</text><text x="224" textLength="8" class="background"> </text></g><g id="g31"><text x="0" textLength="232" class="foreground">this is a line of text entere</text><text x="232" textLength="8" class="background"> </text></g><g id="g32"><text x="0" textLength="240" class="foreground">this is a line of text entered</text><text x="240" textLength="8" class="background"> </text></g><g id="g33"><text x="0" textLength="248" class="foreground">this is a line of text entered </text><text x="248" textLength="8" class="background"> </text></g><g id="g34"><text x="0" textLength="256" class="foreground">this is a line of text entered i</text><text x="256" textLength="8" class="background"> </text></g><g id="g35"><text x="0" textLength="264" class="foreground">this is a line of text entered in</text><text x="264" textLength="8" class="background"> </text></g><g id="g36"><text x="0" textLength="272" class="foreground">this is a line of text entered int</text><text x="272" textLength="8" class="background"> </text></g><g id="g37"><text x="0" textLength="280" class="foreground">this is a line of text entered into</text><text x="280" textLength="8" class="background"> </text></g><g id="g38"><text x="0" textLength="288" class="foreground">this is a line of text entered into </text><text x="288" textLength="8" class="background"> </text></g><g id="g39"><text x="0" textLength="304" class="foreground">this is a line of text entered into ht</text><text x="304" textLength="8" class="background"> </text></g><g id="g40"><text x="0" textLength="312" class="foreground">this is a line of text entered into hte</text><text x="312" textLength="8" class="background"> </text></g><g id="g41"><text x="0" textLength="320" class="foreground">this is a line of text entered into hte </text><text x="320" textLength="8" class="background"> </text></g><g id="g42"><text x="0" textLength="328" class="foreground">this is a line of text entered into hte c</text><text x="328" textLength="8" class="background"> </text></g><g id="g43"><text x="0" textLength="312" class="foreground">this is a line of text entered into hte</text><text x="312" textLength="8" class="background"> </text><text x="320" textLength="8" class="foreground"> </text></g><g id="g44"><text x="0" textLength="304" class="foreground">this is a line of text entered into ht</text><text x="304" textLength="8" class="background"> </text><text x="312" textLength="16" class="foreground">  </text></g><g id="g45"><text x="0" textLength="304" class="foreground">this is a line of text entered into h </text><text x="304" textLength="8" class="background"> </text><text x="312" textLength="16" class="foreground">  </text></g><g id="g46"><text x="0" textLength="296" class="foreground">this is a line of text entered into h</text><text x="296" textLength="8" class="background"> </text><text x="304" textLength="24" class="foreground">   </text></g><g id="g47"><text x="0" textLength="296" class="foreground">this is a line of text entered into  </text><text x="296" textLength="8" class="background"> </text><text x="304" textLength="24" class="foreground">   </text></g><g id="g48"><text x="0" textLength="288" class="foreground">this is a line of text entered into </text><text x="288" textLength="8" class="background"> </text><text x="296" textLength="32" class="foreground">    </text></g><g id="g49"><text x="0" textLength="296" class="foreground">this is a line of text entered into t</text><text x="296" textLength="8" class="background"> </text><text x="304" textLength="24" class="foreground">   </text></g><g id="g50"><text x="0" textLength="304" class="foreground">this is a line of text entered into th</text><text x="304" textLength="8" class="background"> </text><text x="312" textLength="16" class="foreground">  </text></g><g id="g51"><text x="0" textLength="312" class="foreground">this is a line of text entered into the</text><text x="312" textLength="8" class="background"> </text><text x="320" textLength="8" class="foreground"> </text></g><g id="g52"><text x="0" textLength="320" class="foreground">this is a line of text entered into the </text><text x="320" textLength="8" class="background"> </text></g><g id="g53"><text x="0" textLength="328" class="foreground">this is a line of text entered into the c</text><text x="328" textLength="8" class="background"> </text></g><g id="g54"><text x="0" textLength="336" class="foreground">this is a line of text entered into the co</text><text x="336" textLength="8" class="background"> </text></g><g id="g55"><text x="0" textLength="344" class="foreground">this is a line of text entered into the con</text><text x="344" textLength="8" class="background"> </text></g><g id="g56"><text x="0" textLength="352" class="foreground">this is a line of text entered into the cons</text><text x="352" textLength="8" class="background"> </text></g><g id="g57"><text x="0" textLength="360" class="foreground">this is a line of text entered into the conso</text><text x="360" textLength="8" class="background"> </text></g><g id="g58"><text x="0" textLength="368" class="foreground">this is a line of text entered into the consol</text><text x="368" textLength="8" class="background"> </text></g><g id="g59"><text x="0" textLength="376" class="foreground">this is a line of text entered into the console</text><text x="376" textLength="8" class="background"> </text></g></defs><g id="screen_view"><g><use xlink:href="#g1" y="0"/><rect x="0" y="34" width="8" height="17" class="foreground"/><use xlink:href="#g2" y="34"/></g><g><use xlink:href="#g1" y="102"/><rect x="8" y="136" width="8" height="17" class="foreground"/><use xlink:href="#g3" y="136"/></g><g><use xlink:href="#g1" y="204"/><rect x="16" y="238" width="8" height="17" class="foreground"/><use xlink:href="#g4" y="238"/></g><g><use xlink:href="#g1" y="306"/><rect x="24" y="340" width="8" height="17" class="foreground"/><use xlink:href="#g5" y="340"/></g><g><use xlink:href="#g1" y="408"/><rect x="32" y="442" width="8" height="17" class="foreground"/><use xlink:href="#g6" y="442"/></g><g><use xlink:href="#g1" y="510"/><rect x="40" y="544" width="8" height="17" class="foreground"/><use xlink:href="#g7" y="544"/></g><g><use xlink:href="#g1" y="612"/><rect x="48" y="646" width="8" height="17" class="foreground"/><use xlink:href="#g8" y="646"/></g><g><use xlink:href="#g1" y="714"/><rect x="56" y="748" width="8" height="17" class="foreground"/><use xlink:href="#g9" y="748"/></g><g><use xlink:href="#g1" y="816"/><rect x="64" y="850" width="8" height="17" class="foreground"/><use xlink:href="#g10" y="850"/></g><g><use xlink:href="#g1" y="918"/><rect x="72" y="952" width="8" height="17" class="foreground"/><use xlink:href="#g11" y="952"/></g><g><use xlink:href="#g1" y="1020"/><rect x="80" y="1054" width="8" height="17" class="foreground"/><use xlink:href="#g12" y="1054"/></g><g><use xlink:href="#g1" y="1122"/><rect x="88" y="1156" width="8" height="17" class="foreground"/><use xlink:href="#g13" y="1156"/></g><g><use xlink:href="#g1" y="1224"/><rect x="96" y="1258" width="8" height="17" class="foreground"/><use xlink:href="#g14" y="1258"/></g><g><use xlink:href="#g1" y="1326"/><rect x="104" y="1360" width="8" height="17" class="foreground"/><use xlink:href="#g15" y="1360"/></g><g><use xlink:href="#g1" y="1428"/><rect x="112" y="1462" width="8" height="17" class="foreground"/><use xlink:href="#g16" y="1462"/></g><g><use xlink:href="#g1" y="1530"/><rect x="120" y="1564" width="8" height="17" class="foreground"/><use xlink:href="#g17" y="1564"/></g><g><use xlink:href="#g1" y="1632"/><rect x="128" y="1666" width="8" height="17" class="foreground"/><use xlink:href="#g18" y="1666"/></g><g><use xlink:href="#g1" y="1734"/><rect x="136" y="1768" width="8" height="17" class="foreground"/><use xlink:href="#g19" y="1768"/></g><g><use xlink:href="#g1" y="1836"/><rect x="144" y="1870" width="8" height="17" class="foreground"/><use xlink:href="#g20" y="1870"/></g><g><use xlink:href="#g1" y="1938"/><rect x="152" y="1972" width="8" height="17" class="foreground"/><use xlink:href="#g21" y="1972"/></g><g><use xlink:href="#g1" y="2040"/><rect x="160" y="2074" width="8" height="17" class="foreground"/><use xlink:href="#g22" y="2074"/></g><g><use xlink:href="#g1" y="2142"/><rect x="168" y="2176" width="8" height="17" class="foreground"/><use xlink:href="#g23" y="2176"/></g><g><use xlink:href="#g1" y="2244"/><rect x="176" y="2278" width="8" height="17" class="foreground"/><use xlink:href="#g24" y="2278"/></g><g><use xlink:href="#g1" y="2346"/><rect x="184" y="2380" width="8" height="17" class="foreground"/><use xlink:href="#g25" y="2380"/></g><g><use xlink:href="#g1" y="2448"/><rect x="192" y="2482" width="8" height="17" class="foreground"/><use xlink:href="#g26" y="2482"/></g><g><use xlink:href="#g1" y="2550"/><rect x="200" y="2584" width="8" height="17" class="foreground"/><use xlink:href="#g27" y="2584"/></g><g><use xlink:href="#g1" y="2652"/><rect x="208" y="2686" width="8" height="17" class="foreground"/><use xlink:href="#g28" y="2686"/></g><g><use xlink:href="#g1" y="2754"/><rect x="216" y="2788" width="8" height="17" class="foreground"/><use xlink:href="#g29" y="2788"/></g><g><use xlink:href="#g1" y="2856"/><rect x="224" y="2890" width="8" height="17" class="foreground"/><use xlink:href="#g30" y="2890"/></g><g><use xlink:href="#g1" y="2958"/><rect x="232" y="2992" width="8" height="17" class="foreground"/><use xlink:href="#g31" y="2992"/></g><g><use xlink:href="#g1" y="3060"/><rect x="240" y="3094" width="8" height="17" class="foreground"/><use xlink:href="#g32" y="3094"/></g><g><use xlink:href="#g1" y="3162"/><rect x="248" y="3196" width="8" height="17" class="foreground"/><use xlink:href="#g33" y="3196"/></g><g><use xlink:href="#g1" y="3264"/><rect x="256" y="3298" width="8" height="17" class="foreground"/><use xlink:href="#g34" y="3298"/></g><g><use xlink:href="#g1" y="3366"/><rect x="264" y="3400" width="8" height="17" class="foreground"/><use xlink:href="#g35" y="3400"/></g><g><use xlink:href="#g1" y="3468"/><rect x="272" y="3502" width="8" height="17" class="foreground"/><use xlink:href="#g36" y="3502"/></g><g><use xlink:href="#g1" y="3570"/><rect x="280" y="3604" width="8" height="17" class="foreground"/><use xlink:href="#g37" y="3604"/></g><g><use xlink:href="#g1" y="3672"/><rect x="288" y="3706" width="8" height="17" class="foreground"/><use xlink:href="#g38" y="3706"/></g><g><use xlink:href="#g1" y="3774"/><rect x="304" y="3808" width="8" height="17" class="foreground"/><use xlink:href="#g39" y="3808"/></g><g><use xlink:href="#g1" y="3876"/><rect x="312" y="3910" width="8" height="17" class="foreground"/><use xlink:href="#g40" y="3910"/></g><g><use xlink:href="#g1" y="3978"/><rect x="320" y="4012" width="8" height="17" class="foreground"/><use xlink:href="#g41" y="4012"/></g><g><use xlink:href="#g1" y="4080"/><rect x="328" y="4114" width="8" height="17" class="foreground"/><use xlink:href="#g42" y="4114"/></g><g><use xlink:href="#g1" y="4182"/><rect x="320" y="4216" width="8" height="17" class="foreground"/><use xlink:href="#g41" y="4216"/></g><g><use xlink:href="#g1" y="4284"/><rect x="312" y="4318" width="8" height="17" class="foreground"/><use xlink:href="#g43" y="4318"/></g><g><use xlink:href="#g1" y="4386"/><rect x="304" y="4420" width="8" height="17" class="foreground"/><use xlink:href="#g44" y="4420"/></g><g><use xlink:href="#g1" y="4488"/><rect x="304" y="4522" width="8" height="17" class="foreground"/><use xlink:href="#g45" y="4522"/></g><g><use xlink:href="#g1" y="4590"/><rect x="296" y="4624" width="8" height="17" class="foreground"/><use xlink:href="#g46" y="4624"/></g><g><use xlink:href="#g1" y="4692"/><rect x="296" y="4726" width="8" height="17" class="foreground"/><use xlink:href="#g47" y="4726"/></g><g><use xlink:href="#g1" y="4794"/><rect x="288" y="4828" width="8" height="17" class="foreground"/><use xlink:href="#g48" y="4828"/></g><g><use xlink:href="#g1" y="4896"/><rect x="296" y="4930" width="8" height="17" class="foreground"/><use xlink:href="#g49" y="4930"/></g><g><use xlink:href="#g1" y="4998"/><rect x="304" y="5032" width="8" height="17" class="foreground"/><use xlink:href="#g50" y="5032"/></g><g><use xlink:href="#g1" y="5100"/><rect x="312" y="5134" width="8" height="17" class="foreground"/><use xlink:href="#g51" y="5134"/></g><g><use xlink:href="#g1" y="5202"/><rect x="320" y="5236" width="8" height="17" class="foreground"/><use xlink:href="#g52" y="5236"/></g><g><use xlink:href="#g1" y="5304"/><rect x="328" y="5338" width="8" height="17" class="foreground"/><use xlink:href="#g53" y="5338"/></g><g><use xlink:href="#g1" y="5406"/><rect x="336" y="5440" width="8" height="17" class="foreground"/><use xlink:href="#g54" y="5440"/></g><g><use xlink:href="#g1" y="5508"/><rect x="344" y="5542" width="8" height="17" class="foreground"/><use xlink:href="#g55" y="5542"/></g><g><use xlink:href="#g1" y="5610"/><rect x="352" y="5644" width="8" height="17" class="foreground"/><use xlink:href="#g56" y="5644"/></g><g><use xlink:href="#g1" y="5712"/><rect x="360" y="5746" width="8" height="17" class="foreground"/><use xlink:href="#g57" y="5746"/></g><g><use xlink:href="#g1" y="5814"/><rect x="368" y="5848" width="8" height="17" class="foreground"/><use xlink:href="#g58" y="5848"/></g><g><use xlink:href="#g1" y="5916"/><rect x="376" y="5950" width="8" height="17" class="foreground"/><use xlink:href="#g59" y="5950"/></g></g></svg>
+</svg>

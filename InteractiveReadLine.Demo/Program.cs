@@ -20,25 +20,15 @@ namespace InteractiveReadLine.Demo
         private static DemoNode _demoHome;
         private static DemoNode _activeNode;
 
-
         static void Main(string[] args)
         {
+            _demoHome = SetupDemo();
+            _activeNode = _demoHome;
+            var isRunning = true;
+            
             Console.WriteLine("InteractiveReadLine Demo Program");
             Console.WriteLine("\nThis executable is a demonstration to showcase some of the features of this library.\nYou can exit at any time with the command 'exit'.''");
             Console.WriteLine();
-
-            _demoHome = new DemoNode(null, "home", "Demo Home");
-            _demoHome.AddChild("basic", new BasicConfig());
-            var keyNode = _demoHome.AddChild("keys", "Key Behaviors and Customization");
-            keyNode.AddChild("bare", new BareKeys());
-
-            var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
-            formatNode.AddChild("fixed-prompt", new FixedPrompt());
-            formatNode.AddChild("passwd-stars", new PasswordStarPrompt());
-            formatNode.AddChild("passwd-bars", new PasswordBarPrompt());
-
-            _activeNode = _demoHome;
-            bool isRunning = true;
 
             while (isRunning)
             {
@@ -98,6 +88,39 @@ namespace InteractiveReadLine.Demo
                     options.GetAction(result).Invoke();
                 }
             }
+        }
+
+        static DemoNode SetupDemo()
+        {
+            // Demo home node
+            _demoHome = new DemoNode(null, "home", "Demo Home");
+            
+            // featured demos
+            var featuredNode = _demoHome.AddChild("featured", "Featured Demos");
+            featuredNode.AddChild("basic", new BasicConfig());
+            featuredNode.AddChild("complex", new ComplexConfig());
+            
+            // Key behavior demos
+            var keyNode = _demoHome.AddChild("keys", "Key Behaviors and Customization");
+            keyNode.AddChild("bare", new BareKeys());
+
+            // Formatting demos
+            var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
+            formatNode.AddChild("fixed-prompt", new FixedPrompt());
+            formatNode.AddChild("passwd-stars", new PasswordStarPrompt());
+            formatNode.AddChild("passwd-bars", new PasswordBarPrompt());
+            
+            // Lexing demos
+            var lexingNode = _demoHome.AddChild("lexing", "Lexers and Tokenizing");
+
+            // Autocomplete demos
+            var autocompleteNode = _demoHome.AddChild("autocomplete", "Autocomplete Demos");
+
+            // History demos
+            var historyNode = _demoHome.AddChild("history", "History Demos");
+
+
+            return _demoHome;
         }
 
         private static string GetGithubLink(IDemo demo)

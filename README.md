@@ -16,6 +16,8 @@ This library provides a GNU Readline-like functionality for interactive C# progr
 var text = ConsoleReadLine.ReadLine();
 ```
 
+![Example](./docs/animations/basic_config.svg)
+
 However, practically every aspect of the system's behavior is configurable.  Configuration falls into the following categories:
 * **Key Behaviors**: *determine what happens when a key is emitted from the console, allow for all of the standard behaviors, as well as custom behaviors, to be mapped to key information.*
 
@@ -31,13 +33,15 @@ All of these above configurations are done by providing `Action<..>` and `Func<.
 var config = ReadLineConfig.Empty
     .AddStandardKeys()
     .AddTabAutoComplete()
-    .AddKeyBehavior('?', CommonKeyBehaviors.WriteMessageFromTokens(WriteHelp)) 
-    .SetFormatter(CommonFormatters.FixedPrompt("prompt > "))
+    .AddKeyBehavior('?', HelpAction) 
+    .SetFormatter(Formatter)
     .SetAutoCompletion(AutoComplete)
-    .SetLexer(CommonLexers.SplitOnWhitespace);
+    .SetLexer(lexer);
 
-var text = ConsoleReadline.ReadLine(config);
+string result = ConsoleReadline.ReadLine(config);
 ```
+![Example](./docs/animations/complex_config.svg)
+[see Demos/ComplexConfig.cs for this full example](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/Demos/ComplexConfig.cs)
 
 ## Code Examples
 > Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.

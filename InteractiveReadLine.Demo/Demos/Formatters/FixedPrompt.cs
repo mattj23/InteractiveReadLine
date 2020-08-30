@@ -9,7 +9,7 @@ namespace InteractiveReadLine.Demo.Demos.Formatters
 
         public void Action()
         {
-            Console.WriteLine("This shows a very basic use of a formatter; to insert fixed text in front of the input area.\n");
+            Console.WriteLine("This shows a very basic use of a formatter; to insert fixed text in front of the input area.");
             
             var config = ReadLineConfig.Basic
                 .SetFormatter(CommonFormatters.FixedPrompt("prompt text #"));

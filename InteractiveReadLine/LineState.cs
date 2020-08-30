@@ -7,6 +7,11 @@ namespace InteractiveReadLine
     /// </summary>
     public class LineState : IEquatable<LineState>
     {
+        /// <summary>
+        /// A string can implicitly be converted to a LineState, however the cursor position will be 0 by default.
+        /// </summary>
+        public static implicit operator LineState(string s) => new LineState(s, 0);
+        
         public LineState(string text, int cursor)
         {
             Text = text;
