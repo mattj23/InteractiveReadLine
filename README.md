@@ -128,13 +128,13 @@ A *binding* links a behavior to an actual key. For example, a behavior which mov
 
 There are many pre-made bindings as well.  These exist in `BehaviorExtensionMethods.cs` and can be used to compose most standard set of key bindings.
 
-* **AddEnterToFinish** binds the action that completes the line input to the enter key
-* **AddHomeAndEndKeys** binds the home and end keys to move the cursor to the beginning and end of the line, respectively
-* **ArrowMovesCursor** binds the left and right arrows to move the cursor one character in their respective directions
-* **AddUpDownHistoryNavation** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
-* **AddCtrlNavKeys** this adds a series of many naviation and edit commands familiar to bash users, such as cut word, cut to begining/end, jump to beginning/end, etc
-* **AddStandardKeys** is a shortcut to add a complete and basic set of bindings (this is what a `ReadLineConfig.Basic` config uses), which will add the default insert character behavior, enter to complete the line, delete, backspace, home/end, left/right arrows, and the up/down arrow history navigation
-* **AddTabAutoComplete** binds tab to the autocompletion behavior
+* **`AddEnterToFinish()`** binds the action that completes the line input to the enter key
+* **`AddHomeAndEndKeys()`** binds the home and end keys to move the cursor to the beginning and end of the line, respectively
+* **`ArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
+* **`AddUpDownHistoryNavation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
+* **`AddCtrlNavKeys()`** this adds a series of many naviation and edit commands familiar to bash users, such as cut word, cut to begining/end, jump to beginning/end, etc
+* **`AddStandardKeys()`** is a shortcut to add a complete and basic set of bindings (this is what a `ReadLineConfig.Basic` config uses), which will add the default insert character behavior, enter to complete the line, delete, backspace, home/end, left/right arrows, and the up/down arrow history navigation
+* **`AddTabAutoComplete()`** binds tab to the autocompletion behavior
 
 These are cumulative, so the following is a valid way to set up a configuration:
 
@@ -211,6 +211,8 @@ var config = ReadLineConfig.Empty
 ### Formatters
 Formatters intercept the contents of the text buffer on its way to be displayed and allow it to be changed and formatted.  *They do not alter the original text residing in the handler's text buffer in any way.*
 
+![Example](./docs/animations/hunter2.svg)
+
 In the technical sense, a formatter is any function which takes *either* a `TokenizedLine` (covered in more detail with lexers) or a `LineState` and returns a `LineDisplayState`. If you set the ReadLine configuration to use a TokenizedLine the handler must be given a lexer as well, otherwise the formatter which simply receives the LineState must be used. The reason for this distinction is to allow the handler to run the lexer only one time internally if both a formatter and an autocompletion service is used. 
 
 A `LineDisplayState` consists of three pieces of `FormattedText` (`FormattedText` is text with both a foreground and background `ConsoleColor` which can be set individually per character).  These three pieces are a prefix, a body, and a suffix.  The `LineDisplayState` also has a cursor position, which is an offset from the first character of the body.
@@ -241,13 +243,19 @@ var result = ConsoleReadLine.ReadLine(config);
 
 In this case the prefix is static, but there is no reason that it needs to be.  The character count in the suffix could have been implemented in the prefix just as easily.
 
+#### Pre-built Formatters
+There are a handful of pre-built formatters in the `CommonFormatters` static class.
+
+A fixed prompt that appears in front of the text input:
+
 ```csharp
 var config = ReadLineConfig.Basic
     .SetFormatter(CommonFormatters.FixedPrompt("enter text here > "))
 
 var text = ConsoleReadLine.ReadLine(config);
 ```
-The code above gives us a fixed prompt that appears in front of our text input.
+
+There are three built in formatters intended for hiding passwords while they're being typed.  The first, `PasswordBlank`, simply displays an empty string instead of the input text.  The second `PasswordStars` replaces the password characters with stars.  The one in the following example, `PasswordBar`, displays a bar based on the SHA256 hash of the input text.  The bar moves around as you type, revealing no information about your password or its length, but it will always produce the same visual effect for the same input text.
 
 ```csharp
 var config = ReadLineConfig.Basic
@@ -255,7 +263,8 @@ var config = ReadLineConfig.Basic
 
 var text = ConsoleReadLine.ReadLine(config);
 ```
-There are three built in formatters intended for hiding passwords while they're being typed.  The first, `PasswordBlank`, simply displays an empty string instead of the input text.  The second `PasswordStars` replaces the password characters with stars.  The one above, `PasswordBar`, displays a bar based on the SHA256 hash of the input text.  The bar moves around as you type, revealing no information about your password or its length, but it will always produce the same visual effect for the same input text.
+
+Finally, formatters can be composed together as well. The following code produces a fixed prompt in front of the password display, and works with all of the password formatters.  
 
 ```csharp
 var config = ReadLineConfig.Basic
@@ -264,10 +273,41 @@ var config = ReadLineConfig.Basic
 var text = ConsoleReadLine.ReadLine(config);
 ```
 ![Example](./docs/animations/password_bar.svg)
-Finally, formatters can be composed together as well. The above code produces a fixed prompt in front of the password display, and works with all of the password formatters.  See the [section on Formatters](#formatters) for more information on how they work and what can be done with them.
 
+#### TokenizedLine Formatters
+As has been mentioned, a formatter can be either a function which recieves a `LineState` object, or a function which recieves a `TokenizedLine` object.  The `TokenizedLine` will be covered in more detail in the section on lexers, but this simple example shows how the lexer can be used to split the input text into tokens and a formatter can take advantage of that.
+
+The following code example can be seen in further detail in [this demo](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs), but effectively it searches for tokens which match a valid hexidecimal number (digits 0 to 9 and letters a through f) and simultaneously displays it as capitalized and cyan.  All other tokens are displayed exactly as they have been entered.
+
+```csharp
+var pattern = new Regex(@"^[0-9a-fA-F]+$");
+
+var formatter = new Func<TokenizedLine, LineDisplayState>(tk =>
+{
+    FormattedText output = string.Empty;
+    foreach (var token in tk)
+    {
+        if (pattern.IsMatch(token.Text))
+            output += new FormattedText(token.Text.ToUpper(), ConsoleColor.Cyan);
+        else
+            output += token.Text;
+    }
+    
+    return new LineDisplayState("try it: ", output, string.Empty, tk.Cursor);
+});
+
+var config = ReadLineConfig.Basic
+    .SetLexer(CommonLexers.SplitOnWhitespace)
+    .SetFormatter(formatter);
+
+var result = ConsoleReadLine.ReadLine(config);
+```
+![Example](./docs/animations/token_formatter.svg)
+
+---
 
 ### Lexers 
+
 
 ### Auto-Complete
 

@@ -67,5 +67,6 @@ namespace InteractiveReadLine.Formatting
         /// Adds a fixed prompt to the given formatter, overwriting the prefix
         /// </summary>
         public static LineFormatter WithFixedPrompt(this LineFormatter formatter, FormattedText prompt) => FixedPrompt(prompt, formatter);
+        
     }
 }

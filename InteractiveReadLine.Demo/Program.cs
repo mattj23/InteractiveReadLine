@@ -99,6 +99,7 @@ namespace InteractiveReadLine.Demo
             var featuredNode = _demoHome.AddChild("featured", "Featured Demos");
             featuredNode.AddChild("basic", new BasicConfig());
             featuredNode.AddChild("complex", new ComplexConfig());
+            featuredNode.AddChild("hunter2", new Hunter2());
             
             // Key behavior demos
             var keyNode = _demoHome.AddChild("keys", "Key Behaviors and Customization");
@@ -108,7 +109,8 @@ namespace InteractiveReadLine.Demo
             // Formatting demos
             var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
             formatNode.AddChild("fixed-prompt", new FixedPrompt());
-            formatNode.AddChild("simple-custom", new SimpleCustomFormatter());
+            formatNode.AddChild("custom-simple", new SimpleCustomFormatter());
+            formatNode.AddChild("custom-token", new TokenCustomFormatter());
             formatNode.AddChild("passwd-stars", new PasswordStarPrompt());
             formatNode.AddChild("passwd-bars", new PasswordBarPrompt());
             
