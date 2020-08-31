@@ -54,8 +54,7 @@ Within the github repository there is a demo project which contains many example
 
 ![Example](./docs/animations/demo.svg)
 
-
-
+---
 ## Design Philosopy
 
 ### Obviousness and Correctness
@@ -78,6 +77,8 @@ I've made it a priority to provide as many code examples as possible for all of 
 
 ### Testing
 In conjunction with documentation, unit testing is a priority to ensure that the code works as intended even through changes.  Most of the complex parts of the library were developed directly through test writing, and my goal has been to cover all of the internal machinery of the library (the readline handler, the console provider, the regex lexing engine, and the token/sequence) with tests immediately.  The built-in behaviors, like the various key and formatting behaviors, will be covered by tests as time permits.
+
+--- 
 
 ## Code Documentation
 > Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
@@ -105,6 +106,8 @@ var text = ConsoleReadLine.ReadLine(config);
 This is the minimum configuration needed to insert characters when they are typed and complete the input when the enter key is pressed.  Note that this is less functionality than the basic configuration.
 
 *All special behavior relating to the readline operation is added through the configuration object.*
+
+---
 
 ### Key Behaviors
 
@@ -203,6 +206,7 @@ var config = ReadLineConfig.Empty
     .AddEnterToFinish();
 ```
 
+---
 
 ### Formatters
 Formatters intercept the contents of the text buffer on its way to be displayed and allow it to be changed and formatted.  *They do not alter the original text residing in the handler's text buffer in any way.*
@@ -210,6 +214,32 @@ Formatters intercept the contents of the text buffer on its way to be displayed 
 In the technical sense, a formatter is any function which takes *either* a `TokenizedLine` (covered in more detail with lexers) or a `LineState` and returns a `LineDisplayState`. If you set the ReadLine configuration to use a TokenizedLine the handler must be given a lexer as well, otherwise the formatter which simply receives the LineState must be used. The reason for this distinction is to allow the handler to run the lexer only one time internally if both a formatter and an autocompletion service is used. 
 
 A `LineDisplayState` consists of three pieces of `FormattedText` (`FormattedText` is text with both a foreground and background `ConsoleColor` which can be set individually per character).  These three pieces are a prefix, a body, and a suffix.  The `LineDisplayState` also has a cursor position, which is an offset from the first character of the body.
+
+#### Formatter Example
+Before showing some of the built in formatters, it's useful to show what a formatter looks like in its complete form.  Ultimately, a formatter can set a prefix, the line body, and a suffix through the returned `LineDisplayState`.
+
+To that end, a formatter needs to be one of the following types:
+* `Func<LineState, LineDisplayState>`
+* `Func<TokenizedLine, LineDisplayState>`
+
+In the following example, we'll add a fixed red prompt at the beginning of the line, a suffix with a count of how many characters are in the text buffer, and an exact copy of the text buffer in the body with the default terminal foreground color.
+
+```csharp
+var formatter = new Func<LineState, LineDisplayState>(ls =>
+    {
+        var prefix = new FormattedText("prompt $ ", ConsoleColor.Red);
+        var suffix = new FormattedText($" [{ls.Text.Length} characters]", ConsoleColor.Blue);
+        return new LineDisplayState(prefix, ls.Text, suffix, ls.Cursor);
+    });
+
+var config = ReadLineConfig.Basic
+    .SetFormatter(formatter);
+
+var result = ConsoleReadLine.ReadLine(config);
+```
+![Example](./docs/animations/simple_formatter.svg)
+
+In this case the prefix is static, but there is no reason that it needs to be.  The character count in the suffix could have been implemented in the prefix just as easily.
 
 ```csharp
 var config = ReadLineConfig.Basic
@@ -240,3 +270,5 @@ Finally, formatters can be composed together as well. The above code produces a 
 ### Lexers 
 
 ### Auto-Complete
+
+### History

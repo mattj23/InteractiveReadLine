@@ -108,6 +108,7 @@ namespace InteractiveReadLine.Demo
             // Formatting demos
             var formatNode = _demoHome.AddChild("formatters", "Display Formatting and Customization");
             formatNode.AddChild("fixed-prompt", new FixedPrompt());
+            formatNode.AddChild("simple-custom", new SimpleCustomFormatter());
             formatNode.AddChild("passwd-stars", new PasswordStarPrompt());
             formatNode.AddChild("passwd-bars", new PasswordBarPrompt());
             
