@@ -77,6 +77,33 @@ namespace InteractiveReadLine.Tests.Fakes
             return this.Add(ConsoleKey.Escape, false, false, false, count);
         }
 
+        /// <summary>
+        /// Adds a Ctrl+C keypress as the console delivers it when TreatControlCAsInput is set. The keypress
+        /// carries the end-of-text control character instead of a 'c'.
+        /// </summary>
+        public KeyBuilder CtrlC(int count=1)
+        {
+            return this.AddControlChar(ConsoleKey.C, '\u0003', count);
+        }
+
+        /// <summary>
+        /// Adds a Ctrl+D keypress, which carries the end-of-transmission control character.
+        /// </summary>
+        public KeyBuilder CtrlD(int count=1)
+        {
+            return this.AddControlChar(ConsoleKey.D, '\u0004', count);
+        }
+
+        private KeyBuilder AddControlChar(ConsoleKey key, char character, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                _keys.Add(new ConsoleKeyInfo(character, key, false, false, true));
+            }
+
+            return this;
+        }
+
 
         public ConsoleKeyInfo[] Keys => _keys.ToArray();
 

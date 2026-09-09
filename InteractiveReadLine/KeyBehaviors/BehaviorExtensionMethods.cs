@@ -47,6 +47,19 @@ namespace InteractiveReadLine.KeyBehaviors
             return config.AddKeyBehavior(ConsoleKey.Enter, CommonKeyBehaviors.Finish);
         }
 
+        /// <summary>
+        /// Binds Ctrl+C to abandon the current line, matching conventional shell behavior.
+        /// </summary>
+        /// <remarks>
+        /// The ConsoleReadLine provider puts the console into a mode where Ctrl+C arrives as an ordinary
+        /// keypress rather than terminating the process, and restores the previous mode when it is disposed.
+        /// Without this binding, Ctrl+C has no effect while a line is being read.
+        /// </remarks>
+        public static ReadLineConfig AddCancelKeys(this ReadLineConfig config)
+        {
+            return config.AddCtrlKeyBehavior(ConsoleKey.C, CommonKeyBehaviors.Cancel);
+        }
+
         public static ReadLineConfig AddHomeAndEndKeys(this ReadLineConfig config)
         {
             return config
@@ -81,13 +94,14 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddCtrlKeyBehavior(ConsoleKey.M, CommonKeyBehaviors.Finish)
                 .AddCtrlKeyBehavior(ConsoleKey.N, CommonKeyBehaviors.HistoryNext)
                 .AddCtrlKeyBehavior(ConsoleKey.P, CommonKeyBehaviors.HistoryPrevious)
-                .AddCtrlKeyBehavior(ConsoleKey.D, CommonKeyBehaviors.Delete)
+                .AddCtrlKeyBehavior(ConsoleKey.D, CommonKeyBehaviors.DeleteOrEndOfInput)
                 .AddCtrlKeyBehavior(ConsoleKey.W, CommonKeyBehaviors.CutPreviousWord);
         }
 
         /// <summary>
         /// Adds a set of standard keys to the configuration, including the default of inserting printable
-        /// characters, enter to finish the line, delete, backspace, and the left and right arrow keys.
+        /// characters, enter to finish the line, delete, backspace, the left and right arrow keys, and
+        /// Ctrl+C to abandon the line.
         /// </summary>
         public static ReadLineConfig AddStandardKeys(this ReadLineConfig config)
         {
@@ -97,7 +111,8 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddDeleteBackspace()
                 .AddHomeAndEndKeys()
                 .AddUpDownHistoryNavigation()
-                .AddArrowMovesCursor();
+                .AddArrowMovesCursor()
+                .AddCancelKeys();
         }
 
         public static ReadLineConfig AddTabAutoComplete(this ReadLineConfig config)

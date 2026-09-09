@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Abstractions
@@ -25,6 +26,40 @@ namespace InteractiveReadLine.Abstractions
         public int BufferHeight => Console.BufferHeight;
 
         public int BufferWidth => Console.BufferWidth;
+
+        public bool TreatControlCAsInput
+        {
+            // Some platforms and processes without an attached console do not support reading or writing this
+            // property. Because Ctrl+C handling is optional, both accessors suppress the related exceptions.
+            get
+            {
+                try
+                {
+                    return Console.TreatControlCAsInput;
+                }
+                catch (IOException)
+                {
+                    return false;
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                try
+                {
+                    Console.TreatControlCAsInput = value;
+                }
+                catch (IOException)
+                {
+                }
+                catch (PlatformNotSupportedException)
+                {
+                }
+            }
+        }
 
         public void Write(FormattedText text)
         {

@@ -69,5 +69,18 @@ namespace InteractiveReadLine.KeyBehaviors
         /// Tells the readline handler to finish this line of input and return it
         /// </summary>
         void Finish();
+
+        /// <summary>
+        /// Tells the ReadLine handler to abandon the current line and discard the entered text. This matches
+        /// conventional Ctrl+C behavior: the handler records nothing in history and completes without an error.
+        /// </summary>
+        void Cancel();
+
+        /// <summary>
+        /// Tells the ReadLine handler that the user has signaled the end of input, which is what Ctrl+D on an
+        /// empty line means to a shell. The line is discarded, and the caller is told that no
+        /// further input is coming.
+        /// </summary>
+        void EndOfInput();
     }
 }

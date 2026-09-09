@@ -81,11 +81,17 @@ namespace InteractiveReadLine.Demo
                     .SetAutoCompletion(t => options.NonBlankKeys.Where(o => o.StartsWith(t.CursorToken.Text)).ToArray())
                     .SetFormatter(NodeFormatter(options.NonBlankKeys.ToArray()));
 
-                var result = ConsoleReadLine.ReadLine(config);
+                var result = ConsoleReadLine.Read(config);
 
-                if (options.ContainsKey(result))
+                // Ctrl+D on an empty line means the user is done, which for this menu is the same as choosing
+                // "exit". Ctrl+C abandons whatever was typed and simply redraws the menu.
+                if (result.Kind == ReadLineResultKind.EndOfInput)
                 {
-                    options.GetAction(result).Invoke();
+                    isRunning = false;
+                }
+                else if (result.IsLine && options.ContainsKey(result.Text))
+                {
+                    options.GetAction(result.Text).Invoke();
                 }
             }
         }

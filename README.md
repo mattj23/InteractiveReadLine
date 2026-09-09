@@ -132,8 +132,9 @@ There are many pre-made bindings as well.  These exist in `BehaviorExtensionMeth
 * **`AddHomeAndEndKeys()`** binds the home and end keys to move the cursor to the beginning and end of the line, respectively
 * **`ArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
 * **`AddUpDownHistoryNavation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
-* **`AddCtrlNavKeys()`** this adds a series of many naviation and edit commands familiar to bash users, such as cut word, cut to begining/end, jump to beginning/end, etc
-* **`AddStandardKeys()`** is a shortcut to add a complete and basic set of bindings (this is what a `ReadLineConfig.Basic` config uses), which will add the default insert character behavior, enter to complete the line, delete, backspace, home/end, left/right arrows, and the up/down arrow history navigation
+* **`AddCtrlNavKeys()`** adds navigation and editing commands familiar to Bash users, such as cutting a word, cutting to the beginning or end, and jumping to the beginning or end. It also binds Ctrl+D to delete forward or signal the end of input when the line is empty
+* **`AddCancelKeys()`** binds Ctrl+C to abandon the current line
+* **`AddStandardKeys()`** adds the complete basic set of bindings used by `ReadLineConfig.Basic`: default character insertion, Enter to complete the line, Delete, Backspace, Home, End, the arrow keys, and Ctrl+C to abandon the line
 * **`AddTabAutoComplete()`** binds tab to the autocompletion behavior
 
 These are cumulative, so the following is a valid way to set up a configuration:
@@ -223,6 +224,52 @@ var config = ReadLineConfig.Empty
     .AddDeleteBackspace()
     .AddEnterToFinish();
 ```
+
+---
+
+### Canceling and Ending Input
+
+A user can end a read line operation in three ways. Enter typically finishes the line, Ctrl+C abandons it, and Ctrl+D on an empty line signals that the user has no more input.
+
+The `ReadLine()` method converts all three outcomes to strings. This convenient API cannot distinguish an abandoned line from an entered empty line:
+
+| The user pressed | `ReadLine()` returns |
+| --- | --- |
+| Enter | the text they entered |
+| Ctrl+C | an empty string |
+| Ctrl+D on an empty line | `null` |
+
+Returning `null` at the end of input matches GNU Readline and `Console.ReadLine()`, so an ordinary read loop terminates on Ctrl+D without special handling:
+
+```csharp
+string line;
+while ((line = ConsoleReadLine.ReadLine(config)) != null)
+{
+    Execute(line);
+}
+```
+
+When the distinction matters, use `Read()`. It returns a `ReadLineResult` containing the text and a `Kind` that describes how the interaction ended:
+
+```csharp
+var result = ConsoleReadLine.Read(config);
+
+switch (result.Kind)
+{
+    case ReadLineResultKind.Line:
+        Execute(result.Text);
+        break;
+    case ReadLineResultKind.Cancelled:
+        Console.WriteLine("Cancelled, nothing was run");
+        break;
+    case ReadLineResultKind.EndOfInput:
+        return;
+}
+```
+
+Abandoned lines and end-of-input signals are not recorded in history because their text is discarded.
+
+> **A note on Ctrl+C.** The console normally treats Ctrl+C as a request to terminate the program, so the keypress does not reach the application. To let a key behavior respond, the `ConsoleReadLine` provider temporarily configures the console to deliver Ctrl+C as an ordinary keypress. Therefore, **while a line is being read, Ctrl+C abandons the line instead of terminating the process**. The provider restores the previous console setting when the operation finishes. To make Ctrl+C have no effect during a read, build a configuration without `AddCancelKeys()`.
 
 ---
 

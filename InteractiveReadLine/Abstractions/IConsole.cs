@@ -26,9 +26,20 @@ namespace InteractiveReadLine.Abstractions
         int BufferHeight { get; }
 
         /// <summary>
-        /// Gets the width of the provider's buffer, measured in columns 
+        /// Gets the width of the provider's buffer, measured in columns
         /// </summary>
         int BufferWidth { get; }
+
+        /// <summary>
+        /// Gets or sets whether Ctrl+C is delivered as an ordinary keypress rather than being treated as a
+        /// signal to terminate the program.
+        /// </summary>
+        /// <remarks>
+        /// A read line operation enables this property so that a Ctrl+C key behavior can abandon the line, then
+        /// restores the previous value when the operation finishes. Implementations without a system console
+        /// can store the value without acting on it.
+        /// </remarks>
+        bool TreatControlCAsInput { get; set; }
 
         void Write(FormattedText text);
         void WriteLine(FormattedText text);

@@ -16,6 +16,7 @@ namespace InteractiveReadLine
         private int _lastWrittenCursor;
         private int _startingRow;
         private bool _disposed;
+        private bool _previousTreatControlCAsInput;
 
         public ConsoleReadLine(IConsole console=null)
         {
@@ -162,10 +163,16 @@ namespace InteractiveReadLine
             _startingRow = _console.CursorTop;
             _console.CursorLeft = 0;
             _lastWrittenText = string.Empty;
+
+            // Ctrl+C would otherwise terminate the process instead of reaching a key behavior. The previous
+            // setting is captured so that it can be restored when the operation finishes.
+            _previousTreatControlCAsInput = _console.TreatControlCAsInput;
+            _console.TreatControlCAsInput = true;
         }
 
         private void Finish()
         {
+            _console.TreatControlCAsInput = _previousTreatControlCAsInput;
             _console.WriteLine(string.Empty);
         }
 
@@ -177,11 +184,24 @@ namespace InteractiveReadLine
         /// Provides a convenient static method of calling the ReadLine method on the System.Console
         /// </summary>
         /// <param name="config"></param>
-        /// <returns></returns>
+        /// <returns>
+        /// The finished text; null if the user signaled the end of input with Ctrl+D; or an empty string if the
+        /// user abandoned the line with Ctrl+C. Use Read to distinguish these outcomes.
+        /// </returns>
         public static string ReadLine(ReadLineConfig config=null)
         {
             var provider = new ConsoleReadLine();
             return provider.ReadLine(config ?? ReadLineConfig.Basic);
+        }
+
+        /// <summary>
+        /// Reads a line from System.Console and returns a result that describes the text and how the
+        /// user ended the interaction.
+        /// </summary>
+        public static ReadLineResult Read(ReadLineConfig config=null)
+        {
+            var provider = new ConsoleReadLine();
+            return provider.Read(config ?? ReadLineConfig.Basic);
         }
     }
 }

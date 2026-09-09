@@ -25,7 +25,9 @@ namespace InteractiveReadLine
         private int _historyIndex;
         private LineState _preHistoryState;
 
-        private bool _finishTrigger = false;
+        // Null while the user is still editing; set by Finish, Cancel or EndOfInput to the kind of result the
+        // read line operation should produce, which also ends the processing loop.
+        private ReadLineResultKind? _resultKind;
 
         public ReadLineHandler(IReadLineProvider provider, ReadLineConfig config=null)
         {
@@ -187,14 +189,24 @@ namespace InteractiveReadLine
         /// Interactively manage the user input of a line of text at the console, returning the contents
         /// of the text when finished.
         /// </summary>
-        public string ReadLine()
+        /// <returns>
+        /// The finished text; null if the user signaled the end of input; or an empty string if the user
+        /// abandoned the line. Use Read to distinguish an abandoned line from an entered empty line.
+        /// </returns>
+        public string ReadLine() => this.Read().ToText();
+
+        /// <summary>
+        /// Interactively manages a line of console input and returns a result that describes the text and how
+        /// the interaction ended.
+        /// </summary>
+        public ReadLineResult Read()
         {
             // The display must be updated at the beginning if any prompts or other prefix/suffix text
-            // is to be displayed 
+            // is to be displayed
             this.UpdateDisplay();
 
             // The main processing loop of the handler, this loop will block until it receives a single key from the
-            // console. It will then attempt to look up a key behavior for that key, and if it finds one it will 
+            // console. It will then attempt to look up a key behavior for that key, and if it finds one it will
             // invoke it, otherwise it will invoke the default behavior if there is one. After that it will check
             // if the condition to finish the input has been set, and if not it will update the display and wait
             // for the next key.
@@ -202,40 +214,67 @@ namespace InteractiveReadLine
             {
                 this.ReceivedKey = _provider.ReadKey();
 
-                // We will need to check if the line state (text & cursor position) is altered by the
-                // key behavior which will be run, so we store the current state now
-                var previousState = this.LineState;
-                _autoCompleteCalled = false;
-                
-                // See if there's a specific behavior which should be mapped to this key,
-                // and if so, run it instead of checking the insert/enter behaviors
-                var behavior = this.GetKeyAction(ReceivedKey);
-                if (behavior != null)
-                {
-                    behavior.Invoke(this);
-                }
-                else
-                {
-                    _config.DefaultKeyBehavior?.Invoke(this);
-                }
-
-                // Check if the Finish behavior was called, indicating that we can exit this method
-                // and return the contents of the text buffer to the caller
-                if (_finishTrigger)
+                if (this.ProcessKey())
                     break;
-
-                // If the text contents or the cursor have changed at all, and we weren't currently
-                // doing autocomplete, we need to invalidate the auto-completion information
-                if ((!previousState.Equals(this.LineState)) && !_autoCompleteCalled)
-                    this.InvalidateAutoComplete();
 
                 this.UpdateDisplay();
             }
 
-            // If there is a delegate to update the history, invoke it now
-            _config.UpdateHistory?.Invoke(TextBuffer.ToString());
+            return this.BuildResult();
+        }
 
-            return TextBuffer.ToString();
+        /// <summary>
+        /// Runs the behavior registered for the key currently in ReceivedKey, then reports whether the
+        /// interaction is over.
+        /// </summary>
+        /// <returns>True if a behavior ended the interaction; otherwise, false.</returns>
+        private bool ProcessKey()
+        {
+            // We will need to check if the line state (text & cursor position) is altered by the
+            // key behavior which will be run, so we store the current state now
+            var previousState = this.LineState;
+            _autoCompleteCalled = false;
+
+            // See if there's a specific behavior which should be mapped to this key,
+            // and if so, run it instead of checking the insert/enter behaviors
+            var behavior = this.GetKeyAction(ReceivedKey);
+            if (behavior != null)
+            {
+                behavior.Invoke(this);
+            }
+            else
+            {
+                _config.DefaultKeyBehavior?.Invoke(this);
+            }
+
+            // Check if a behavior ended the interaction, in which case we can stop reading keys
+            if (_resultKind != null)
+                return true;
+
+            // If the text contents or the cursor have changed at all, and we weren't currently
+            // doing autocomplete, we need to invalidate the auto-completion information
+            if ((!previousState.Equals(this.LineState)) && !_autoCompleteCalled)
+                this.InvalidateAutoComplete();
+
+            return false;
+        }
+
+        /// <summary>
+        /// Produces the interaction result and updates history only when the user finishes a line.
+        /// </summary>
+        private ReadLineResult BuildResult()
+        {
+            // A canceled or ended interaction discards its text. Pass only a finished line to the history
+            // update action.
+            if (_resultKind != ReadLineResultKind.Line)
+                return _resultKind == ReadLineResultKind.Cancelled
+                    ? ReadLineResult.Cancelled
+                    : ReadLineResult.EndOfInput;
+
+            var text = TextBuffer.ToString();
+            _config.UpdateHistory?.Invoke(text);
+
+            return ReadLineResult.ForLine(text);
         }
 
         /// <summary>
@@ -341,6 +380,12 @@ namespace InteractiveReadLine
         /// <summary>
         /// Causes the ReadLine handler to finish, returning the contents of the text buffer
         /// </summary>
-        public void Finish() => _finishTrigger = true;
+        public void Finish() => _resultKind = ReadLineResultKind.Line;
+
+        /// <inheritdoc />
+        public void Cancel() => _resultKind = ReadLineResultKind.Cancelled;
+
+        /// <inheritdoc />
+        public void EndOfInput() => _resultKind = ReadLineResultKind.EndOfInput;
     }
 }

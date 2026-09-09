@@ -127,6 +127,31 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void Finish(IKeyBehaviorTarget target) => target.Finish();
 
         /// <summary>
+        /// Abandons the ReadLine input and discards the entered text. This behavior is conventionally
+        /// bound to Ctrl+C.
+        /// </summary>
+        public static void Cancel(IKeyBehaviorTarget target) => target.Cancel();
+
+        /// <summary>
+        /// Signals that the user has no more input and discards the entered text. This behavior is conventionally
+        /// behavior conventionally bound to Ctrl+D on an empty line.
+        /// </summary>
+        public static void EndOfInput(IKeyBehaviorTarget target) => target.EndOfInput();
+
+        /// <summary>
+        /// Deletes the character under the cursor, or signals the end of input if the line is empty. This
+        /// matches shell behavior for Ctrl+D: it deletes forward when a character is available and otherwise
+        /// ends the session.
+        /// </summary>
+        public static void DeleteOrEndOfInput(IKeyBehaviorTarget target)
+        {
+            if (target.TextBuffer.Length == 0)
+                target.EndOfInput();
+            else
+                Delete(target);
+        }
+
+        /// <summary>
         /// Removes all of the text between the cursor and the end of the line
         /// </summary>
         /// <param name="target"></param>

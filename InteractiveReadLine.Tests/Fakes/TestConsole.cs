@@ -46,6 +46,8 @@ namespace InteractiveReadLine.Tests.Fakes
         public int BufferHeight => _height;
 
         public int BufferWidth => _width;
+
+        public bool TreatControlCAsInput { get; set; }
         public void Write(FormattedText text)
         {
             this.Write(text.Text);

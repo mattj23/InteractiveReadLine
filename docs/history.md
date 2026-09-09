@@ -98,6 +98,8 @@ Only an *immediately* repeated line is skipped. Entering a command that appears 
 
 To record every finalized line as entered, including blank lines, supply your own delegate through `SetHistoryUpdateAction()`. The input handler performs no filtering and passes the finalized line to the update action in the configuration.
 
+The update action runs only when the user finishes a line. If the user abandons the line with Ctrl+C or signals the end of input with Ctrl+D, the text is discarded and the update action is not called.
+
 **For a simple self-updating history:**
 ```csharp
 var history = new List<string> {"history entry 0", "history entry 1", "history entry 2"};
