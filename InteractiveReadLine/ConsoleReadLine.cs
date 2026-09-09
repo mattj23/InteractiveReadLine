@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using InteractiveReadLine.Abstractions;
 using InteractiveReadLine.Formatting;
 
@@ -54,6 +55,29 @@ namespace InteractiveReadLine
             {
                 Thread.Sleep(PollIntervalMilliseconds);
                 cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            return _console.ReadKey();
+        }
+
+        /// <summary>
+        /// Reads a console key from the underlying provider, waiting asynchronously until one is received.
+        /// </summary>
+        /// <remarks>
+        /// No asynchronous console input API is available. This method therefore polls until a key is available
+        /// and then reads it without blocking. It polls even when the token cannot be canceled because an
+        /// asynchronous read must not block. No thread is occupied between polls.
+        /// </remarks>
+        /// <param name="cancellationToken">A token that cancels the wait.</param>
+        /// <returns>A task producing the next keypress.</returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before a key arrived.</exception>
+        public async Task<ConsoleKeyInfo> ReadKeyAsync(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            while (!_console.KeyAvailable)
+            {
+                await Task.Delay(PollIntervalMilliseconds, cancellationToken).ConfigureAwait(false);
             }
 
             return _console.ReadKey();
@@ -245,6 +269,40 @@ namespace InteractiveReadLine
         {
             var provider = new ConsoleReadLine();
             return provider.Read(config ?? ReadLineConfig.Basic, cancellationToken);
+        }
+
+        /// <summary>
+        /// Reads a line from System.Console without blocking a thread while waiting for keys.
+        /// </summary>
+        /// <param name="config">The configuration to use, or null to use ReadLineConfig.Basic.</param>
+        /// <param name="cancellationToken">A token that cancels the read.</param>
+        /// <returns>
+        /// The finished text; null if the user signaled the end of input with Ctrl+D; or an empty string if the
+        /// user abandoned the line with Ctrl+C. Use ReadAsync to distinguish these outcomes.
+        /// </returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        /// <exception cref="InvalidOperationException">Standard input is redirected.</exception>
+        public static Task<string> ReadLineAsync(ReadLineConfig config=null,
+            CancellationToken cancellationToken=default)
+        {
+            var provider = new ConsoleReadLine();
+            return provider.ReadLineAsync(config ?? ReadLineConfig.Basic, cancellationToken);
+        }
+
+        /// <summary>
+        /// Reads a line from System.Console without blocking a thread while waiting for keys, returning a
+        /// result that describes the text and how the user ended the interaction.
+        /// </summary>
+        /// <param name="config">The configuration to use, or null to use ReadLineConfig.Basic.</param>
+        /// <param name="cancellationToken">A token that cancels the read.</param>
+        /// <returns>A task producing the completed interaction result.</returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        /// <exception cref="InvalidOperationException">Standard input is redirected.</exception>
+        public static Task<ReadLineResult> ReadAsync(ReadLineConfig config=null,
+            CancellationToken cancellationToken=default)
+        {
+            var provider = new ConsoleReadLine();
+            return provider.ReadAsync(config ?? ReadLineConfig.Basic, cancellationToken);
         }
     }
 }

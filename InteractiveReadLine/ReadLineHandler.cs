@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
@@ -222,6 +223,54 @@ namespace InteractiveReadLine
             while (true)
             {
                 this.ReceivedKey = _provider.ReadKey(cancellationToken);
+
+                if (this.ProcessKey())
+                    break;
+
+                this.UpdateDisplay();
+            }
+
+            return this.BuildResult();
+        }
+
+        /// <summary>
+        /// Interactively manages a line of console input without blocking a thread while waiting for keys,
+        /// returning the contents of the text when finished.
+        /// </summary>
+        /// <param name="cancellationToken">A token that cancels the read.</param>
+        /// <returns>
+        /// The finished text; null if the user signaled the end of input; or an empty string if the user
+        /// abandoned the line. Use ReadAsync to distinguish an abandoned line from an entered empty line.
+        /// </returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public async Task<string> ReadLineAsync(CancellationToken cancellationToken = default)
+        {
+            var result = await this.ReadAsync(cancellationToken).ConfigureAwait(false);
+            return result.ToText();
+        }
+
+        /// <summary>
+        /// Interactively manages a line of console input without blocking a thread while waiting for keys, and
+        /// returns a result that describes the text and how the interaction ended.
+        /// </summary>
+        /// <remarks>
+        /// This method performs the same interaction as Read and differs only in how it waits for each key. Each
+        /// key behavior, auto-completion operation, and history operation runs synchronously on the thread that
+        /// resumes the wait.
+        /// </remarks>
+        /// <param name="cancellationToken">
+        /// A token that cancels the read. Cancellation raises an OperationCanceledException instead of
+        /// producing a result, which is what distinguishes it from the user abandoning the line with Ctrl+C.
+        /// </param>
+        /// <returns>A task that produces the completed interaction result.</returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public async Task<ReadLineResult> ReadAsync(CancellationToken cancellationToken = default)
+        {
+            this.UpdateDisplay();
+
+            while (true)
+            {
+                this.ReceivedKey = await _provider.ReadKeyAsync(cancellationToken).ConfigureAwait(false);
 
                 if (this.ProcessKey())
                     break;

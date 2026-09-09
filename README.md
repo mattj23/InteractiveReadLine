@@ -81,7 +81,7 @@ In conjunction with documentation, unit testing is a priority to ensure that the
 --- 
 
 ## Code Documentation
-> Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
+> Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement four methods which consist of displaying text and reading keyboard input, synchronously and asynchronously, in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
 
 ### Configuration Object
 
@@ -293,6 +293,32 @@ Canceling this way raises an `OperationCanceledException` instead of returning a
 Because a console read cannot be interrupted after it starts, a cancelable read polls for an available keypress and checks the token between polls. The provider waits 15 milliseconds between checks while the prompt is idle. If you omit the token or pass `CancellationToken.None`, the provider uses the ordinary blocking path without polling.
 
 > **An interactive console is required.** Individual keypresses cannot be read from a pipe or file. Therefore, the `ConsoleReadLine` constructor throws an `InvalidOperationException` when standard input is redirected. Use `Console.ReadLine()` for redirected input or supply a custom `IReadLineProvider`. The provider checks the `IConsole.InputIsRedirected` property, so custom console implementations determine whether their input is redirected.
+
+---
+
+### Reading Asynchronously
+
+Every read method has an asynchronous counterpart. `ReadLineAsync()` returns the converted string, and `ReadAsync()` returns the full `ReadLineResult`. Both produce the same outcomes as their synchronous counterparts and differ only in how they wait:
+
+```csharp
+var line = await ConsoleReadLine.ReadLineAsync(config);
+
+var result = await ConsoleReadLine.ReadAsync(config, cancellationToken);
+```
+
+The asynchronous versions do not occupy a thread while waiting for a keypress. This is useful when other work must continue while a prompt remains open, such as in a server with a console or an application that writes progress messages through `InsertText` while the user types.
+
+Key behaviors, formatters, lexers, and auto-completion still run synchronously on the thread that resumes the wait. Configuration delegates do not require asynchronous implementations.
+
+#### Implementing an Asynchronous Provider
+
+`IReadLineProvider` requires both `ReadKey` and `ReadKeyAsync`. Because .NET Standard 2.0 has no default interface methods, each provider must implement both methods. The appropriate implementation depends on the backend:
+
+* A backend whose input arrives through an event or an already asynchronous API should implement `ReadKeyAsync` natively and build the synchronous version on top of it.
+* A backend whose `ReadKey` does not block, such as one draining a populated queue, can implement `ReadKeyAsync` as `Task.FromResult(ReadKey(cancellationToken))`.
+* A backend that can only block, like `System.Console`, should wait for input to become available rather than blocking, then read. This is what `ConsoleReadLine` does, polling every 15 milliseconds.
+
+Do not wrap a blocking read in `Task.Run`. That approach occupies a thread until the user presses a key, and the token cannot interrupt it. After cancellation, the abandoned read also remains queued and consumes the next keypress when it arrives.
 
 ---
 
