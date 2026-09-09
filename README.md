@@ -43,7 +43,7 @@ var config = ReadLineConfig.Empty
     .SetAutoCompletion(AutoComplete)
     .SetLexer(lexer);
 
-string result = ConsoleReadline.ReadLine(config);
+string result = ConsoleReadLine.ReadLine(config);
 ```
 ![Example](./docs/animations/complex_config.svg)
 
@@ -55,7 +55,7 @@ Within the github repository there is a demo project which contains many example
 ![Example](./docs/animations/demo.svg)
 
 ---
-## Design Philosopy
+## Design Philosophy
 
 ### Obviousness and Correctness
 The design of this library's API was based on an attempt to do two things:
@@ -130,8 +130,8 @@ There are many pre-made bindings as well.  These exist in `BehaviorExtensionMeth
 
 * **`AddEnterToFinish()`** binds the action that completes the line input to the enter key
 * **`AddHomeAndEndKeys()`** binds the home and end keys to move the cursor to the beginning and end of the line, respectively
-* **`ArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
-* **`AddUpDownHistoryNavation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
+* **`AddArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
+* **`AddUpDownHistoryNavigation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
 * **`AddCtrlNavKeys()`** adds navigation and editing commands familiar to Bash users, such as cutting a word, cutting to the beginning or end, and jumping to the beginning or end. It also binds Ctrl+Y to paste back what was cut, and Ctrl+D to delete forward or signal the end of input when the line is empty
 * **`AddCancelKeys()`** binds Ctrl+C to abandon the current line
 * **`AddStandardKeys()`** adds the complete basic set of bindings used by `ReadLineConfig.Basic`: default character insertion, Enter to complete the line, Delete, Backspace, Home, End, the arrow keys, and Ctrl+C to abandon the line

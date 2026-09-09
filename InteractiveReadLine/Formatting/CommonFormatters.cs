@@ -6,6 +6,10 @@ using TokenFormatter = System.Func<InteractiveReadLine.Tokenizing.TokenizedLine,
 
 namespace InteractiveReadLine.Formatting
 {
+    /// <summary>
+    /// Provides ready-made formatters that add a prompt, hide text, or apply colors before displaying a line.
+    /// A formatter does not alter the text that the user is editing.
+    /// </summary>
     public static class CommonFormatters
     {
         /// <summary>

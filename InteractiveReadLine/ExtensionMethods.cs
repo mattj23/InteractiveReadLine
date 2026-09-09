@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace InteractiveReadLine
 {
+    /// <summary>
+    /// Provides methods that drive a provider through one line of input. Each method runs the interaction
+    /// through a handler and disposes the provider before returning.
+    /// </summary>
     public static class ExtensionMethods
     {
         /// <summary>

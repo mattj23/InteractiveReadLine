@@ -20,6 +20,9 @@ namespace InteractiveReadLine.Tokenizing
         private readonly List<Token> _tokens;
         private int _cursor;
 
+        /// <summary>
+        /// Creates an empty sequence to which a lexer can add tokens.
+        /// </summary>
         public TokenizedLine()
         {
             _tokens = new List<Token>();

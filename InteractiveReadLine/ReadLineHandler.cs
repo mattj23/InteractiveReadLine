@@ -37,6 +37,14 @@ namespace InteractiveReadLine
         private bool _cutOnThisKey;
         private bool _cutOnPreviousKey;
 
+        /// <summary>
+        /// Creates a handler which will read a single line of input through the given provider.
+        /// </summary>
+        /// <param name="provider">The backend which reads keys and displays the line</param>
+        /// <param name="config">
+        /// The configuration controlling key behaviors, formatting, lexing, auto-completion and history, or
+        /// null to use ReadLineConfig.Basic.
+        /// </param>
         public ReadLineHandler(IReadLineProvider provider, ReadLineConfig? config=null)
         {
             _config = config ?? ReadLineConfig.Basic;
@@ -177,6 +185,7 @@ namespace InteractiveReadLine
                 _historyIndex = history.Count;
         }
 
+        /// <inheritdoc />
         public void HistoryNext()
         {
             // If there is no history, we don't need to do anything
@@ -205,6 +214,7 @@ namespace InteractiveReadLine
             }
         }
 
+        /// <inheritdoc />
         public void HistoryPrevious()
         {
             // If there is no history, we don't need to do anything

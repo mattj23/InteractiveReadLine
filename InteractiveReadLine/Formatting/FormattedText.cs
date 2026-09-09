@@ -10,6 +10,14 @@ namespace InteractiveReadLine.Formatting
     /// </summary>
     public class FormattedText : IEquatable<FormattedText>
     {
+        /// <summary>
+        /// Creates formatted text whose characters all have the specified foreground and background colors.
+        /// Either color can be null to use the display default.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="foreground">The foreground color, or null to use the display default.</param>
+        /// <param name="background">The background color, or null to use the display default.</param>
+        /// <exception cref="ArgumentNullException">The text is null.</exception>
         public FormattedText(string text, ConsoleColor? foreground = null, ConsoleColor? background = null)
         {
             this.Text = text ?? throw new ArgumentNullException(nameof(text));
@@ -23,6 +31,10 @@ namespace InteractiveReadLine.Formatting
             }
         }
 
+        /// <summary>
+        /// Creates formatted text containing one character and its colors.
+        /// </summary>
+        /// <param name="c">The character used to create the text.</param>
         public FormattedText(FormattedChar c)
             : this(c.Char.ToString(), c.Foreground, c.Background)
         {
@@ -122,10 +134,19 @@ namespace InteractiveReadLine.Formatting
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Converts a plain string to formatted text which uses the display's default colors.
+        /// </summary>
         public static implicit operator FormattedText(string s) => new FormattedText(s);
         
+        /// <summary>
+        /// Converts a single formatted character to formatted text of length one.
+        /// </summary>
         public static implicit operator FormattedText(FormattedChar c) => new FormattedText(c);
 
+        /// <summary>
+        /// Joins two pieces of formatted text, preserving the colors each character already carried.
+        /// </summary>
         public static FormattedText operator +(FormattedText lhs, FormattedText rhs)
         {
             var product = new FormattedText(lhs.Text + rhs.Text);

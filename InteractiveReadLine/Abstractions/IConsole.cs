@@ -52,10 +52,30 @@ namespace InteractiveReadLine.Abstractions
         /// </summary>
         bool InputIsRedirected { get; }
 
+        /// <summary>
+        /// Writes formatted text at the cursor, applies each character's colors, and leaves the cursor after
+        /// the written text.
+        /// </summary>
+        /// <param name="text">The text to write.</param>
         void Write(FormattedText text);
+
+        /// <summary>
+        /// Writes formatted text at the cursor followed by a newline, leaving the cursor at the start of the
+        /// following row.
+        /// </summary>
+        /// <param name="text">The text to write.</param>
         void WriteLine(FormattedText text);
+
+        /// <summary>
+        /// Writes a single formatted character at the cursor, applying its colors.
+        /// </summary>
+        /// <param name="c">The character to write.</param>
         void Write(FormattedChar c);
 
+        /// <summary>
+        /// Waits for a keypress and returns it without echoing it to the display.
+        /// </summary>
+        /// <returns>Information about the pressed key.</returns>
         ConsoleKeyInfo ReadKey();
     }
 }

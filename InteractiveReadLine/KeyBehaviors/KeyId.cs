@@ -8,6 +8,10 @@ namespace InteractiveReadLine.KeyBehaviors
     /// </summary>
     public struct KeyId : IEquatable<KeyId>
     {
+        /// <summary>
+        /// Creates an identity that matches a character, regardless of the keys that produced it.
+        /// </summary>
+        /// <param name="c">The character to match.</param>
         public KeyId(char c)
         {
             this.Char = c;
@@ -17,6 +21,13 @@ namespace InteractiveReadLine.KeyBehaviors
             this.HasShift = false;
         }
 
+        /// <summary>
+        /// Creates an identity matching a key pressed together with a particular set of modifiers.
+        /// </summary>
+        /// <param name="key">The key to match.</param>
+        /// <param name="ctrl">Whether the Control key must be held.</param>
+        /// <param name="alt">Whether the Alt key must be held.</param>
+        /// <param name="shift">Whether the Shift key must be held.</param>
         public KeyId(ConsoleKey key, bool ctrl, bool alt, bool shift)
         {
             this.Char = null;
@@ -28,13 +39,31 @@ namespace InteractiveReadLine.KeyBehaviors
 
         // These properties are deliberately get-only. KeyId values serve as dictionary keys, and mutating a
         // value after using it to store a behavior would make the entry unreachable through that value.
+        /// <summary>
+        /// Gets the character this identity matches, or null when it matches a key rather than a character.
+        /// </summary>
         public char? Char { get; }
+        /// <summary>
+        /// Gets the key this identity matches, or null when it matches a character rather than a key.
+        /// </summary>
         public ConsoleKey? Key { get; }
 
+        /// <summary>
+        /// Gets whether the Control key must be held for this identity to match.
+        /// </summary>
         public bool HasCtrl { get; }
+        /// <summary>
+        /// Gets whether the Alt key must be held for this identity to match.
+        /// </summary>
         public bool HasAlt { get; }
+        /// <summary>
+        /// Gets whether the Shift key must be held for this identity to match.
+        /// </summary>
         public bool HasShift { get; }
 
+        /// <summary>
+        /// Returns a readable description of the keypress, such as "Ctrl+Shift+Tab".
+        /// </summary>
         public override string ToString()
         {
             var repr = new List<string>();
@@ -52,16 +81,21 @@ namespace InteractiveReadLine.KeyBehaviors
             return string.Join("+", repr);
         }
 
+        /// <summary>
+        /// Determines whether this identity matches the same keypress as another.
+        /// </summary>
         public bool Equals(KeyId other)
         {
             return Char == other.Char && Key == other.Key && HasCtrl == other.HasCtrl && HasAlt == other.HasAlt && HasShift == other.HasShift;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object? obj)
         {
             return obj is KeyId other && Equals(other);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked

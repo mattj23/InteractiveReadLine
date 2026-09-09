@@ -12,6 +12,11 @@ namespace InteractiveReadLine
         /// </summary>
         public static implicit operator LineState(string s) => new LineState(s, 0);
         
+        /// <summary>
+        /// Creates a line state from the text of a line and a cursor position within it.
+        /// </summary>
+        /// <param name="text">The contents of the line</param>
+        /// <param name="cursor">The cursor position, as an offset from the first character</param>
         public LineState(string text, int cursor)
         {
             Text = text;
@@ -28,6 +33,9 @@ namespace InteractiveReadLine
         /// </summary>
         public string Text { get; }
 
+        /// <summary>
+        /// Determines whether this line state holds the same text and cursor position as another.
+        /// </summary>
         public bool Equals(LineState? other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -35,6 +43,7 @@ namespace InteractiveReadLine
             return Cursor == other.Cursor && Text == other.Text;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -43,6 +52,7 @@ namespace InteractiveReadLine
             return Equals((LineState) obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked

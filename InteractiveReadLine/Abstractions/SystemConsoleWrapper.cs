@@ -11,26 +11,33 @@ namespace InteractiveReadLine.Abstractions
     /// </summary>
     public class SystemConsoleWrapper : IConsole
     {
+        /// <inheritdoc />
         public int CursorLeft
         {
             get => Console.CursorLeft;
             set => Console.CursorLeft = value;
         }
 
+        /// <inheritdoc />
         public int CursorTop
         {
             get => Console.CursorTop;
             set => Console.CursorTop = value;
         }
 
+        /// <inheritdoc />
         public int BufferHeight => Console.BufferHeight;
 
+        /// <inheritdoc />
         public int BufferWidth => Console.BufferWidth;
 
+        /// <inheritdoc />
         public bool KeyAvailable => Console.KeyAvailable;
 
+        /// <inheritdoc />
         public bool InputIsRedirected => Console.IsInputRedirected;
 
+        /// <inheritdoc />
         public bool TreatControlCAsInput
         {
             // Some platforms and processes without an attached console do not support reading or writing this
@@ -65,6 +72,7 @@ namespace InteractiveReadLine.Abstractions
             }
         }
 
+        /// <inheritdoc />
         public void Write(FormattedText text)
         {
             // Break the text into pieces which have the same foreground and background colors, then write them
@@ -92,12 +100,14 @@ namespace InteractiveReadLine.Abstractions
             }
         }
 
+        /// <inheritdoc />
         public void WriteLine(FormattedText text)
         {
             this.Write(text);
             this.Write("\n");
         }
 
+        /// <inheritdoc />
         public void Write(FormattedChar c)
         {
             // A single character is a one-character run of formatted text, so defer to the text overload to
@@ -106,6 +116,7 @@ namespace InteractiveReadLine.Abstractions
             this.Write(new FormattedText(c));
         }
 
+        /// <inheritdoc />
         public ConsoleKeyInfo ReadKey()
         {
             return Console.ReadKey(true);
