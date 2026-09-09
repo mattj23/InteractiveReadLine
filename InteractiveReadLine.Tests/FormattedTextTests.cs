@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using InteractiveReadLine.Formatting;
 using Xunit;
@@ -88,8 +89,78 @@ namespace InteractiveReadLine.Tests
         public void Equality_FalseOnNullOther()
         {
             var t = new FormattedText("test");
-            
+
             Assert.False(t.Equals(null));
+        }
+
+        [Fact]
+        public void Constructor_WithNullText_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => new FormattedText(null));
+        }
+
+        [Fact]
+        public void ObjectEquality_MatchesTypedEquality()
+        {
+            object t0 = new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black);
+            object t1 = new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black);
+
+            Assert.True(t0.Equals(t1));
+        }
+
+        [Fact]
+        public void ObjectEquality_FalseOnDifferentColors()
+        {
+            object t0 = new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black);
+            object t1 = new FormattedText("test", ConsoleColor.Blue, ConsoleColor.Black);
+
+            Assert.False(t0.Equals(t1));
+        }
+
+        [Fact]
+        public void ObjectEquality_FalseOnUnrelatedType()
+        {
+            object t = new FormattedText("test");
+
+            Assert.False(t.Equals("test"));
+        }
+
+        [Fact]
+        public void HashCode_MatchesForEqualInstances()
+        {
+            var t0 = new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black);
+            var t1 = new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black);
+
+            Assert.Equal(t0, t1);
+            Assert.Equal(t0.GetHashCode(), t1.GetHashCode());
+        }
+
+        /// <summary>
+        /// The color arrays are mutable and publicly accessible, so the hash code deliberately ignores them.
+        /// It therefore remains stable while the instance is in a hash-based collection.
+        /// </summary>
+        [Fact]
+        public void HashCode_IsUnaffectedByColorChanges()
+        {
+            var text = new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black);
+            var before = text.GetHashCode();
+
+            text.SetForeground(ConsoleColor.Green);
+
+            Assert.Equal(before, text.GetHashCode());
+        }
+
+        [Fact]
+        public void CanBeUsedInAHashSet()
+        {
+            var set = new HashSet<FormattedText>
+            {
+                new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black),
+                new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black)
+            };
+
+            Assert.Single(set);
+            Assert.Contains(new FormattedText("test", ConsoleColor.Red, ConsoleColor.Black), set);
         }
 
         [Fact]

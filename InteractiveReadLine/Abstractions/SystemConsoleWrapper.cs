@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Text;
 using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Abstractions
 {
     /// <summary>
-    /// A wrapper around the System.Console object. This currently only exists to allow unit testing.
+    /// Presents System.Console through the IConsole interface. This default implementation originally existed
+    /// to support unit testing. It is public so that callers can decorate or compose it to intercept output
+    /// that read line operations write to the system console.
     /// </summary>
-    internal class SystemConsoleWrapper : IConsole
+    public class SystemConsoleWrapper : IConsole
     {
         public int CursorLeft
         {
@@ -57,16 +58,10 @@ namespace InteractiveReadLine.Abstractions
 
         public void Write(FormattedChar c)
         {
-            // TODO: Is there a more efficient way of dealing with this?
-            Console.ResetColor();
-
-            if (c.Foreground != null)
-                Console.ForegroundColor = (ConsoleColor) c.Foreground;
-
-            if (c.Background != null)
-                Console.BackgroundColor = (ConsoleColor) c.Background;
-
-            Console.Write(c.Char);
+            // A single character is a one-character run of formatted text, so defer to the text overload to
+            // reuse its color handling. When the character specifies foreground and background colors, this
+            // also avoids resetting the console colors immediately before setting both of them.
+            this.Write(new FormattedText(c));
         }
 
         public ConsoleKeyInfo ReadKey()

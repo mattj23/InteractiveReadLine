@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace InteractiveReadLine
+﻿namespace InteractiveReadLine
 {
     public static class ExtensionMethods
     {

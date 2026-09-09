@@ -15,6 +15,7 @@ namespace InteractiveReadLine
         private FormattedText _lastWrittenText;
         private int _lastWrittenCursor;
         private int _startingRow;
+        private bool _disposed;
 
         public ConsoleReadLine(IConsole console=null)
         {
@@ -89,25 +90,12 @@ namespace InteractiveReadLine
                 {
                     edit = new Tuple<int, FormattedText>(edit.Item1, edit.Item2 + writeText[i]);
                 }
-
-                /*
-                int left = this.ColOffset(i);
-                int top = this.RowOffset(i) + _startingRow;
-
-                if (left != _console.CursorLeft)
-                    _console.CursorLeft = left;
-                if (top != _console.CursorTop)
-                    _console.CursorTop = top;
-
-                _console.Write(writeText[i]);
-            */
             }
             if (edit != null)
                 edits.Add(edit);
 
             foreach (var e in edits)
             {
-                
                 int left = this.ColOffset(e.Item1);
                 int top = this.RowOffset(e.Item1) + _startingRow;
 
@@ -155,8 +143,16 @@ namespace InteractiveReadLine
 
         }
         
+        /// <summary>
+        /// Finishes the read line operation and moves the console cursor to the following row. Additional calls
+        /// have no effect.
+        /// </summary>
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             this.Finish();
         }
 

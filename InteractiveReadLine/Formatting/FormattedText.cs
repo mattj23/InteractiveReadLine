@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Net.Mime;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace InteractiveReadLine.Formatting
@@ -17,7 +12,7 @@ namespace InteractiveReadLine.Formatting
     {
         public FormattedText(string text, ConsoleColor? foreground = null, ConsoleColor? background = null)
         {
-            this.Text = text;
+            this.Text = text ?? throw new ArgumentNullException(nameof(text));
             this.Foreground = new ConsoleColor?[this.Text.Length];
             this.Background = new ConsoleColor?[this.Text.Length];
 
@@ -149,6 +144,10 @@ namespace InteractiveReadLine.Formatting
             return product;
         }
 
+        /// <summary>
+        /// Determines whether this instance and another FormattedText instance contain identical characters
+        /// and identical per-character foreground and background colors.
+        /// </summary>
         public bool Equals(FormattedText other)
         {
             if (other == null || this.Text != other.Text)
@@ -165,5 +164,19 @@ namespace InteractiveReadLine.Formatting
 
             return true;
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj) => this.Equals(obj as FormattedText);
+
+        /// <summary>
+        /// Gets a hash code derived from the characters of the text, ignoring the colors.
+        /// </summary>
+        /// <remarks>
+        /// The color arrays are mutable and publicly accessible, so including them would let an instance's hash
+        /// code change while the instance is in a hash-based collection. Hashing only the text keeps the hash
+        /// code stable for the lifetime of the instance and satisfies the contract because equal instances
+        /// contain the same text. Instances that differ only by color can have the same hash code.
+        /// </remarks>
+        public override int GetHashCode() => this.Text.GetHashCode();
     }
 }

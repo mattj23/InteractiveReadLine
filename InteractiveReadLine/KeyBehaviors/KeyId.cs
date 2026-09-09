@@ -26,12 +26,14 @@ namespace InteractiveReadLine.KeyBehaviors
             this.HasShift = shift;
         }
 
-        public char? Char { get; set; }
-        public ConsoleKey? Key { get; set; }
+        // These properties are deliberately get-only. KeyId values serve as dictionary keys, and mutating a
+        // value after using it to store a behavior would make the entry unreachable through that value.
+        public char? Char { get; }
+        public ConsoleKey? Key { get; }
 
-        public bool HasCtrl { get; set; }
-        public bool HasAlt { get; set; }
-        public bool HasShift { get; set; }
+        public bool HasCtrl { get; }
+        public bool HasAlt { get; }
+        public bool HasShift { get; }
 
         public override string ToString()
         {
