@@ -1,0 +1,26 @@
+# Normalize line endings
+#
+# This file was added after the repository had already accumulated a mix of
+# CRLF and LF files; the history was renormalized in a single dedicated commit
+# (see .git-blame-ignore-revs).
+
+* text=auto
+
+# Source and project files. diff=csharp gives hunk headers that name the
+# enclosing type or method.
+*.cs        text diff=csharp
+*.csproj    text
+*.props     text
+*.targets   text
+
+*.sln       text
+
+# Always LF: these are consumed by tools that dislike CR.
+*.sh        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+*.md        text diff=markdown
+*.json      text
+*.svg       text
+LICENSE     text
