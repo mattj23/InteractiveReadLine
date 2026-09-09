@@ -60,9 +60,12 @@ For example, the following code maps `HistoryNext` to Ctrl+Shift+Tab, and `Histo
 
 ```csharp
 var config = ReadLineConfig.Empty
-    .AddKeyBehavior(ConsoleKey.Tab, true, true, false, CommonKeyBehaviors.HistoryNext)
+    .AddKeyBehavior(ConsoleKey.Tab, true, false, true, CommonKeyBehaviors.HistoryNext)
     .AddKeyBehavior('-', CommonKeyBehaviors.HistoryPrevious);
 ```
+
+The three booleans represent modifier keys in the order **control, alt, shift**, which matches the
+`KeyId` constructor. Therefore, Ctrl+Shift+Tab is `true, false, true`.
 
 ### Providing History Values
 

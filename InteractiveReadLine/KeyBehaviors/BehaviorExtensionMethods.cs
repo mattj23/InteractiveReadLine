@@ -6,14 +6,16 @@ namespace InteractiveReadLine.KeyBehaviors
     {
         public static ReadLineConfig AddKeyBehavior(this ReadLineConfig config, KeyId key, Action<IKeyBehaviorTarget> action)
         {
-            config.KeyBehaviors.Add(key, action);
+            // Use assignment so that a binding registered later replaces an earlier binding without throwing.
+            // This lets callers start with a pre-built configuration and override individual keys.
+            config.KeyBehaviors[key] = action;
             return config;
         }
 
         public static ReadLineConfig AddKeyBehavior(this ReadLineConfig config, ConsoleKey key,
             bool control, bool alt, bool shift, Action<IKeyBehaviorTarget> action)
         {
-            return config.AddKeyBehavior(new KeyId(key, false, false, false), action);
+            return config.AddKeyBehavior(new KeyId(key, control, alt, shift), action);
         }
 
         public static ReadLineConfig AddKeyBehavior(this ReadLineConfig config, char key,

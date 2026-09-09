@@ -164,12 +164,30 @@ var config = ReadLineConfig.Empty
     .AddKeyBehavior(new KeyId(ConsoleKey.S, false, true, false), CommonKeyBehaviors.CutToStart)
     .[...]
 ```
+
+You can write the same binding without constructing a `KeyId` by passing the modifiers directly.
+The three booleans are **control, alt, shift**, in that order:
+
+```csharp
+var config = ReadLineConfig.Empty
+    .AddKeyBehavior(ConsoleKey.S, false, true, false, CommonKeyBehaviors.CutToStart)
+    .[...]
+```
     
 Or, to bind the `'?'` character to end the input:
 ```csharp
 var config = ReadLineConfig.Empty
     .AddKeyBehavior('?', CommonKeyBehaviors.Finish)
     .[...]
+```
+
+Binding a key that is already bound replaces its existing behavior without raising an error. You can
+therefore use a pre-built configuration as a starting point and selectively override its bindings:
+
+```csharp
+// Basic maps the down arrow to history navigation; this replaces that binding
+var config = ReadLineConfig.Basic
+    .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.Delete);
 ```
 
 #### Custom Key Behaviors
