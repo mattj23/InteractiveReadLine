@@ -271,6 +271,29 @@ Abandoned lines and end-of-input signals are not recorded in history because the
 
 > **A note on Ctrl+C.** The console normally treats Ctrl+C as a request to terminate the program, so the keypress does not reach the application. To let a key behavior respond, the `ConsoleReadLine` provider temporarily configures the console to deliver Ctrl+C as an ordinary keypress. Therefore, **while a line is being read, Ctrl+C abandons the line instead of terminating the process**. The provider restores the previous console setting when the operation finishes. To make Ctrl+C have no effect during a read, build a configuration without `AddCancelKeys()`.
 
+#### Canceling From Code
+
+The user initiates each of the three outcomes above. A program can also cancel a read by passing a `CancellationToken`:
+
+```csharp
+using var source = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+try
+{
+    var line = ConsoleReadLine.ReadLine(config, source.Token);
+}
+catch (OperationCanceledException)
+{
+    Console.WriteLine("Timed out waiting for input");
+}
+```
+
+Canceling this way raises an `OperationCanceledException` instead of returning a result. User cancellation is ordinary input and produces a `Cancelled` result. Programmatic cancellation interrupts control flow and raises an exception. The provider is still disposed after programmatic cancellation, so it restores the console as it would after any other read.
+
+Because a console read cannot be interrupted after it starts, a cancelable read polls for an available keypress and checks the token between polls. The provider waits 15 milliseconds between checks while the prompt is idle. If you omit the token or pass `CancellationToken.None`, the provider uses the ordinary blocking path without polling.
+
+> **An interactive console is required.** Individual keypresses cannot be read from a pipe or file. Therefore, the `ConsoleReadLine` constructor throws an `InvalidOperationException` when standard input is redirected. Use `Console.ReadLine()` for redirected input or supply a custom `IReadLineProvider`. The provider checks the `IConsole.InputIsRedirected` property, so custom console implementations determine whether their input is redirected.
+
 ---
 
 ### Formatters

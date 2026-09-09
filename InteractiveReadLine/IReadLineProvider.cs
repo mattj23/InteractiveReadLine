@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine
@@ -21,8 +22,13 @@ namespace InteractiveReadLine
         /// <summary>
         /// Waits synchronously for a ConsoleKeyInfo to be returned from some underlying input source.
         /// </summary>
-        /// <returns>The information of the key which was just read/pressed</returns>
-        ConsoleKeyInfo ReadKey();
+        /// <param name="cancellationToken">
+        /// A token that cancels the wait. An implementation whose underlying wait cannot be interrupted
+        /// should poll for input becoming available rather than blocking, so that the token can be observed.
+        /// </param>
+        /// <returns>Information about the key that was read.</returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before a key arrived.</exception>
+        ConsoleKeyInfo ReadKey(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Displays the LineDisplayState to the visual output, including the cursor position

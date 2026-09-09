@@ -41,6 +41,17 @@ namespace InteractiveReadLine.Abstractions
         /// </remarks>
         bool TreatControlCAsInput { get; set; }
 
+        /// <summary>
+        /// Gets whether a keypress is waiting, which lets callers wait for input without blocking on ReadKey.
+        /// </summary>
+        bool KeyAvailable { get; }
+
+        /// <summary>
+        /// Gets whether input comes from a redirected stream instead of an interactive console. Individual
+        /// keypresses cannot be read from a redirected stream.
+        /// </summary>
+        bool InputIsRedirected { get; }
+
         void Write(FormattedText text);
         void WriteLine(FormattedText text);
         void Write(FormattedChar c);

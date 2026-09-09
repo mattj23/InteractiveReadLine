@@ -27,6 +27,10 @@ namespace InteractiveReadLine.Abstractions
 
         public int BufferWidth => Console.BufferWidth;
 
+        public bool KeyAvailable => Console.KeyAvailable;
+
+        public bool InputIsRedirected => Console.IsInputRedirected;
+
         public bool TreatControlCAsInput
         {
             // Some platforms and processes without an attached console do not support reading or writing this

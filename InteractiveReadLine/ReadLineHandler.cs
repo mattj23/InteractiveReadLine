@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
@@ -189,17 +190,25 @@ namespace InteractiveReadLine
         /// Interactively manage the user input of a line of text at the console, returning the contents
         /// of the text when finished.
         /// </summary>
+        /// <param name="cancellationToken">A token that cancels the read.</param>
         /// <returns>
         /// The finished text; null if the user signaled the end of input; or an empty string if the user
         /// abandoned the line. Use Read to distinguish an abandoned line from an entered empty line.
         /// </returns>
-        public string ReadLine() => this.Read().ToText();
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public string ReadLine(CancellationToken cancellationToken = default) =>
+            this.Read(cancellationToken).ToText();
 
         /// <summary>
         /// Interactively manages a line of console input and returns a result that describes the text and how
         /// the interaction ended.
         /// </summary>
-        public ReadLineResult Read()
+        /// <param name="cancellationToken">
+        /// A token that cancels the read. Cancellation raises an OperationCanceledException instead of
+        /// producing a result, which is what distinguishes it from the user abandoning the line with Ctrl+C.
+        /// </param>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public ReadLineResult Read(CancellationToken cancellationToken = default)
         {
             // The display must be updated at the beginning if any prompts or other prefix/suffix text
             // is to be displayed
@@ -212,7 +221,7 @@ namespace InteractiveReadLine
             // for the next key.
             while (true)
             {
-                this.ReceivedKey = _provider.ReadKey();
+                this.ReceivedKey = _provider.ReadKey(cancellationToken);
 
                 if (this.ProcessKey())
                     break;

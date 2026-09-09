@@ -1,4 +1,6 @@
-﻿namespace InteractiveReadLine
+﻿using System.Threading;
+
+namespace InteractiveReadLine
 {
     public static class ExtensionMethods
     {
@@ -9,13 +11,18 @@
         /// <param name="provider">the IReadLineProvider provider which will perform the interaction with the user (for
         /// example, the ConsoleReadLine object which wraps System.Console)</param>
         /// <param name="config">The configuration to use for this specific interaction</param>
+        /// <param name="cancellationToken">A token that cancels the read.</param>
         /// <returns>
         /// The text read from the user; null if the user signaled the end of input; or an empty string if the
         /// user abandoned the line. Use Read to distinguish an abandoned line from an entered empty line.
         /// </returns>
-        public static string ReadLine(this IReadLineProvider provider, ReadLineConfig config=null)
+        /// <exception cref="System.OperationCanceledException">
+        /// The token was canceled before input completed.
+        /// </exception>
+        public static string ReadLine(this IReadLineProvider provider, ReadLineConfig config=null,
+            CancellationToken cancellationToken=default)
         {
-            return provider.Read(config).ToText();
+            return provider.Read(config, cancellationToken).ToText();
         }
 
         /// <summary>
@@ -25,12 +32,21 @@
         /// <param name="provider">the IReadLineProvider provider which will perform the interaction with the user (for
         /// example, the ConsoleReadLine object which wraps System.Console)</param>
         /// <param name="config">The configuration to use for this specific interaction</param>
-        public static ReadLineResult Read(this IReadLineProvider provider, ReadLineConfig config=null)
+        /// <param name="cancellationToken">
+        /// A token that cancels the read. The provider is still disposed if the read is canceled, so the
+        /// console is left in the state it would have been after an ordinary read.
+        /// </param>
+        /// <returns>The completed interaction result.</returns>
+        /// <exception cref="System.OperationCanceledException">
+        /// The token was canceled before input completed.
+        /// </exception>
+        public static ReadLineResult Read(this IReadLineProvider provider, ReadLineConfig config=null,
+            CancellationToken cancellationToken=default)
         {
             using (provider)
             {
                 var handler = new ReadLineHandler(provider, config);
-                return handler.Read();
+                return handler.Read(cancellationToken);
             }
         }
 
