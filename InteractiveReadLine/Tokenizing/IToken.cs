@@ -35,25 +35,25 @@
         /// Gets the next token in the sequence, regardless of whether the next token is hidden or not. Returns null
         /// if this is the last token in the sequence.
         /// </summary>
-        IToken Next { get; }
+        IToken? Next { get; }
 
         /// <summary>
         /// Gets the previous token in the sequence, regardless of whether the previous token is hidden or not. Returns
         /// null if this is the first token in the sequence.
         /// </summary>
-        IToken Previous { get; }
+        IToken? Previous { get; }
 
         /// <summary>
         /// Gets the next token in the sequence, ignoring hidden tokens. Returns null if this is the last non-hidden
         /// token in the sequence.
         /// </summary>
-        IToken NextNotHidden { get; }
+        IToken? NextNotHidden { get; }
 
         /// <summary>
         /// Gets the previous token in the sequence, ignoring hidden tokens. Returns null if this is the first non-hidden
         /// token in the sequence.
         /// </summary>
-        IToken PreviousNotHidden { get; }
+        IToken? PreviousNotHidden { get; }
 
         /// <summary>
         /// Gets a value indicating whether or not this token is considered a hidden (grammatically meaningless) token. An

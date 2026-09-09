@@ -20,9 +20,9 @@ namespace InteractiveReadLine
         private readonly ReadLineConfig _config;
         private int _cursorPos;
         private int _autoCompleteIndex;
-        private TokenizedLine _autoCompleteTokens;
+        private TokenizedLine? _autoCompleteTokens;
         private bool _autoCompleteCalled = false;
-        private string[] _autoCompleteSuggestions;
+        private string[]? _autoCompleteSuggestions;
 
         private int _historyIndex;
         private LineState _preHistoryState;
@@ -37,7 +37,7 @@ namespace InteractiveReadLine
         private bool _cutOnThisKey;
         private bool _cutOnPreviousKey;
 
-        public ReadLineHandler(IReadLineProvider provider, ReadLineConfig config=null)
+        public ReadLineHandler(IReadLineProvider provider, ReadLineConfig? config=null)
         {
             _config = config ?? ReadLineConfig.Basic;
             _provider = provider;
@@ -83,7 +83,7 @@ namespace InteractiveReadLine
         /// <inheritdoc />
         public void AutoCompleteNext()
         {
-            if (_autoCompleteIndex >= 0)
+            if (_autoCompleteIndex >= 0 && _autoCompleteSuggestions != null)
             {
                 // Next index
                 _autoCompleteIndex++;
@@ -99,7 +99,7 @@ namespace InteractiveReadLine
         /// <inheritdoc />
         public void AutoCompletePrevious()
         {
-            if (_autoCompleteIndex >= 0)
+            if (_autoCompleteIndex >= 0 && _autoCompleteSuggestions != null)
             {
                 // Previous index
                 _autoCompleteIndex--;
@@ -120,7 +120,7 @@ namespace InteractiveReadLine
         }
 
         /// <inheritdoc />
-        public TokenizedLine GetTextTokens()
+        public TokenizedLine? GetTextTokens()
         {
             return _config.Lexer?.Invoke(this.LineState);
         }
@@ -172,8 +172,9 @@ namespace InteractiveReadLine
         /// </remarks>
         private void ClampHistoryIndex()
         {
-            if (_historyIndex > _config.History.Count)
-                _historyIndex = _config.History.Count;
+            var history = _config.History;
+            if (history != null && _historyIndex > history.Count)
+                _historyIndex = history.Count;
         }
 
         public void HistoryNext()
@@ -238,7 +239,7 @@ namespace InteractiveReadLine
         /// abandoned the line. Use Read to distinguish an abandoned line from an entered empty line.
         /// </returns>
         /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
-        public string ReadLine(CancellationToken cancellationToken = default) =>
+        public string? ReadLine(CancellationToken cancellationToken = default) =>
             this.Read(cancellationToken).ToText();
 
         /// <summary>
@@ -284,7 +285,7 @@ namespace InteractiveReadLine
         /// abandoned the line. Use ReadAsync to distinguish an abandoned line from an entered empty line.
         /// </returns>
         /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
-        public async Task<string> ReadLineAsync(CancellationToken cancellationToken = default)
+        public async Task<string?> ReadLineAsync(CancellationToken cancellationToken = default)
         {
             var result = await this.ReadAsync(cancellationToken).ConfigureAwait(false);
             return result.ToText();
@@ -393,7 +394,11 @@ namespace InteractiveReadLine
             if (_config.FormatterFromLine != null)
                 display = _config.FormatterFromLine.Invoke(LineState);
             else if (_config.FormatterFromTokens != null && _config.Lexer != null)
-                display = _config.FormatterFromTokens(GetTextTokens());
+            {
+                var tokens = this.GetTextTokens();
+                if (tokens != null)
+                    display = _config.FormatterFromTokens(tokens);
+            }
 
             _provider.SetDisplay(display);
         }
@@ -403,7 +408,7 @@ namespace InteractiveReadLine
         /// for that key. The character is checked first, and if that fails, the ConsoleKey and the modifier keys
         /// are checked. If that fails, null is returned
         /// </summary>
-        private Action<IKeyBehaviorTarget> GetKeyAction(ConsoleKeyInfo info)
+        private Action<IKeyBehaviorTarget>? GetKeyAction(ConsoleKeyInfo info)
         {
                 var charKey = new KeyId(info.KeyChar);
             if (_config.KeyBehaviors.ContainsKey(charKey))
@@ -426,14 +431,18 @@ namespace InteractiveReadLine
         /// </summary>
         private void StartAutoComplete()
         {
-            if (!_config.CanAutoComplete)
+            // CanAutoComplete tests whether both values are present. Store them in local variables so nullable
+            // analysis can preserve that relationship throughout the method.
+            var lexer = _config.Lexer;
+            var autoCompletion = _config.AutoCompletion;
+            if (lexer == null || autoCompletion == null)
                 return;
 
-            _autoCompleteTokens = _config.Lexer(new LineState(TextBuffer.ToString(), _cursorPos));
-            if (_autoCompleteTokens.CursorToken == null)
+            _autoCompleteTokens = lexer(new LineState(TextBuffer.ToString(), _cursorPos));
+            if (_autoCompleteTokens?.CursorToken == null)
                 return;
 
-            _autoCompleteSuggestions = _config.AutoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
+            _autoCompleteSuggestions = autoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
 
             if (_autoCompleteTokens.Text != TextBuffer.ToString())
             {
@@ -468,16 +477,20 @@ namespace InteractiveReadLine
         /// </summary>
         private void SetAutoCompleteText()
         {
-            if (!_config.CanAutoComplete || _autoCompleteTokens == null || _autoCompleteIndex < 0)
+            var tokens = _autoCompleteTokens;
+            var suggestions = _autoCompleteSuggestions;
+            var cursorToken = tokens?.CursorToken;
+
+            if (tokens == null || suggestions == null || cursorToken == null || _autoCompleteIndex < 0)
                 return;
 
             _autoCompleteCalled = true;
-            _autoCompleteTokens.CursorToken.Text = _autoCompleteSuggestions[_autoCompleteIndex];
-            _autoCompleteTokens.CursorToken.Cursor = _autoCompleteTokens.CursorToken.Text.Length;
+            cursorToken.Text = suggestions[_autoCompleteIndex];
+            cursorToken.Cursor = cursorToken.Text.Length;
 
             TextBuffer.Clear();
-            TextBuffer.Append(_autoCompleteTokens.Text);
-            CursorPosition = _autoCompleteTokens.Cursor;
+            TextBuffer.Append(tokens.Text);
+            CursorPosition = tokens.Cursor;
 
         }
 

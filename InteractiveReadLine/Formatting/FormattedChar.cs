@@ -24,7 +24,7 @@ namespace InteractiveReadLine.Formatting
             return Char == other.Char && Foreground == other.Foreground && Background == other.Background;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is FormattedChar other && Equals(other);
         }

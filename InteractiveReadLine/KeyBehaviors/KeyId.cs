@@ -45,7 +45,7 @@ namespace InteractiveReadLine.KeyBehaviors
             if (HasShift)
                 repr.Add("Shift");
             if (Key != null)
-                repr.Add(Key.ToString());
+                repr.Add(Key.Value.ToString());
             else 
                 repr.Add("'" + Char + "'");
 
@@ -57,7 +57,7 @@ namespace InteractiveReadLine.KeyBehaviors
             return Char == other.Char && Key == other.Key && HasCtrl == other.HasCtrl && HasAlt == other.HasAlt && HasShift == other.HasShift;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is KeyId other && Equals(other);
         }

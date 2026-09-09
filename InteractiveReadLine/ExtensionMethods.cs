@@ -20,7 +20,7 @@ namespace InteractiveReadLine
         /// <exception cref="System.OperationCanceledException">
         /// The token was canceled before input completed.
         /// </exception>
-        public static string ReadLine(this IReadLineProvider provider, ReadLineConfig config=null,
+        public static string? ReadLine(this IReadLineProvider provider, ReadLineConfig? config=null,
             CancellationToken cancellationToken=default)
         {
             return provider.Read(config, cancellationToken).ToText();
@@ -41,7 +41,7 @@ namespace InteractiveReadLine
         /// <exception cref="System.OperationCanceledException">
         /// The token was canceled before input completed.
         /// </exception>
-        public static ReadLineResult Read(this IReadLineProvider provider, ReadLineConfig config=null,
+        public static ReadLineResult Read(this IReadLineProvider provider, ReadLineConfig? config=null,
             CancellationToken cancellationToken=default)
         {
             using (provider)
@@ -66,7 +66,7 @@ namespace InteractiveReadLine
         /// <exception cref="System.OperationCanceledException">
         /// The token was canceled before input completed.
         /// </exception>
-        public static async Task<string> ReadLineAsync(this IReadLineProvider provider, ReadLineConfig config=null,
+        public static async Task<string?> ReadLineAsync(this IReadLineProvider provider, ReadLineConfig? config=null,
             CancellationToken cancellationToken=default)
         {
             var result = await provider.ReadAsync(config, cancellationToken).ConfigureAwait(false);
@@ -89,7 +89,7 @@ namespace InteractiveReadLine
         /// <exception cref="System.OperationCanceledException">
         /// The token was canceled before input completed.
         /// </exception>
-        public static async Task<ReadLineResult> ReadAsync(this IReadLineProvider provider, ReadLineConfig config=null,
+        public static async Task<ReadLineResult> ReadAsync(this IReadLineProvider provider, ReadLineConfig? config=null,
             CancellationToken cancellationToken=default)
         {
             using (provider)

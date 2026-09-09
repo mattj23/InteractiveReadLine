@@ -88,7 +88,7 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <param name="message">A function which receives a Tokens object and uses it to create a string
         /// message, this is typically useful for providing help or hints to the user</param>
         /// <returns>A key behavior action which can be registered with the read line configuration</returns>
-        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine, string> message)
+        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine?, string> message)
         {
             return new Action<IKeyBehaviorTarget>(t => t.InsertText(message(t.GetTextTokens())));
         }
@@ -197,10 +197,12 @@ namespace InteractiveReadLine.KeyBehaviors
 
             var tokens =
                 CommonLexers.SplitOnWhitespace(new LineState(target.TextBuffer.ToString(), target.CursorPosition));
-            int cursor = (int) tokens.CursorToken.Cursor;
-
             var token = tokens.CursorToken;
-            var previous = tokens.CursorToken.Previous;
+            if (token?.Cursor == null)
+                return;
+
+            int cursor = token.Cursor.Value;
+            var previous = token.Previous;
 
             if (cursor == 0 && previous?.IsHidden == true)
             {

@@ -14,9 +14,6 @@ namespace InteractiveReadLine.Demo
 {
     class Program
     {
-        private static ConsoleReadLine _provider;
-        private static string[] _options;
-
         private static DemoNode _demoHome;
         private static DemoNode _activeNode;
 

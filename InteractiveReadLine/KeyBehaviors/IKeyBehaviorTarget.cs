@@ -46,11 +46,10 @@ namespace InteractiveReadLine.KeyBehaviors
         void InsertText(FormattedText text);
 
         /// <summary>
-        /// If the handler configuration has a tokenizer, this will get the tokenization result of the text
-        /// buffer
+        /// Gets the tokenized text buffer when the handler configuration has a lexer.
         /// </summary>
-        /// <returns>Returns null if there is no tokenizer, otherwise a Tokens result</returns>
-        TokenizedLine GetTextTokens();
+        /// <returns>The tokenized line, or null when the configuration has no lexer.</returns>
+        TokenizedLine? GetTextTokens();
 
         /// <summary>
         /// Invokes the history's "next" functionality, which replaces the entire line with the next element

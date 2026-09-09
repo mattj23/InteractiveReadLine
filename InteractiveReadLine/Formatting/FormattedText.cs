@@ -148,7 +148,7 @@ namespace InteractiveReadLine.Formatting
         /// Determines whether this instance and another FormattedText instance contain identical characters
         /// and identical per-character foreground and background colors.
         /// </summary>
-        public bool Equals(FormattedText other)
+        public bool Equals(FormattedText? other)
         {
             if (other == null || this.Text != other.Text)
                 return false;
@@ -166,7 +166,7 @@ namespace InteractiveReadLine.Formatting
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => this.Equals(obj as FormattedText);
+        public override bool Equals(object? obj) => this.Equals(obj as FormattedText);
 
         /// <summary>
         /// Gets a hash code derived from the characters of the text, ignoring the colors.

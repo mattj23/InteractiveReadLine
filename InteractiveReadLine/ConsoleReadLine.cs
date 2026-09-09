@@ -19,7 +19,7 @@ namespace InteractiveReadLine
         private const int PollIntervalMilliseconds = 15;
 
         private readonly IConsole _console;
-        private FormattedText _lastWrittenText;
+        private FormattedText _lastWrittenText = string.Empty;
         private int _lastWrittenCursor;
         private int _startingRow;
         private bool _disposed;
@@ -30,7 +30,7 @@ namespace InteractiveReadLine
         /// </summary>
         /// <param name="console">The console to use, or null to use System.Console.</param>
         /// <exception cref="InvalidOperationException">The selected console reports redirected input.</exception>
-        public ConsoleReadLine(IConsole console=null)
+        public ConsoleReadLine(IConsole? console=null)
         {
             _console = console ?? new SystemConsoleWrapper();
             this.Start();
@@ -118,7 +118,7 @@ namespace InteractiveReadLine
             // Cluster the edits into contiguous FormattedText objects, each with a cursor start position.
             var edits = new List<Tuple<int, FormattedText>>();
 
-            Tuple<int, FormattedText> edit = null;
+            Tuple<int, FormattedText>? edit = null;
             
             for (int i = 0; i < writeText.Length; i++)
             {
@@ -250,7 +250,7 @@ namespace InteractiveReadLine
         /// </returns>
         /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
         /// <exception cref="InvalidOperationException">Standard input is redirected.</exception>
-        public static string ReadLine(ReadLineConfig config=null, CancellationToken cancellationToken=default)
+        public static string? ReadLine(ReadLineConfig? config=null, CancellationToken cancellationToken=default)
         {
             var provider = new ConsoleReadLine();
             return provider.ReadLine(config ?? ReadLineConfig.Basic, cancellationToken);
@@ -265,7 +265,7 @@ namespace InteractiveReadLine
         /// <returns>The completed interaction result.</returns>
         /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
         /// <exception cref="InvalidOperationException">Standard input is redirected.</exception>
-        public static ReadLineResult Read(ReadLineConfig config=null, CancellationToken cancellationToken=default)
+        public static ReadLineResult Read(ReadLineConfig? config=null, CancellationToken cancellationToken=default)
         {
             var provider = new ConsoleReadLine();
             return provider.Read(config ?? ReadLineConfig.Basic, cancellationToken);
@@ -282,7 +282,7 @@ namespace InteractiveReadLine
         /// </returns>
         /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
         /// <exception cref="InvalidOperationException">Standard input is redirected.</exception>
-        public static Task<string> ReadLineAsync(ReadLineConfig config=null,
+        public static Task<string?> ReadLineAsync(ReadLineConfig? config=null,
             CancellationToken cancellationToken=default)
         {
             var provider = new ConsoleReadLine();
@@ -298,7 +298,7 @@ namespace InteractiveReadLine
         /// <returns>A task producing the completed interaction result.</returns>
         /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
         /// <exception cref="InvalidOperationException">Standard input is redirected.</exception>
-        public static Task<ReadLineResult> ReadAsync(ReadLineConfig config=null,
+        public static Task<ReadLineResult> ReadAsync(ReadLineConfig? config=null,
             CancellationToken cancellationToken=default)
         {
             var provider = new ConsoleReadLine();

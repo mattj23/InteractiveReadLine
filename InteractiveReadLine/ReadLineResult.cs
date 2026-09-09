@@ -34,7 +34,7 @@ namespace InteractiveReadLine
     /// </remarks>
     public readonly struct ReadLineResult : IEquatable<ReadLineResult>
     {
-        private ReadLineResult(ReadLineResultKind kind, string text)
+        private ReadLineResult(ReadLineResultKind kind, string? text)
         {
             this.Kind = kind;
             this.Text = text;
@@ -48,7 +48,7 @@ namespace InteractiveReadLine
         /// <summary>
         /// Gets the text that the user entered. This value is non-null when Kind is Line and null otherwise.
         /// </summary>
-        public string Text { get; }
+        public string? Text { get; }
 
         /// <summary>
         /// Gets whether the operation produced a line of text.
@@ -80,7 +80,7 @@ namespace InteractiveReadLine
         /// Flattens this result to a string, returning the text for a finished line, null for the end of
         /// input, and an empty string for a line the user abandoned.
         /// </summary>
-        public string ToText()
+        public string? ToText()
         {
             switch (this.Kind)
             {
@@ -97,7 +97,7 @@ namespace InteractiveReadLine
         public bool Equals(ReadLineResult other) => this.Kind == other.Kind && this.Text == other.Text;
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => obj is ReadLineResult other && this.Equals(other);
+        public override bool Equals(object? obj) => obj is ReadLineResult other && this.Equals(other);
 
         /// <inheritdoc />
         public override int GetHashCode()

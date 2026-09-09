@@ -95,8 +95,9 @@ namespace InteractiveReadLine.Tokenizing
 
                 tokenized.Cursor = lineState.Cursor;
 
-                if (!tokenized.Any() ||
-                    (tokenized.Last.IsHidden && tokenized.Last.Cursor == tokenized.Last.Text.Length))
+                var last = tokenized.Last;
+                if (last == null ||
+                    (last.IsHidden && last.Cursor == last.Text.Length))
                 {
                     tokenized.Add(string.Empty, false, 0);
                 }

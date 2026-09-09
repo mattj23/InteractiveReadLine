@@ -14,7 +14,7 @@ namespace InteractiveReadLine.Formatting
         /// </summary>
         /// <param name="prompt">the prompt text to display</param>
         /// <param name="formatter"></param>
-        public static LineFormatter FixedPrompt(FormattedText prompt, LineFormatter formatter = null)
+        public static LineFormatter FixedPrompt(FormattedText prompt, LineFormatter? formatter = null)
         {
             return state =>
             {

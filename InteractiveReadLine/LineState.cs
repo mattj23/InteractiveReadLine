@@ -28,14 +28,14 @@ namespace InteractiveReadLine
         /// </summary>
         public string Text { get; }
 
-        public bool Equals(LineState other)
+        public bool Equals(LineState? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Cursor == other.Cursor && Text == other.Text;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

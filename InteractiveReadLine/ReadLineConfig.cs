@@ -26,24 +26,24 @@ namespace InteractiveReadLine
         /// this action automatically, or callers can configure it directly with SetHistoryUpdateAction. It is
         /// null when history updates are disabled, in which case no line is recorded.
         /// </summary>
-        public Action<string> UpdateHistory { get; private set; }
+        public Action<string>? UpdateHistory { get; private set; }
 
         /// <summary>
-        /// Gets a list which contains the history of entered text, used for any behaviors which interact
-        /// with the entered history.
+        /// Gets the history of entered text, or null when no history source is configured.
         /// </summary>
-        public IReadOnlyList<string> History { get; private set; }
+        public IReadOnlyList<string>? History { get; private set; }
 
         /// <summary>
-        /// Gets a providing function used to format the line to display based on a tokenization of the
-        /// readline content just before display. Requires a Lexer to work.
+        /// Gets the formatter that processes a tokenized line before display, or null when no token-based
+        /// formatter is configured. The formatter requires a Lexer.
         /// </summary>
-        public Func<TokenizedLine, LineDisplayState> FormatterFromTokens { get; private set; }
+        public Func<TokenizedLine, LineDisplayState>? FormatterFromTokens { get; private set; }
 
         /// <summary>
-        /// Gets a format providing method which should format the line based on the raw LineState
+        /// Gets the formatter that processes the raw LineState, or null when no line-based formatter is
+        /// configured.
         /// </summary>
-        public Func<LineState, LineDisplayState> FormatterFromLine { get; private set; }
+        public Func<LineState, LineDisplayState>? FormatterFromLine { get; private set; }
 
         /// <summary>
         /// Gets a dictionary which maps key press information to key behavior methods
@@ -51,23 +51,23 @@ namespace InteractiveReadLine
         public Dictionary<KeyId, Action<IKeyBehaviorTarget>> KeyBehaviors { get; }
 
         /// <summary>
-        /// Gets the default key behavior, which is applied if no other key behavior is first located by
-        /// the KeyBehaviors dictionary
+        /// Gets the default key behavior applied when KeyBehaviors contains no behavior for the pressed key.
+        /// The value is null when no default behavior is configured.
         /// </summary>
-        public Action<IKeyBehaviorTarget> DefaultKeyBehavior { get; private set; }
+        public Action<IKeyBehaviorTarget>? DefaultKeyBehavior { get; private set; }
         
         /// <summary>
-        /// Gets the lexer for the readline handler to use, which tokenizes a LineState object.
-        /// A non-null lexer is a critical component of auto-completion and certain token-based key behaviors 
+        /// Gets the lexer that tokenizes a LineState, or null when no lexer is configured. A lexer is required
+        /// for auto-completion and certain token-based key behaviors.
         /// </summary>
-        public Func<LineState, TokenizedLine> Lexer { get; private set; }
+        public Func<LineState, TokenizedLine>? Lexer { get; private set; }
 
         /// <summary>
-        /// Gets the auto-completion provider, which is a method that takes a TokenizedLine object
-        /// and returns a list of suggestions for the token under the cursor. The TokenizedLine can
-        /// also be modified by the auto-completion method.
+        /// Gets the auto-completion provider, or null when none is configured. The provider receives a
+        /// TokenizedLine and returns suggestions for the token under the cursor. It can also modify the
+        /// TokenizedLine.
         /// </summary>
-        public Func<TokenizedLine, string[]> AutoCompletion { get; private set; }
+        public Func<TokenizedLine, string[]>? AutoCompletion { get; private set; }
 
         /// <summary>
         /// Gets whether the configuration is capable of auto-completion, which requires both a Lexer

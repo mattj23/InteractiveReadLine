@@ -76,14 +76,17 @@ namespace InteractiveReadLine.Abstractions
                 if (piece.Length <= 0)
                     continue;
                 
-                if (piece[0].Foreground == null || piece[0].Background == null)
+                var foreground = piece[0].Foreground;
+                var background = piece[0].Background;
+
+                if (foreground == null || background == null)
                     Console.ResetColor();
 
-                if (piece[0].Foreground != null)
-                    Console.ForegroundColor = (ConsoleColor) piece[0].Foreground;
-                
-                if (piece[0].Background != null)
-                    Console.BackgroundColor = (ConsoleColor) piece[0].Background;
+                if (foreground != null)
+                    Console.ForegroundColor = foreground.Value;
+
+                if (background != null)
+                    Console.BackgroundColor = background.Value;
                 
                 Console.Write(piece.Text);
             }
