@@ -71,6 +71,8 @@ The three booleans represent modifier keys in the order **control, alt, shift**,
 
 The history is provided to the configuration object as any object which implements `IReadOnlyList<string>`.  The sequence of the history is assumed to be oldest values at the beginning of the list, newest values at the end of the list.  The entries are plain text, as any lexing or formatting will only be done when a particular value is loaded to the input handler's text buffer.
 
+The configuration keeps a live reference to the collection you provide, so collection changes are visible without reconfiguration. If the collection shrinks during a read line operation, the input handler clamps its navigation position to the new end of the collection. The user can then navigate backward to the most recent remaining entry or forward to the text entered before history navigation began.
+
 **For a non-updating history:**
 ```csharp
 // For a history that is not actively updated by the input handler, any object which
@@ -87,7 +89,14 @@ The input handler can take care of the task of updating the history values when 
 
 > The decision to split the history into a read-only component and an `Action` to update was to allow for the user to supply more complex update behavior than simply appending an entry onto the end of a list, such as the cleaning and max size behavior demonstrated in the later tutorial.
 
-In the case of using a simple `List<string>` to store command history, there is a shortcut method which will set the update action delegate automatically (it will point directly at the list's `.Add()` method). New entries will simply be added to the end of the list with no regard for content or history size.
+When you use a simple `List<string>` to store command history, a shortcut method configures the update action automatically. The generated action appends the finalized line to the end of the list, except in two cases that would otherwise crowd out useful entries:
+
+* Lines that are empty or contain only whitespace
+* A line that is identical to the entry already at the end of the list
+
+Only an *immediately* repeated line is skipped. Entering a command that appears earlier in the history still appends it, which moves the command to the most recent position. The history has no size limit.
+
+To record every finalized line as entered, including blank lines, supply your own delegate through `SetHistoryUpdateAction()`. The input handler performs no filtering and passes the finalized line to the update action in the configuration.
 
 **For a simple self-updating history:**
 ```csharp
@@ -112,6 +121,8 @@ As an example of the usefulness of splitting the history into a component that i
 Notice in this case there's no need to use the `SetUpdatingHistorySource()` shortcut.  
 
 Instead, the history list is added through the `SetHistorySource()` method, which will only ever read values.  The update action is defined as a lambda which encloses `history` in its scope and performs the duplicate removal and size capping before adding the new value.
+
+Because this replaces the update action entirely, the skipping behavior described above does not apply. The lambda receives every finalized line and decides what to record. To discard blank lines here too, add an `if (string.IsNullOrWhiteSpace(s)) return;` guard at the beginning.
 
 ```csharp
 var history = new List<string>();

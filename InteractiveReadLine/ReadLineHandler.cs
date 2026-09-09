@@ -39,8 +39,12 @@ namespace InteractiveReadLine
             _autoCompleteIndex = int.MinValue;
             _autoCompleteSuggestions = null;
 
+            // This is the state to restore when the user navigates forward out of the history. HistoryNext can
+            // run before HistoryPrevious stores a state here, so initialize it to an empty state.
+            _preHistoryState = new LineState(string.Empty, 0);
+
             // The history index should start one element past the length of the current history
-            _historyIndex = config?.History?.Any() == true ? config.History.Count : 0;
+            _historyIndex = _config.History?.Any() == true ? _config.History.Count : 0;
         }
 
         /// <summary>
@@ -113,15 +117,33 @@ namespace InteractiveReadLine
             return _config.Lexer?.Invoke(this.LineState);
         }
 
+        /// <summary>
+        /// Brings the history index into the inclusive range from zero through the length of the history. The
+        /// final position represents the text that the user entered before navigating backward into history.
+        /// </summary>
+        /// <remarks>
+        /// The configuration holds a live reference to the history collection, so entries can be removed after
+        /// this handler is constructed and before the user navigates. Without clamping, the index could point
+        /// past the end of the collection and cause an exception when used. The lower bound does not require
+        /// clamping because the index starts at zero or above and is decremented only after a check for zero.
+        /// </remarks>
+        private void ClampHistoryIndex()
+        {
+            if (_historyIndex > _config.History.Count)
+                _historyIndex = _config.History.Count;
+        }
+
         public void HistoryNext()
         {
             // If there is no history, we don't need to do anything
             if (_config.History?.Any() != true)
                 return;
 
+            this.ClampHistoryIndex();
+
             // If we're at the end of the history (including the entered text) we do nothing
             if (_historyIndex == _config.History.Count)
-                return; 
+                return;
 
             // Otherwise we increment the history index and set the current text buffer based 
             // on whether or not we still have another history element
@@ -144,6 +166,8 @@ namespace InteractiveReadLine
             // If there is no history, we don't need to do anything
             if (_config.History?.Any() != true)
                 return;
+
+            this.ClampHistoryIndex();
 
             if (_historyIndex == 0)
                 return;

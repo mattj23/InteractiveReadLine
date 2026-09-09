@@ -21,8 +21,10 @@ namespace InteractiveReadLine
         }
 
         /// <summary>
-        /// Gets an Action which can be used to update the history. This is automatically set when the
-        /// 
+        /// Gets an Action that is invoked with the finalized line when a ReadLine operation completes. The
+        /// action is responsible for recording the line in the history. SetUpdatingHistorySource configures
+        /// this action automatically, or callers can configure it directly with SetHistoryUpdateAction. It is
+        /// null when history updates are disabled, in which case no line is recorded.
         /// </summary>
         public Action<string> UpdateHistory { get; private set; }
 
@@ -134,11 +136,29 @@ namespace InteractiveReadLine
         /// cause the history list to be automatically updated. Also, make sure to set some key behavior which
         /// will make use of the history.
         /// </summary>
+        /// <remarks>
+        /// The update action created here skips lines that are empty or contain only whitespace. It also skips
+        /// a line that is identical to the most recent entry. These entries therefore do not crowd out useful
+        /// history. To record every finalized line, provide your own action through SetHistoryUpdateAction.
+        /// </remarks>
         /// <param name="history"></param>
         /// <returns></returns>
         public ReadLineConfig SetUpdatingHistorySource(List<string> history)
         {
-            this.SetHistoryUpdateAction(history.Add);
+            if (history == null)
+                throw new ArgumentNullException(nameof(history));
+
+            this.SetHistoryUpdateAction(text =>
+            {
+                if (string.IsNullOrWhiteSpace(text))
+                    return;
+
+                if (history.Count > 0 && history[history.Count - 1] == text)
+                    return;
+
+                history.Add(text);
+            });
+
             return this.SetHistorySource(history);
         }
 
