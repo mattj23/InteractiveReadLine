@@ -31,6 +31,12 @@ namespace InteractiveReadLine
         // read line operation should produce, which also ends the processing loop.
         private ReadLineResultKind? _resultKind;
 
+        // The text accumulated by consecutive cuts and two flags that determine where a run starts and ends.
+        // A run continues while each key performs a cut, allowing one paste to restore text from several cuts.
+        private string _cutBuffer = string.Empty;
+        private bool _cutOnThisKey;
+        private bool _cutOnPreviousKey;
+
         public ReadLineHandler(IReadLineProvider provider, ReadLineConfig config=null)
         {
             _config = config ?? ReadLineConfig.Basic;
@@ -117,6 +123,41 @@ namespace InteractiveReadLine
         public TokenizedLine GetTextTokens()
         {
             return _config.Lexer?.Invoke(this.LineState);
+        }
+
+        /// <inheritdoc />
+        public string CutBuffer => _cutBuffer;
+
+        /// <inheritdoc />
+        public void CutForward(string text) => this.RecordCut(text, true);
+
+        /// <inheritdoc />
+        public void CutBackward(string text) => this.RecordCut(text, false);
+
+        /// <summary>
+        /// Adds text to the cut buffer, starting a new buffer unless this key is continuing a run of cuts.
+        /// </summary>
+        /// <param name="text">The text that was removed from the line.</param>
+        /// <param name="fromInFrontOfCursor">
+        /// True when the text was in front of the cursor and belongs at the end of the buffer, false when it
+        /// was behind the cursor and belongs at the front.
+        /// </param>
+        private void RecordCut(string text, bool fromInFrontOfCursor)
+        {
+            // The first cut after anything else discards whatever an earlier run had accumulated.
+            if (!_cutOnPreviousKey && !_cutOnThisKey)
+                _cutBuffer = string.Empty;
+
+            // Mark the key as a cut even when it removes nothing, so cutting at the end of a line does not end
+            // the current run.
+            _cutOnThisKey = true;
+
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            _cutBuffer = fromInFrontOfCursor
+                ? _cutBuffer + text
+                : text + _cutBuffer;
         }
 
         /// <summary>
@@ -292,6 +333,7 @@ namespace InteractiveReadLine
             // key behavior which will be run, so we store the current state now
             var previousState = this.LineState;
             _autoCompleteCalled = false;
+            _cutOnThisKey = false;
 
             // See if there's a specific behavior which should be mapped to this key,
             // and if so, run it instead of checking the insert/enter behaviors
@@ -304,6 +346,10 @@ namespace InteractiveReadLine
             {
                 _config.DefaultKeyBehavior?.Invoke(this);
             }
+
+            // A cut run continues only while every key performs a cut. Any other key ends the run, so the next
+            // cut clears the buffer. Custom cut behaviors participate by calling CutForward or CutBackward.
+            _cutOnPreviousKey = _cutOnThisKey;
 
             // Check if a behavior ended the interaction, in which case we can stop reading keys
             if (_resultKind != null)

@@ -66,6 +66,39 @@ namespace InteractiveReadLine.KeyBehaviors
         void HistoryPrevious();
 
         /// <summary>
+        /// Gets the text accumulated by the most recent run of cut operations. The paste behavior inserts this
+        /// text at the cursor. The value is empty when nothing has been cut.
+        /// </summary>
+        /// <remarks>
+        /// The buffer belongs to a single read line operation and does not carry over to the next one. It is
+        /// populated through CutForward and CutBackward, which accumulate consecutive cuts into one piece of
+        /// text that can be pasted.
+        /// </remarks>
+        string CutBuffer { get; }
+
+        /// <summary>
+        /// Records text removed from in front of the cursor, placing it at the end of the cut buffer.
+        /// </summary>
+        /// <remarks>
+        /// Cut text is stored in its original order on the line, so a run of cuts can be pasted back as the
+        /// original text. A behavior that removes text in front of the cursor, such as cutting to the end of
+        /// the line, should report it here.
+        /// </remarks>
+        /// <param name="text">The text that was removed from the line.</param>
+        void CutForward(string text);
+
+        /// <summary>
+        /// Records text removed from behind the cursor, placing it at the front of the cut buffer.
+        /// </summary>
+        /// <remarks>
+        /// A behavior that removes text from behind the cursor, such as cutting to the start of the line or
+        /// cutting the previous word, should report it here. Cutting three words backward one after
+        /// another therefore leaves the three words in the buffer in their original order.
+        /// </remarks>
+        /// <param name="text">The text that was removed from the line.</param>
+        void CutBackward(string text);
+
+        /// <summary>
         /// Tells the readline handler to finish this line of input and return it
         /// </summary>
         void Finish();

@@ -95,7 +95,10 @@ namespace InteractiveReadLine.KeyBehaviors
                 .AddCtrlKeyBehavior(ConsoleKey.N, CommonKeyBehaviors.HistoryNext)
                 .AddCtrlKeyBehavior(ConsoleKey.P, CommonKeyBehaviors.HistoryPrevious)
                 .AddCtrlKeyBehavior(ConsoleKey.D, CommonKeyBehaviors.DeleteOrEndOfInput)
-                .AddCtrlKeyBehavior(ConsoleKey.W, CommonKeyBehaviors.CutPreviousWord);
+                .AddCtrlKeyBehavior(ConsoleKey.W, CommonKeyBehaviors.CutPreviousWord)
+                // GNU Readline and many terminal applications conventionally use Ctrl+Y for pasting. Ctrl+V
+                // conventionally inserts the next character literally, and many terminals intercept it.
+                .AddCtrlKeyBehavior(ConsoleKey.Y, CommonKeyBehaviors.Paste);
         }
 
         /// <summary>

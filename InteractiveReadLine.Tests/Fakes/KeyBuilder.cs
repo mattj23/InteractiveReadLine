@@ -94,6 +94,16 @@ namespace InteractiveReadLine.Tests.Fakes
             return this.AddControlChar(ConsoleKey.D, '\u0004', count);
         }
 
+        /// <summary>
+        /// Adds a Ctrl+letter keypress as the console delivers it. The keypress carries the matching control
+        /// character instead of the letter. Use this method only with letter keys A through Z.
+        /// </summary>
+        public KeyBuilder Ctrl(ConsoleKey key, int count=1)
+        {
+            var character = (char) (key - ConsoleKey.A + 1);
+            return this.AddControlChar(key, character, count);
+        }
+
         private KeyBuilder AddControlChar(ConsoleKey key, char character, int count)
         {
             for (int i = 0; i < count; i++)

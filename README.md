@@ -132,7 +132,7 @@ There are many pre-made bindings as well.  These exist in `BehaviorExtensionMeth
 * **`AddHomeAndEndKeys()`** binds the home and end keys to move the cursor to the beginning and end of the line, respectively
 * **`ArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
 * **`AddUpDownHistoryNavation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
-* **`AddCtrlNavKeys()`** adds navigation and editing commands familiar to Bash users, such as cutting a word, cutting to the beginning or end, and jumping to the beginning or end. It also binds Ctrl+D to delete forward or signal the end of input when the line is empty
+* **`AddCtrlNavKeys()`** adds navigation and editing commands familiar to Bash users, such as cutting a word, cutting to the beginning or end, and jumping to the beginning or end. It also binds Ctrl+Y to paste back what was cut, and Ctrl+D to delete forward or signal the end of input when the line is empty
 * **`AddCancelKeys()`** binds Ctrl+C to abandon the current line
 * **`AddStandardKeys()`** adds the complete basic set of bindings used by `ReadLineConfig.Basic`: default character insertion, Enter to complete the line, Delete, Backspace, Home, End, the arrow keys, and Ctrl+C to abandon the line
 * **`AddTabAutoComplete()`** binds tab to the autocompletion behavior
@@ -224,6 +224,41 @@ var config = ReadLineConfig.Empty
     .AddDeleteBackspace()
     .AddEnterToFinish();
 ```
+
+---
+
+### Cutting and Pasting
+
+The three cut behaviors store removed text in a cut buffer. `CommonKeyBehaviors.Paste` inserts that text at the cursor. `AddCtrlNavKeys()` binds all four behaviors:
+
+| Key | Behavior |
+| --- | --- |
+| Ctrl+K | cut from the cursor to the end of the line |
+| Ctrl+U | cut from the cursor to the start of the line |
+| Ctrl+W | cut the word before the cursor |
+| Ctrl+Y | paste the cut buffer at the cursor |
+
+To move text within a line, cut it, move the cursor, and paste it. Pasting does not empty the buffer, so you can insert the same text more than once.
+
+> **Why Ctrl+Y?** GNU Readline and many terminal applications conventionally use Ctrl+Y to paste. Ctrl+V conventionally inserts the next character literally, and many terminal emulators intercept it before the program receives it.
+
+**Consecutive cuts accumulate.** Cutting three words in a row with Ctrl+W collects all three in the buffer, so one paste restores them together. The buffer preserves the text's original order on the line. Pressing any other key ends the run, so the next cut starts a fresh buffer.
+
+The buffer belongs to a single read line operation and starts empty each time, so text cut on one line cannot be pasted onto the next.
+
+#### Cutting From a Custom Behavior
+
+A custom behavior can add text to the buffer. It must specify which side of the cursor the text came from so that consecutive cuts preserve the correct order:
+
+```csharp
+// Removing text from in front of the cursor
+target.CutForward(removedText);
+
+// Removing text from behind the cursor
+target.CutBackward(removedText);
+```
+
+Calling either method also marks the keypress as part of a cut run, so a custom cut accumulates with the built-in cuts.
 
 ---
 

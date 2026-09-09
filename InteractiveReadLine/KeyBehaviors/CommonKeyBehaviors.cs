@@ -158,10 +158,14 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void CutToEnd(IKeyBehaviorTarget target)
         {
             var cursor = target.CursorPosition;
-            var captured = target.TextBuffer.ToString().Substring(0, cursor);
+            var text = target.TextBuffer.ToString();
+            var captured = text.Substring(0, cursor);
+
             target.TextBuffer.Clear();
             target.TextBuffer.Append(captured);
             target.CursorPosition = cursor;
+
+            target.CutForward(text.Substring(cursor));
         }
 
         /// <summary>
@@ -171,11 +175,14 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void CutToStart(IKeyBehaviorTarget target)
         {
             var cursor = target.CursorPosition;
-            var captured = target.TextBuffer.ToString()
-                .Substring(cursor, target.TextBuffer.Length - cursor);
+            var text = target.TextBuffer.ToString();
+            var captured = text.Substring(cursor, target.TextBuffer.Length - cursor);
+
             target.TextBuffer.Clear();
             target.TextBuffer.Append(captured);
             target.CursorPosition = 0;
+
+            target.CutBackward(text.Substring(0, cursor));
         }
 
         /// <summary>
@@ -185,6 +192,9 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <param name="target"></param>
         public static void CutPreviousWord(IKeyBehaviorTarget target)
         {
+            var textBefore = target.TextBuffer.ToString();
+            var cursorBefore = target.CursorPosition;
+
             var tokens =
                 CommonLexers.SplitOnWhitespace(new LineState(target.TextBuffer.ToString(), target.CursorPosition));
             int cursor = (int) tokens.CursorToken.Cursor;
@@ -218,6 +228,31 @@ namespace InteractiveReadLine.KeyBehaviors
             target.TextBuffer.Clear();
             target.TextBuffer.Append(tokens.Text);
             target.CursorPosition = tokens.Cursor;
+
+            // This behavior rebuilds the line from its tokens. Recover the removed text from the span crossed
+            // when the cursor moved backward.
+            var removedLength = cursorBefore - target.CursorPosition;
+            if (removedLength > 0 && cursorBefore <= textBefore.Length)
+                target.CutBackward(textBefore.Substring(target.CursorPosition, removedLength));
+            else
+                target.CutBackward(string.Empty);
+        }
+
+        /// <summary>
+        /// Inserts the text in the cut buffer at the cursor position and leaves the cursor at the end of
+        /// the inserted text. Does nothing when nothing has been cut.
+        /// </summary>
+        /// <remarks>
+        /// The buffer is not emptied by pasting, so the same text can be pasted repeatedly.
+        /// </remarks>
+        public static void Paste(IKeyBehaviorTarget target)
+        {
+            var text = target.CutBuffer;
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            target.TextBuffer.Insert(target.CursorPosition, text);
+            target.CursorPosition += text.Length;
         }
 
         /// <summary>
