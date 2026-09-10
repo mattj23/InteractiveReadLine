@@ -1,0 +1,50 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "InteractiveReadLine/InteractiveReadLine.csproj" ],
+          "src": ".."
+        }
+      ],
+      "dest": "api",
+      "properties": {
+        "TargetFramework": "net10.0",
+        "Configuration": "Release"
+      },
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "api/**.yml", "api/index.md" ]
+      },
+      {
+        "files": [ "*.md", "toc.yml" ],
+        "exclude": [ "nuget-readme.md" ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "animations/**" ]
+      }
+    ],
+    "output": "_site",
+    "template": [ "default", "modern" ],
+    "globalMetadata": {
+      "_appName": "InteractiveReadLine",
+      "_appTitle": "InteractiveReadLine",
+      "_enableSearch": true,
+      "_gitContribute": {
+        "repo": "https://github.com/mattj23/InteractiveReadLine",
+        "branch": "master"
+      },
+      "pdf": false
+    },
+    "postProcessors": [ "ExtractSearchIndex" ],
+    "keepFileLink": false,
+    "disableGitFeatures": false
+  }
+}
