@@ -7,4 +7,42 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Label="Package metadata">
+    <PackageId>InteractiveReadLine</PackageId>
+    <Authors>Matt Jarvis</Authors>
+    <Description>An extensible, composable GNU Readline-style line editor for interactive .NET console applications. Provides customizable key behaviors, colored formatting, lexers, tab auto-complete, and navigable history with no external runtime dependencies.</Description>
+    <PackageTags>readline;console;cli;repl;interactive;autocomplete;history;prompt;terminal</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mattj23/InteractiveReadLine</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mattj23/InteractiveReadLine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright (c) Matt Jarvis</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Symbols and source linking">
+    <!-- Source Link ships with the SDK. These settings make it emit a usable repository reference. -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Versioning">
+    <!-- MinVer derives the version from Git tags. A v1.0.0 tag produces 1.0.0, and untagged commits
+         produce a prerelease version counted from the last tag. A shallow clone has no tags to read and
+         silently yields 0.0.0-alpha, so the workflows check out the full history. -->
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The repository README cannot be used here: NuGet.org rejects relative image links and does not
+         render SVG, and the repository README relies on both for its animated examples. -->
+    <None Include="../docs/nuget-readme.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+
 </Project>
