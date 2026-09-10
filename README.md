@@ -4,14 +4,32 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Interactive ReadLine
-An extensible, composable readline library written in pure C# for creating interactive text-based interfaces with System.Console and other console-like UI components.  Includes customizable key behaviors, formatting, auto-complete, and a navigable history, with many composable pre-made components included.
+An extensible, composable GNU Readline-style line editor for interactive .NET console applications. It includes customizable key behaviors, colored formatting, lexers, tab auto-complete, and navigable history, with ready-made components for common configurations.
 
-Targets .NET Standard 2.0 and has no external dependencies.
+InteractiveReadLine targets .NET Standard 2.0 and .NET 10 and has no external runtime dependencies.
+
+## Install
+
+InteractiveReadLine is available from [NuGet](https://www.nuget.org/packages/InteractiveReadLine/):
+
+```console
+dotnet add package InteractiveReadLine
+```
+
+Then import the namespace and read a line:
+
+```csharp
+using InteractiveReadLine;
+
+string? text = ConsoleReadLine.ReadLine();
+```
+
+See the [API reference](https://mattj23.github.io/InteractiveReadLine/api/InteractiveReadLine.html), the detailed [history guide](./docs/history.md), or the [demo project](./InteractiveReadLine.Demo) for more examples.
 
 ___
 
 ## Overview
-This library provides a GNU Readline-like functionality for interactive C# programs that use either the `System.Console` or (in the future) a similar console-like UI component. 
+This library provides GNU Readline-like editing for interactive C# programs that use `System.Console` or another console-like UI component through a custom `IReadLineProvider`.
 
 ```csharp
 var text = ConsoleReadLine.ReadLine();
@@ -30,7 +48,7 @@ However, practically every aspect of the system's behavior is configurable.  Con
 
 * **History**: *a way to provide lines that were entered previously so that the user can select from them, similar to how many terminals provide a history of entered commands.*
 
-All of these above configurations are done by providing `Action<..>` and `Func<..>` style delegates to a configuration object, rather than use a zoo of custom interfaces.
+These features are configured by supplying `Action<...>` and `Func<...>` delegates to a configuration object, rather than by implementing a large set of custom interfaces.
 
 Below is a more complex example, the full code for which can be seen at [Demos/ComplexConfig.cs](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/ComplexConfig.cs)
 
@@ -44,14 +62,18 @@ var config = ReadLineConfig.Empty
     .SetAutoCompletion(AutoComplete)
     .SetLexer(lexer);
 
-string result = ConsoleReadLine.ReadLine(config);
+string? result = ConsoleReadLine.ReadLine(config);
 ```
 ![Example](./docs/animations/complex_config.svg)
 
-## Install using Nuget
-
 ## Demo Program
-Within the github repository there is a demo project which contains many examples of different features and configurations.  It can be navigated using the console and the different examples can be run, and links to their github files are displayed.
+The repository includes an interactive demo project with examples of different features and configurations. Run it from the repository root:
+
+```console
+dotnet run --project InteractiveReadLine.Demo
+```
+
+Navigate the demo from the console to run each example and display a link to its source file.
 
 ![Example](./docs/animations/demo.svg)
 
@@ -117,7 +139,7 @@ Key behaviors are actions that are invoked on a keypress and typically perform s
 A key behavior is added to a configuration by the `.AddKeyBehavior(...)` extension method.  There are several overloads to make it convenient, but at the heart a `ConsoleKeyInfo` object is given to define what specific keypress invokes the associated action.  This allows for a key character as well as modifier keys (shift/ctrl/alt) to be
 specified.  There is also a shortcut for adding a behavior with a plain control key in the `.AddCtrlKeyBehavior(...)` method.
 
-The key behavior itself is any function/method which takes an `IKeyBehaviorTarget` as its single argument, such as an `Action<IKeyBehaviorTarget>` or a class method or a lambda.  The action is mapped/bound to the key information and is invoked when the key is pressed.  The `IKeyBehaviorTarget` exposes several properites of the readline handler itself so that it can be mutated by the action, such as by inserting the pressed key or deleting the last character, or invoking the autocomplete behavior.
+The key behavior itself is any function or method that takes an `IKeyBehaviorTarget` as its single argument, such as an `Action<IKeyBehaviorTarget>`, a class method, or a lambda. The action is bound to the key information and invoked when the key is pressed. `IKeyBehaviorTarget` exposes several properties of the readline handler so that the action can mutate it, for example by inserting the pressed key, deleting the last character, or invoking auto-completion.
 
 #### Pre-Built Key Behaviors and Bindings
 
@@ -154,9 +176,8 @@ var text = ConsoleReadLine.ReadLine(config);
 A custom key binding is performed with the `.AddKeyBehavior(...)` method.  For example, to bind the down arrow to the delete behavior:
 
 ```csharp
-var config = ReadLineConfig.Empty
-    .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.Delete)
-    .[...]
+var config = ReadLineConfig.Basic
+    .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.Delete);
 ```
 
 Or, to bind the `CutToStart` action to Alt+s
@@ -164,7 +185,7 @@ Or, to bind the `CutToStart` action to Alt+s
 ```csharp
 var config = ReadLineConfig.Empty
     .AddKeyBehavior(new KeyId(ConsoleKey.S, false, true, false), CommonKeyBehaviors.CutToStart)
-    .[...]
+    .AddEnterToFinish();
 ```
 
 You can write the same binding without constructing a `KeyId` by passing the modifiers directly.
@@ -173,14 +194,14 @@ The three booleans are **control, alt, shift**, in that order:
 ```csharp
 var config = ReadLineConfig.Empty
     .AddKeyBehavior(ConsoleKey.S, false, true, false, CommonKeyBehaviors.CutToStart)
-    .[...]
+    .AddEnterToFinish();
 ```
     
 Or, to bind the `'?'` character to end the input:
 ```csharp
 var config = ReadLineConfig.Empty
     .AddKeyBehavior('?', CommonKeyBehaviors.Finish)
-    .[...]
+    .SetDefaultKeyBehavior(CommonKeyBehaviors.InsertCharacter);
 ```
 
 Binding a key that is already bound replaces its existing behavior without raising an error. You can
@@ -278,7 +299,7 @@ The `ReadLine()` method converts all three outcomes to strings. This convenient 
 Returning `null` at the end of input matches GNU Readline and `Console.ReadLine()`, so an ordinary read loop terminates on Ctrl+D without special handling:
 
 ```csharp
-string line;
+string? line;
 while ((line = ConsoleReadLine.ReadLine(config)) != null)
 {
     Execute(line);
@@ -400,7 +421,7 @@ A fixed prompt that appears in front of the text input:
 
 ```csharp
 var config = ReadLineConfig.Basic
-    .SetFormatter(CommonFormatters.FixedPrompt("enter text here > "))
+    .SetFormatter(CommonFormatters.FixedPrompt("enter text here > "));
 
 var text = ConsoleReadLine.ReadLine(config);
 ```
@@ -425,9 +446,9 @@ var text = ConsoleReadLine.ReadLine(config);
 ![Example](./docs/animations/password_bar.svg)
 
 #### TokenizedLine Formatters
-As has been mentioned, a formatter can be either a function which recieves a `LineState` object, or a function which recieves a `TokenizedLine` object.  The `TokenizedLine` will be covered in more detail in the section on lexers, but this simple example shows how the lexer can be used to split the input text into tokens and a formatter can take advantage of that.
+As mentioned above, a formatter can receive either a `LineState` or a `TokenizedLine`. The `TokenizedLine` is covered in more detail in the section on lexers, but this simple example shows how a lexer can split the input text into tokens for a formatter to use.
 
-The following code example can be seen in further detail in [this demo](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs), but effectively it searches for tokens which match a valid hexidecimal number (digits 0 to 9 and letters a through f) and simultaneously displays it as capitalized and cyan.  All other tokens are displayed exactly as they have been entered.
+The [complete demo](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs) searches for tokens that contain a valid hexadecimal number (digits 0 through 9 and letters a through f), then displays them in uppercase and cyan. All other tokens are displayed exactly as entered.
 
 ```csharp
 var pattern = new Regex(@"^[0-9a-fA-F]+$");
@@ -456,9 +477,61 @@ var result = ConsoleReadLine.ReadLine(config);
 
 ---
 
-### Lexers 
+### Lexers
 
+Lexers split the current line into tokens. Token-aware formatters and auto-completion providers receive a `TokenizedLine`, which includes the token under the cursor and the cursor's position within that token. The library includes `CommonLexers.SplitOnWhitespace` for command-style input and composable regular-expression token definitions for more specialized grammars.
+
+Set a lexer on the configuration before using token-based formatting or auto-completion:
+
+```csharp
+var config = ReadLineConfig.Basic
+    .SetLexer(CommonLexers.SplitOnWhitespace);
+```
+
+A lexer receives the complete `LineState`, so a custom lexer can use both the text and cursor position when it constructs the token sequence.
 
 ### Auto-Complete
 
+Auto-completion requires three pieces: a lexer, a suggestion provider, and key bindings that invoke completion. The provider receives the tokenized line and returns replacement strings for the token under the cursor. `AddTabAutoComplete()` binds Tab to the next suggestion and Shift+Tab to the previous suggestion.
+
+```csharp
+var commands = new[] { "build", "clean", "publish", "restore", "test" };
+
+var config = ReadLineConfig.Basic
+    .SetLexer(CommonLexers.SplitOnWhitespace)
+    .SetAutoCompletion(tokens => commands
+        .Where(command => command.StartsWith(
+            tokens.CursorToken?.Text ?? string.Empty,
+            StringComparison.OrdinalIgnoreCase))
+        .ToArray())
+    .AddTabAutoComplete();
+
+string? command = ConsoleReadLine.ReadLine(config);
+```
+
+Suggestions are recalculated from the current tokenized line, so the provider can use earlier tokens to offer context-aware values. Auto-completion does nothing unless both the lexer and suggestion provider are configured.
+
 ### History
+
+`ReadLineConfig.Basic` already binds the up and down arrows to history navigation. Supply a list to make those bindings active and to append completed lines automatically:
+
+```csharp
+var history = new List<string>();
+var config = ReadLineConfig.Basic
+    .SetUpdatingHistorySource(history);
+
+while (ConsoleReadLine.ReadLine(config) is { } line)
+{
+    Execute(line);
+}
+```
+
+The default updating history skips blank lines and an entry that is identical to the most recent entry. Use `SetHistorySource(IReadOnlyList<string>)` for read-only history, or combine it with `SetHistoryUpdateAction(Action<string>)` when you need persistence, size limits, or different filtering. The configuration keeps a live reference to the history collection, and abandoned lines and end-of-input signals are not recorded.
+
+See the [history guide](./docs/history.md) for navigation behavior and complete custom update examples.
+
+---
+
+## License
+
+InteractiveReadLine is available under the [MIT License](./LICENSE).
