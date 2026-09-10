@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace InteractiveReadLine.Tokenizing
@@ -22,25 +20,28 @@ namespace InteractiveReadLine.Tokenizing
         private readonly List<Token> _tokens;
         private int _cursor;
 
+        /// <summary>
+        /// Creates an empty sequence to which a lexer can add tokens.
+        /// </summary>
         public TokenizedLine()
         {
             _tokens = new List<Token>();
         }
 
         /// <summary>
-        /// Gets the first token in the sequence, or null if the sequence is empty
+        /// Gets the first token in the sequence, or null when the sequence is empty.
         /// </summary>
-        public IToken First => _tokens.FirstOrDefault();
+        public IToken? First => _tokens.FirstOrDefault();
 
         /// <summary>
-        /// Gets the last token in the sequence, or null if the sequence is empty
+        /// Gets the last token in the sequence, or null when the sequence is empty.
         /// </summary>
-        public IToken Last => _tokens.LastOrDefault();
+        public IToken? Last => _tokens.LastOrDefault();
 
         /// <summary>
-        /// Gets the first non-hidden token in the sequence, or null if none exist
+        /// Gets the first non-hidden token in the sequence, or null when none exists.
         /// </summary>
-        public IToken FirstNonHidden => _tokens.FirstOrDefault()?.FirstNonHidden;
+        public IToken? FirstNonHidden => _tokens.FirstOrDefault()?.FirstNonHidden;
 
         /// <summary>
         /// Gets the combined text of all of the tokens in the sequence, which will match the original line of text
@@ -73,14 +74,14 @@ namespace InteractiveReadLine.Tokenizing
         public IToken this[int index] => _tokens[index];
 
         /// <summary>
-        /// Gets the token which currently contains the cursor
+        /// Gets the token that contains the cursor, or null when no token contains it.
         /// </summary>
-        public IToken CursorToken => _tokens.FirstOrDefault(x => x.Cursor != null);
+        public IToken? CursorToken => _tokens.FirstOrDefault(x => x.Cursor != null);
 
         /// <summary>
-        /// Gets the index number of the token which currently contains the cursor
+        /// Gets the index of the token that contains the cursor, or -1 when no token contains it.
         /// </summary>
-        public int CursorTokenIndex => _tokens.IndexOf(_tokens.FirstOrDefault(x => x.Cursor != null));
+        public int CursorTokenIndex => _tokens.FindIndex(x => x.Cursor != null);
 
         /// <summary>
         /// Gets the overall index of the cursor in the combined text
@@ -204,19 +205,19 @@ namespace InteractiveReadLine.Tokenizing
                 }
             }
 
-            public Token Next { get; set; }
-            public Token Previous { get; set; }
+            public Token? Next { get; set; }
+            public Token? Previous { get; set; }
             
-            public IToken PreviousNotHidden => this.Previous?.ThisOrPrevIfHidden();
-            public IToken NextNotHidden => this.Next?.ThisOrNextIfHidden();
+            public IToken? PreviousNotHidden => this.Previous?.ThisOrPrevIfHidden();
+            public IToken? NextNotHidden => this.Next?.ThisOrNextIfHidden();
 
-            IToken IToken.Next => this.Next;
+            IToken? IToken.Next => this.Next;
 
-            IToken IToken.Previous => this.Previous;
+            IToken? IToken.Previous => this.Previous;
 
             public Token First => this.Previous == null ? this : this.Previous.First;
 
-            public Token FirstNonHidden => this.First.ThisOrNextIfHidden();
+            public Token? FirstNonHidden => this.First.ThisOrNextIfHidden();
 
             public bool IsHidden { get; set; }
 
@@ -233,7 +234,7 @@ namespace InteractiveReadLine.Tokenizing
                     return gap?.Count;
             }
 
-            private List<Token> ForwardTo(Token other, List<Token> gap)
+            private List<Token>? ForwardTo(Token other, List<Token> gap)
             {
                 gap.Add(this);
 
@@ -250,8 +251,8 @@ namespace InteractiveReadLine.Tokenizing
                 var tokens = new List<Token>();
                 var first = this.First;
 
-                var pointer = first;
-                while (pointer != this)
+                Token? pointer = first;
+                while (pointer != null && pointer != this)
                 {
                     tokens.Add(pointer);
                     pointer = pointer.Next;
@@ -265,7 +266,7 @@ namespace InteractiveReadLine.Tokenizing
                 return BuildText(this.TokensBefore());
             }
 
-            private Token ThisOrNextIfHidden()
+            private Token? ThisOrNextIfHidden()
             {
                 if (this.IsHidden)
                     return this.Next?.ThisOrNextIfHidden();
@@ -273,7 +274,7 @@ namespace InteractiveReadLine.Tokenizing
                     return this;
             }
 
-            private Token ThisOrPrevIfHidden()
+            private Token? ThisOrPrevIfHidden()
             {
                 if (this.IsHidden)
                     return this.Previous?.ThisOrPrevIfHidden();

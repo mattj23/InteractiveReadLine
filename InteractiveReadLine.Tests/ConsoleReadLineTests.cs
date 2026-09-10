@@ -1,4 +1,5 @@
 ﻿using System;
+using InteractiveReadLine.Abstractions;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.Tests.Fakes;
 using Xunit;
@@ -14,6 +15,33 @@ namespace InteractiveReadLine.Tests
             var readLine = new ConsoleReadLine(fakeConsole);
             
             Assert.Equal("", fakeConsole.GetRow(0));
+        }
+
+        /// <summary>
+        /// The ReadLine extension method disposes its provider. A caller who also wraps the provider in a using
+        /// block therefore disposes it twice, but only the first call should move the cursor to a new row.
+        /// </summary>
+        [Fact]
+        public void Dispose_CalledTwice_FinishesOnlyOnce()
+        {
+            var fakeConsole = new TestConsole(10, 40);
+            var provider = new ConsoleReadLine(fakeConsole);
+
+            provider.Dispose();
+            var rowAfterFirstDispose = fakeConsole.CursorTop;
+
+            provider.Dispose();
+
+            Assert.Equal(rowAfterFirstDispose, fakeConsole.CursorTop);
+        }
+
+        [Fact]
+        public void SystemConsoleWrapper_IsPubliclyConstructable()
+        {
+            // IConsole is public, so callers must be able to access its default implementation to decorate it.
+            IConsole console = new SystemConsoleWrapper();
+
+            Assert.NotNull(console);
         }
 
         [Fact]

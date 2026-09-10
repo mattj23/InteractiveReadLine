@@ -14,9 +14,6 @@ namespace InteractiveReadLine.Demo
 {
     class Program
     {
-        private static ConsoleReadLine _provider;
-        private static string[] _options;
-
         private static DemoNode _demoHome;
         private static DemoNode _activeNode;
 
@@ -81,11 +78,17 @@ namespace InteractiveReadLine.Demo
                     .SetAutoCompletion(t => options.NonBlankKeys.Where(o => o.StartsWith(t.CursorToken.Text)).ToArray())
                     .SetFormatter(NodeFormatter(options.NonBlankKeys.ToArray()));
 
-                var result = ConsoleReadLine.ReadLine(config);
+                var result = ConsoleReadLine.Read(config);
 
-                if (options.ContainsKey(result))
+                // Ctrl+D on an empty line means the user is done, which for this menu is the same as choosing
+                // "exit". Ctrl+C abandons whatever was typed and simply redraws the menu.
+                if (result.Kind == ReadLineResultKind.EndOfInput)
                 {
-                    options.GetAction(result).Invoke();
+                    isRunning = false;
+                }
+                else if (result.IsLine && options.ContainsKey(result.Text))
+                {
+                    options.GetAction(result.Text).Invoke();
                 }
             }
         }
@@ -129,7 +132,7 @@ namespace InteractiveReadLine.Demo
 
         private static string GetGithubLink(IDemo demo)
         {
-            const string rootUrl = "https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/";
+            const string rootUrl = "https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/";
             var typeInfo = demo.GetType();
             var path = typeInfo.FullName?.Replace("InteractiveReadLine.Demo.", "").Split(".");
             if (path != null)

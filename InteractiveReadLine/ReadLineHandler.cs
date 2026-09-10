@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using InteractiveReadLine.Formatting;
 using InteractiveReadLine.KeyBehaviors;
 using InteractiveReadLine.Tokenizing;
@@ -20,16 +20,32 @@ namespace InteractiveReadLine
         private readonly ReadLineConfig _config;
         private int _cursorPos;
         private int _autoCompleteIndex;
-        private TokenizedLine _autoCompleteTokens;
+        private TokenizedLine? _autoCompleteTokens;
         private bool _autoCompleteCalled = false;
-        private string[] _autoCompleteSuggestions;
+        private string[]? _autoCompleteSuggestions;
 
         private int _historyIndex;
         private LineState _preHistoryState;
 
-        private bool _finishTrigger = false;
+        // Null while the user is still editing; set by Finish, Cancel or EndOfInput to the kind of result the
+        // read line operation should produce, which also ends the processing loop.
+        private ReadLineResultKind? _resultKind;
 
-        public ReadLineHandler(IReadLineProvider provider, ReadLineConfig config=null)
+        // The text accumulated by consecutive cuts and two flags that determine where a run starts and ends.
+        // A run continues while each key performs a cut, allowing one paste to restore text from several cuts.
+        private string _cutBuffer = string.Empty;
+        private bool _cutOnThisKey;
+        private bool _cutOnPreviousKey;
+
+        /// <summary>
+        /// Creates a handler which will read a single line of input through the given provider.
+        /// </summary>
+        /// <param name="provider">The backend which reads keys and displays the line</param>
+        /// <param name="config">
+        /// The configuration controlling key behaviors, formatting, lexing, auto-completion and history, or
+        /// null to use ReadLineConfig.Basic.
+        /// </param>
+        public ReadLineHandler(IReadLineProvider provider, ReadLineConfig? config=null)
         {
             _config = config ?? ReadLineConfig.Basic;
             _provider = provider;
@@ -39,8 +55,12 @@ namespace InteractiveReadLine
             _autoCompleteIndex = int.MinValue;
             _autoCompleteSuggestions = null;
 
+            // This is the state to restore when the user navigates forward out of the history. HistoryNext can
+            // run before HistoryPrevious stores a state here, so initialize it to an empty state.
+            _preHistoryState = new LineState(string.Empty, 0);
+
             // The history index should start one element past the length of the current history
-            _historyIndex = config?.History?.Any() == true ? config.History.Count : 0;
+            _historyIndex = _config.History?.Any() == true ? _config.History.Count : 0;
         }
 
         /// <summary>
@@ -71,7 +91,7 @@ namespace InteractiveReadLine
         /// <inheritdoc />
         public void AutoCompleteNext()
         {
-            if (_autoCompleteIndex >= 0)
+            if (_autoCompleteIndex >= 0 && _autoCompleteSuggestions != null)
             {
                 // Next index
                 _autoCompleteIndex++;
@@ -87,7 +107,7 @@ namespace InteractiveReadLine
         /// <inheritdoc />
         public void AutoCompletePrevious()
         {
-            if (_autoCompleteIndex >= 0)
+            if (_autoCompleteIndex >= 0 && _autoCompleteSuggestions != null)
             {
                 // Previous index
                 _autoCompleteIndex--;
@@ -108,20 +128,75 @@ namespace InteractiveReadLine
         }
 
         /// <inheritdoc />
-        public TokenizedLine GetTextTokens()
+        public TokenizedLine? GetTextTokens()
         {
             return _config.Lexer?.Invoke(this.LineState);
         }
 
+        /// <inheritdoc />
+        public string CutBuffer => _cutBuffer;
+
+        /// <inheritdoc />
+        public void CutForward(string text) => this.RecordCut(text, true);
+
+        /// <inheritdoc />
+        public void CutBackward(string text) => this.RecordCut(text, false);
+
+        /// <summary>
+        /// Adds text to the cut buffer, starting a new buffer unless this key is continuing a run of cuts.
+        /// </summary>
+        /// <param name="text">The text that was removed from the line.</param>
+        /// <param name="fromInFrontOfCursor">
+        /// True when the text was in front of the cursor and belongs at the end of the buffer, false when it
+        /// was behind the cursor and belongs at the front.
+        /// </param>
+        private void RecordCut(string text, bool fromInFrontOfCursor)
+        {
+            // The first cut after anything else discards whatever an earlier run had accumulated.
+            if (!_cutOnPreviousKey && !_cutOnThisKey)
+                _cutBuffer = string.Empty;
+
+            // Mark the key as a cut even when it removes nothing, so cutting at the end of a line does not end
+            // the current run.
+            _cutOnThisKey = true;
+
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            _cutBuffer = fromInFrontOfCursor
+                ? _cutBuffer + text
+                : text + _cutBuffer;
+        }
+
+        /// <summary>
+        /// Brings the history index into the inclusive range from zero through the length of the history. The
+        /// final position represents the text that the user entered before navigating backward into history.
+        /// </summary>
+        /// <remarks>
+        /// The configuration holds a live reference to the history collection, so entries can be removed after
+        /// this handler is constructed and before the user navigates. Without clamping, the index could point
+        /// past the end of the collection and cause an exception when used. The lower bound does not require
+        /// clamping because the index starts at zero or above and is decremented only after a check for zero.
+        /// </remarks>
+        private void ClampHistoryIndex()
+        {
+            var history = _config.History;
+            if (history != null && _historyIndex > history.Count)
+                _historyIndex = history.Count;
+        }
+
+        /// <inheritdoc />
         public void HistoryNext()
         {
             // If there is no history, we don't need to do anything
             if (_config.History?.Any() != true)
                 return;
 
+            this.ClampHistoryIndex();
+
             // If we're at the end of the history (including the entered text) we do nothing
             if (_historyIndex == _config.History.Count)
-                return; 
+                return;
 
             // Otherwise we increment the history index and set the current text buffer based 
             // on whether or not we still have another history element
@@ -139,11 +214,14 @@ namespace InteractiveReadLine
             }
         }
 
+        /// <inheritdoc />
         public void HistoryPrevious()
         {
             // If there is no history, we don't need to do anything
             if (_config.History?.Any() != true)
                 return;
+
+            this.ClampHistoryIndex();
 
             if (_historyIndex == 0)
                 return;
@@ -165,55 +243,153 @@ namespace InteractiveReadLine
         /// Interactively manage the user input of a line of text at the console, returning the contents
         /// of the text when finished.
         /// </summary>
-        public string ReadLine()
+        /// <param name="cancellationToken">A token that cancels the read.</param>
+        /// <returns>
+        /// The finished text; null if the user signaled the end of input; or an empty string if the user
+        /// abandoned the line. Use Read to distinguish an abandoned line from an entered empty line.
+        /// </returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public string? ReadLine(CancellationToken cancellationToken = default) =>
+            this.Read(cancellationToken).ToText();
+
+        /// <summary>
+        /// Interactively manages a line of console input and returns a result that describes the text and how
+        /// the interaction ended.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A token that cancels the read. Cancellation raises an OperationCanceledException instead of
+        /// producing a result, which is what distinguishes it from the user abandoning the line with Ctrl+C.
+        /// </param>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public ReadLineResult Read(CancellationToken cancellationToken = default)
         {
             // The display must be updated at the beginning if any prompts or other prefix/suffix text
-            // is to be displayed 
+            // is to be displayed
             this.UpdateDisplay();
 
             // The main processing loop of the handler, this loop will block until it receives a single key from the
-            // console. It will then attempt to look up a key behavior for that key, and if it finds one it will 
+            // console. It will then attempt to look up a key behavior for that key, and if it finds one it will
             // invoke it, otherwise it will invoke the default behavior if there is one. After that it will check
             // if the condition to finish the input has been set, and if not it will update the display and wait
             // for the next key.
             while (true)
             {
-                this.ReceivedKey = _provider.ReadKey();
+                this.ReceivedKey = _provider.ReadKey(cancellationToken);
 
-                // We will need to check if the line state (text & cursor position) is altered by the
-                // key behavior which will be run, so we store the current state now
-                var previousState = this.LineState;
-                _autoCompleteCalled = false;
-                
-                // See if there's a specific behavior which should be mapped to this key,
-                // and if so, run it instead of checking the insert/enter behaviors
-                var behavior = this.GetKeyAction(ReceivedKey);
-                if (behavior != null)
-                {
-                    behavior.Invoke(this);
-                }
-                else
-                {
-                    _config.DefaultKeyBehavior?.Invoke(this);
-                }
-
-                // Check if the Finish behavior was called, indicating that we can exit this method
-                // and return the contents of the text buffer to the caller
-                if (_finishTrigger)
+                if (this.ProcessKey())
                     break;
-
-                // If the text contents or the cursor have changed at all, and we weren't currently
-                // doing autocomplete, we need to invalidate the auto-completion information
-                if ((!previousState.Equals(this.LineState)) && !_autoCompleteCalled)
-                    this.InvalidateAutoComplete();
 
                 this.UpdateDisplay();
             }
 
-            // If there is a delegate to update the history, invoke it now
-            _config.UpdateHistory?.Invoke(TextBuffer.ToString());
+            return this.BuildResult();
+        }
 
-            return TextBuffer.ToString();
+        /// <summary>
+        /// Interactively manages a line of console input without blocking a thread while waiting for keys,
+        /// returning the contents of the text when finished.
+        /// </summary>
+        /// <param name="cancellationToken">A token that cancels the read.</param>
+        /// <returns>
+        /// The finished text; null if the user signaled the end of input; or an empty string if the user
+        /// abandoned the line. Use ReadAsync to distinguish an abandoned line from an entered empty line.
+        /// </returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public async Task<string?> ReadLineAsync(CancellationToken cancellationToken = default)
+        {
+            var result = await this.ReadAsync(cancellationToken).ConfigureAwait(false);
+            return result.ToText();
+        }
+
+        /// <summary>
+        /// Interactively manages a line of console input without blocking a thread while waiting for keys, and
+        /// returns a result that describes the text and how the interaction ended.
+        /// </summary>
+        /// <remarks>
+        /// This method performs the same interaction as Read and differs only in how it waits for each key. Each
+        /// key behavior, auto-completion operation, and history operation runs synchronously on the thread that
+        /// resumes the wait.
+        /// </remarks>
+        /// <param name="cancellationToken">
+        /// A token that cancels the read. Cancellation raises an OperationCanceledException instead of
+        /// producing a result, which is what distinguishes it from the user abandoning the line with Ctrl+C.
+        /// </param>
+        /// <returns>A task that produces the completed interaction result.</returns>
+        /// <exception cref="OperationCanceledException">The token was canceled before input completed.</exception>
+        public async Task<ReadLineResult> ReadAsync(CancellationToken cancellationToken = default)
+        {
+            this.UpdateDisplay();
+
+            while (true)
+            {
+                this.ReceivedKey = await _provider.ReadKeyAsync(cancellationToken).ConfigureAwait(false);
+
+                if (this.ProcessKey())
+                    break;
+
+                this.UpdateDisplay();
+            }
+
+            return this.BuildResult();
+        }
+
+        /// <summary>
+        /// Runs the behavior registered for the key currently in ReceivedKey, then reports whether the
+        /// interaction is over.
+        /// </summary>
+        /// <returns>True if a behavior ended the interaction; otherwise, false.</returns>
+        private bool ProcessKey()
+        {
+            // We will need to check if the line state (text & cursor position) is altered by the
+            // key behavior which will be run, so we store the current state now
+            var previousState = this.LineState;
+            _autoCompleteCalled = false;
+            _cutOnThisKey = false;
+
+            // See if there's a specific behavior which should be mapped to this key,
+            // and if so, run it instead of checking the insert/enter behaviors
+            var behavior = this.GetKeyAction(ReceivedKey);
+            if (behavior != null)
+            {
+                behavior.Invoke(this);
+            }
+            else
+            {
+                _config.DefaultKeyBehavior?.Invoke(this);
+            }
+
+            // A cut run continues only while every key performs a cut. Any other key ends the run, so the next
+            // cut clears the buffer. Custom cut behaviors participate by calling CutForward or CutBackward.
+            _cutOnPreviousKey = _cutOnThisKey;
+
+            // Check if a behavior ended the interaction, in which case we can stop reading keys
+            if (_resultKind != null)
+                return true;
+
+            // If the text contents or the cursor have changed at all, and we weren't currently
+            // doing autocomplete, we need to invalidate the auto-completion information
+            if ((!previousState.Equals(this.LineState)) && !_autoCompleteCalled)
+                this.InvalidateAutoComplete();
+
+            return false;
+        }
+
+        /// <summary>
+        /// Produces the interaction result and updates history only when the user finishes a line.
+        /// </summary>
+        private ReadLineResult BuildResult()
+        {
+            // A canceled or ended interaction discards its text. Pass only a finished line to the history
+            // update action.
+            if (_resultKind != ReadLineResultKind.Line)
+                return _resultKind == ReadLineResultKind.Cancelled
+                    ? ReadLineResult.Cancelled
+                    : ReadLineResult.EndOfInput;
+
+            var text = TextBuffer.ToString();
+            _config.UpdateHistory?.Invoke(text);
+
+            return ReadLineResult.ForLine(text);
         }
 
         /// <summary>
@@ -228,7 +404,11 @@ namespace InteractiveReadLine
             if (_config.FormatterFromLine != null)
                 display = _config.FormatterFromLine.Invoke(LineState);
             else if (_config.FormatterFromTokens != null && _config.Lexer != null)
-                display = _config.FormatterFromTokens(GetTextTokens());
+            {
+                var tokens = this.GetTextTokens();
+                if (tokens != null)
+                    display = _config.FormatterFromTokens(tokens);
+            }
 
             _provider.SetDisplay(display);
         }
@@ -238,7 +418,7 @@ namespace InteractiveReadLine
         /// for that key. The character is checked first, and if that fails, the ConsoleKey and the modifier keys
         /// are checked. If that fails, null is returned
         /// </summary>
-        private Action<IKeyBehaviorTarget> GetKeyAction(ConsoleKeyInfo info)
+        private Action<IKeyBehaviorTarget>? GetKeyAction(ConsoleKeyInfo info)
         {
                 var charKey = new KeyId(info.KeyChar);
             if (_config.KeyBehaviors.ContainsKey(charKey))
@@ -261,14 +441,18 @@ namespace InteractiveReadLine
         /// </summary>
         private void StartAutoComplete()
         {
-            if (!_config.CanAutoComplete)
+            // CanAutoComplete tests whether both values are present. Store them in local variables so nullable
+            // analysis can preserve that relationship throughout the method.
+            var lexer = _config.Lexer;
+            var autoCompletion = _config.AutoCompletion;
+            if (lexer == null || autoCompletion == null)
                 return;
 
-            _autoCompleteTokens = _config.Lexer(new LineState(TextBuffer.ToString(), _cursorPos));
-            if (_autoCompleteTokens.CursorToken == null)
+            _autoCompleteTokens = lexer(new LineState(TextBuffer.ToString(), _cursorPos));
+            if (_autoCompleteTokens?.CursorToken == null)
                 return;
 
-            _autoCompleteSuggestions = _config.AutoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
+            _autoCompleteSuggestions = autoCompletion(_autoCompleteTokens) ?? Array.Empty<string>();
 
             if (_autoCompleteTokens.Text != TextBuffer.ToString())
             {
@@ -303,22 +487,32 @@ namespace InteractiveReadLine
         /// </summary>
         private void SetAutoCompleteText()
         {
-            if (!_config.CanAutoComplete || _autoCompleteTokens == null || _autoCompleteIndex < 0)
+            var tokens = _autoCompleteTokens;
+            var suggestions = _autoCompleteSuggestions;
+            var cursorToken = tokens?.CursorToken;
+
+            if (tokens == null || suggestions == null || cursorToken == null || _autoCompleteIndex < 0)
                 return;
 
             _autoCompleteCalled = true;
-            _autoCompleteTokens.CursorToken.Text = _autoCompleteSuggestions[_autoCompleteIndex];
-            _autoCompleteTokens.CursorToken.Cursor = _autoCompleteTokens.CursorToken.Text.Length;
+            cursorToken.Text = suggestions[_autoCompleteIndex];
+            cursorToken.Cursor = cursorToken.Text.Length;
 
             TextBuffer.Clear();
-            TextBuffer.Append(_autoCompleteTokens.Text);
-            CursorPosition = _autoCompleteTokens.Cursor;
+            TextBuffer.Append(tokens.Text);
+            CursorPosition = tokens.Cursor;
 
         }
 
         /// <summary>
         /// Causes the ReadLine handler to finish, returning the contents of the text buffer
         /// </summary>
-        public void Finish() => _finishTrigger = true;
+        public void Finish() => _resultKind = ReadLineResultKind.Line;
+
+        /// <inheritdoc />
+        public void Cancel() => _resultKind = ReadLineResultKind.Cancelled;
+
+        /// <inheritdoc />
+        public void EndOfInput() => _resultKind = ReadLineResultKind.EndOfInput;
     }
 }

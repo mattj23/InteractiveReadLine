@@ -18,6 +18,14 @@
     /// </remarks>
     public class LineDisplayState
     {
+        /// <summary>
+        /// Creates a display state from the line body, its surrounding text, and the cursor position within
+        /// the body.
+        /// </summary>
+        /// <param name="prefix">Text displayed before the line, such as a prompt.</param>
+        /// <param name="lineBody">The displayed form of the line being edited.</param>
+        /// <param name="suffix">Text displayed after the line, such as a hint.</param>
+        /// <param name="cursor">The cursor position, measured from the start of the body.</param>
         public LineDisplayState(FormattedText prefix, FormattedText lineBody, FormattedText suffix, int cursor)
         {
             Prefix = prefix;

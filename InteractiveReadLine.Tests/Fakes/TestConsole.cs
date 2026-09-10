@@ -46,6 +46,34 @@ namespace InteractiveReadLine.Tests.Fakes
         public int BufferHeight => _height;
 
         public int BufferWidth => _width;
+
+        public bool TreatControlCAsInput { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this console reports that its input is redirected. A ConsoleReadLine provider
+        /// cannot operate when this value is true.
+        /// </summary>
+        public bool InputIsRedirected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of times KeyAvailable reports false before it starts reporting whether a key
+        /// is queued. Tests use this property to exercise the polling path of a cancelable read.
+        /// </summary>
+        public int PollsBeforeKeyAvailable { get; set; }
+
+        public bool KeyAvailable
+        {
+            get
+            {
+                if (this.PollsBeforeKeyAvailable > 0)
+                {
+                    this.PollsBeforeKeyAvailable--;
+                    return false;
+                }
+
+                return _keys.Count > 0;
+            }
+        }
         public void Write(FormattedText text)
         {
             this.Write(text.Text);

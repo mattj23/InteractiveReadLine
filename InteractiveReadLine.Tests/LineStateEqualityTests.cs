@@ -70,8 +70,8 @@ namespace InteractiveReadLine.Tests
         public void LineState_ReferenceEquals_FalseAgainstNull()
         {
             var s1 = new LineState("this is some text", 5);
-            
-            Assert.NotEqual(null, s1);
+
+            Assert.False(s1.Equals(null));
         }
 
         [Fact]

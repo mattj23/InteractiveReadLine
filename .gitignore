@@ -328,3 +328,8 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# DocFX generates the API metadata and site output from the source during each documentation build,
+# so these directories do not belong in the repository.
+docs/api/
+docs/_site/

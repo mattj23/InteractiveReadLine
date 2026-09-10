@@ -1,30 +1,78 @@
 ﻿using System;
-using System.Text;
+using System.IO;
 using InteractiveReadLine.Formatting;
 
 namespace InteractiveReadLine.Abstractions
 {
     /// <summary>
-    /// A wrapper around the System.Console object. This currently only exists to allow unit testing.
+    /// Presents System.Console through the IConsole interface. This default implementation originally existed
+    /// to support unit testing. It is public so that callers can decorate or compose it to intercept output
+    /// that read line operations write to the system console.
     /// </summary>
-    internal class SystemConsoleWrapper : IConsole
+    public class SystemConsoleWrapper : IConsole
     {
+        /// <inheritdoc />
         public int CursorLeft
         {
             get => Console.CursorLeft;
             set => Console.CursorLeft = value;
         }
 
+        /// <inheritdoc />
         public int CursorTop
         {
             get => Console.CursorTop;
             set => Console.CursorTop = value;
         }
 
+        /// <inheritdoc />
         public int BufferHeight => Console.BufferHeight;
 
+        /// <inheritdoc />
         public int BufferWidth => Console.BufferWidth;
 
+        /// <inheritdoc />
+        public bool KeyAvailable => Console.KeyAvailable;
+
+        /// <inheritdoc />
+        public bool InputIsRedirected => Console.IsInputRedirected;
+
+        /// <inheritdoc />
+        public bool TreatControlCAsInput
+        {
+            // Some platforms and processes without an attached console do not support reading or writing this
+            // property. Because Ctrl+C handling is optional, both accessors suppress the related exceptions.
+            get
+            {
+                try
+                {
+                    return Console.TreatControlCAsInput;
+                }
+                catch (IOException)
+                {
+                    return false;
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                try
+                {
+                    Console.TreatControlCAsInput = value;
+                }
+                catch (IOException)
+                {
+                }
+                catch (PlatformNotSupportedException)
+                {
+                }
+            }
+        }
+
+        /// <inheritdoc />
         public void Write(FormattedText text)
         {
             // Break the text into pieces which have the same foreground and background colors, then write them
@@ -36,39 +84,39 @@ namespace InteractiveReadLine.Abstractions
                 if (piece.Length <= 0)
                     continue;
                 
-                if (piece[0].Foreground == null || piece[0].Background == null)
+                var foreground = piece[0].Foreground;
+                var background = piece[0].Background;
+
+                if (foreground == null || background == null)
                     Console.ResetColor();
 
-                if (piece[0].Foreground != null)
-                    Console.ForegroundColor = (ConsoleColor) piece[0].Foreground;
-                
-                if (piece[0].Background != null)
-                    Console.BackgroundColor = (ConsoleColor) piece[0].Background;
+                if (foreground != null)
+                    Console.ForegroundColor = foreground.Value;
+
+                if (background != null)
+                    Console.BackgroundColor = background.Value;
                 
                 Console.Write(piece.Text);
             }
         }
 
+        /// <inheritdoc />
         public void WriteLine(FormattedText text)
         {
             this.Write(text);
             this.Write("\n");
         }
 
+        /// <inheritdoc />
         public void Write(FormattedChar c)
         {
-            // TODO: Is there a more efficient way of dealing with this?
-            Console.ResetColor();
-
-            if (c.Foreground != null)
-                Console.ForegroundColor = (ConsoleColor) c.Foreground;
-
-            if (c.Background != null)
-                Console.BackgroundColor = (ConsoleColor) c.Background;
-
-            Console.Write(c.Char);
+            // A single character is a one-character run of formatted text, so defer to the text overload to
+            // reuse its color handling. When the character specifies foreground and background colors, this
+            // also avoids resetting the console colors immediately before setting both of them.
+            this.Write(new FormattedText(c));
         }
 
+        /// <inheritdoc />
         public ConsoleKeyInfo ReadKey()
         {
             return Console.ReadKey(true);

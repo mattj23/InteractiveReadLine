@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish to NuGet
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Without the full history and tags, MinVer cannot see the release tag and silently
+          # produces 0.0.0-alpha, which would publish a package under the wrong version.
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Test
+        run: dotnet test --configuration Release
+
+      - name: Pack
+        run: >
+          dotnet pack InteractiveReadLine/InteractiveReadLine.csproj
+          --configuration Release
+          -p:ContinuousIntegrationBuild=true
+          --output ./artifacts
+
+      - name: Confirm the packed version matches the tag
+        # MinVer derives the version from the tag, so a mismatch means that MinVer did not resolve the
+        # release tag. Stop before publishing because NuGet packages cannot be replaced after publication.
+        run: |
+          expected="${GITHUB_REF_NAME#v}"
+          actual=$(ls ./artifacts/InteractiveReadLine.*.nupkg | sed -E 's|.*/InteractiveReadLine\.(.*)\.nupkg|\1|')
+          echo "tag: $expected   packed: $actual"
+          if [ "$expected" != "$actual" ]; then
+            echo "::error::Packed version '$actual' does not match tag '$expected'"
+            exit 1
+          fi
+
+      - name: Push to NuGet
+        run: >
+          dotnet nuget push "./artifacts/*.nupkg"
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME"
+          --title "$GITHUB_REF_NAME"
+          --generate-notes
+          ./artifacts/*.nupkg

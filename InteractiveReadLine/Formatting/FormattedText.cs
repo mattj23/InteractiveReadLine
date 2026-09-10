@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Net.Mime;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace InteractiveReadLine.Formatting
@@ -15,9 +10,17 @@ namespace InteractiveReadLine.Formatting
     /// </summary>
     public class FormattedText : IEquatable<FormattedText>
     {
+        /// <summary>
+        /// Creates formatted text whose characters all have the specified foreground and background colors.
+        /// Either color can be null to use the display default.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="foreground">The foreground color, or null to use the display default.</param>
+        /// <param name="background">The background color, or null to use the display default.</param>
+        /// <exception cref="ArgumentNullException">The text is null.</exception>
         public FormattedText(string text, ConsoleColor? foreground = null, ConsoleColor? background = null)
         {
-            this.Text = text;
+            this.Text = text ?? throw new ArgumentNullException(nameof(text));
             this.Foreground = new ConsoleColor?[this.Text.Length];
             this.Background = new ConsoleColor?[this.Text.Length];
 
@@ -28,6 +31,10 @@ namespace InteractiveReadLine.Formatting
             }
         }
 
+        /// <summary>
+        /// Creates formatted text containing one character and its colors.
+        /// </summary>
+        /// <param name="c">The character used to create the text.</param>
         public FormattedText(FormattedChar c)
             : this(c.Char.ToString(), c.Foreground, c.Background)
         {
@@ -127,10 +134,19 @@ namespace InteractiveReadLine.Formatting
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Converts a plain string to formatted text which uses the display's default colors.
+        /// </summary>
         public static implicit operator FormattedText(string s) => new FormattedText(s);
         
+        /// <summary>
+        /// Converts a single formatted character to formatted text of length one.
+        /// </summary>
         public static implicit operator FormattedText(FormattedChar c) => new FormattedText(c);
 
+        /// <summary>
+        /// Joins two pieces of formatted text, preserving the colors each character already carried.
+        /// </summary>
         public static FormattedText operator +(FormattedText lhs, FormattedText rhs)
         {
             var product = new FormattedText(lhs.Text + rhs.Text);
@@ -149,7 +165,11 @@ namespace InteractiveReadLine.Formatting
             return product;
         }
 
-        public bool Equals(FormattedText other)
+        /// <summary>
+        /// Determines whether this instance and another FormattedText instance contain identical characters
+        /// and identical per-character foreground and background colors.
+        /// </summary>
+        public bool Equals(FormattedText? other)
         {
             if (other == null || this.Text != other.Text)
                 return false;
@@ -165,5 +185,19 @@ namespace InteractiveReadLine.Formatting
 
             return true;
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj) => this.Equals(obj as FormattedText);
+
+        /// <summary>
+        /// Gets a hash code derived from the characters of the text, ignoring the colors.
+        /// </summary>
+        /// <remarks>
+        /// The color arrays are mutable and publicly accessible, so including them would let an instance's hash
+        /// code change while the instance is in a hash-based collection. Hashing only the text keeps the hash
+        /// code stable for the lifetime of the instance and satisfies the contract because equal instances
+        /// contain the same text. Instances that differ only by color can have the same hash code.
+        /// </remarks>
+        public override int GetHashCode() => this.Text.GetHashCode();
     }
 }

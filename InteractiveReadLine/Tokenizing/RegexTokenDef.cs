@@ -3,11 +3,19 @@
 namespace InteractiveReadLine.Tokenizing
 {
     /// <summary>
-    /// A definition of a token type for a regex based parser.  Contains a matching pattern which must begin with
-    /// the start character ^ and an optional type code to assign to tokens matched by the regex.
+    /// Defines a token type for a regular-expression parser. The definition contains a matching pattern,
+    /// automatically anchored with ^ when necessary, and an optional type code for matching tokens.
     /// </summary>
     public class RegexTokenDef
     {
+        /// <summary>
+        /// Creates a token definition from a regular expression pattern.
+        /// </summary>
+        /// <param name="pattern">
+        /// The pattern that identifies the token. The constructor adds a leading ^ when the pattern does not
+        /// already have one.
+        /// </param>
+        /// <param name="typeCode">A code that identifies this token type in the resulting tokens.</param>
         public RegexTokenDef(string pattern, int typeCode=0)
         {
             this.Pattern = pattern;
@@ -30,7 +38,7 @@ namespace InteractiveReadLine.Tokenizing
         public int TypeCode { get; }
 
         /// <summary>
-        /// Gets the compiled regex for the Pattern property
+        /// Gets the regular expression created from the Pattern property.
         /// </summary>
         public Regex Regex { get; }
     }

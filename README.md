@@ -1,5 +1,6 @@
-![](https://github.com/mattj23/InteractiveReadLine/workflows/CI%20netcore/badge.svg)
-[![Coverage](https://codecov.io/gh/mattj23/InteractiveReadLine/branch/master/graph/badge.svg)](https://codecov.io/gh/mattj23/InteractiveReadLine)
+[![CI](https://github.com/mattj23/InteractiveReadLine/actions/workflows/ci.yml/badge.svg)](https://github.com/mattj23/InteractiveReadLine/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/InteractiveReadLine.svg)](https://www.nuget.org/packages/InteractiveReadLine/)
+[![Coverage](https://codecov.io/gh/mattj23/InteractiveReadLine/branch/main/graph/badge.svg)](https://codecov.io/gh/mattj23/InteractiveReadLine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Interactive ReadLine
@@ -31,7 +32,7 @@ However, practically every aspect of the system's behavior is configurable.  Con
 
 All of these above configurations are done by providing `Action<..>` and `Func<..>` style delegates to a configuration object, rather than use a zoo of custom interfaces.
 
-Below is a more complex example, the full code for which can be seen at [Demos/ComplexConfig.cs](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/Demos/ComplexConfig.cs)
+Below is a more complex example, the full code for which can be seen at [Demos/ComplexConfig.cs](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/ComplexConfig.cs)
 
 
 ```csharp
@@ -43,7 +44,7 @@ var config = ReadLineConfig.Empty
     .SetAutoCompletion(AutoComplete)
     .SetLexer(lexer);
 
-string result = ConsoleReadline.ReadLine(config);
+string result = ConsoleReadLine.ReadLine(config);
 ```
 ![Example](./docs/animations/complex_config.svg)
 
@@ -55,7 +56,7 @@ Within the github repository there is a demo project which contains many example
 ![Example](./docs/animations/demo.svg)
 
 ---
-## Design Philosopy
+## Design Philosophy
 
 ### Obviousness and Correctness
 The design of this library's API was based on an attempt to do two things:
@@ -81,7 +82,7 @@ In conjunction with documentation, unit testing is a priority to ensure that the
 --- 
 
 ## Code Documentation
-> Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement three methods which consist of displaying text and reading keyboard input in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
+> Currently, the library only works with a provider written to wrap the `System.Console` object. However, a provider only needs to implement four methods which consist of displaying text and reading keyboard input, synchronously and asynchronously, in order to be a usable backend (see the `IReadLineProvider` interface), so it should be straightforward to write a provider for a WinForms or WPF text box, a console in a game engine, or similar.
 
 ### Configuration Object
 
@@ -130,10 +131,11 @@ There are many pre-made bindings as well.  These exist in `BehaviorExtensionMeth
 
 * **`AddEnterToFinish()`** binds the action that completes the line input to the enter key
 * **`AddHomeAndEndKeys()`** binds the home and end keys to move the cursor to the beginning and end of the line, respectively
-* **`ArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
-* **`AddUpDownHistoryNavation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
-* **`AddCtrlNavKeys()`** this adds a series of many naviation and edit commands familiar to bash users, such as cut word, cut to begining/end, jump to beginning/end, etc
-* **`AddStandardKeys()`** is a shortcut to add a complete and basic set of bindings (this is what a `ReadLineConfig.Basic` config uses), which will add the default insert character behavior, enter to complete the line, delete, backspace, home/end, left/right arrows, and the up/down arrow history navigation
+* **`AddArrowMovesCursor()`** binds the left and right arrows to move the cursor one character in their respective directions
+* **`AddUpDownHistoryNavigation()`** binds the up and down arrows to history navigation, which will require the history mechanism to be set up for it to work
+* **`AddCtrlNavKeys()`** adds navigation and editing commands familiar to Bash users, such as cutting a word, cutting to the beginning or end, and jumping to the beginning or end. It also binds Ctrl+Y to paste back what was cut, and Ctrl+D to delete forward or signal the end of input when the line is empty
+* **`AddCancelKeys()`** binds Ctrl+C to abandon the current line
+* **`AddStandardKeys()`** adds the complete basic set of bindings used by `ReadLineConfig.Basic`: default character insertion, Enter to complete the line, Delete, Backspace, Home, End, the arrow keys, and Ctrl+C to abandon the line
 * **`AddTabAutoComplete()`** binds tab to the autocompletion behavior
 
 These are cumulative, so the following is a valid way to set up a configuration:
@@ -164,12 +166,30 @@ var config = ReadLineConfig.Empty
     .AddKeyBehavior(new KeyId(ConsoleKey.S, false, true, false), CommonKeyBehaviors.CutToStart)
     .[...]
 ```
+
+You can write the same binding without constructing a `KeyId` by passing the modifiers directly.
+The three booleans are **control, alt, shift**, in that order:
+
+```csharp
+var config = ReadLineConfig.Empty
+    .AddKeyBehavior(ConsoleKey.S, false, true, false, CommonKeyBehaviors.CutToStart)
+    .[...]
+```
     
 Or, to bind the `'?'` character to end the input:
 ```csharp
 var config = ReadLineConfig.Empty
     .AddKeyBehavior('?', CommonKeyBehaviors.Finish)
     .[...]
+```
+
+Binding a key that is already bound replaces its existing behavior without raising an error. You can
+therefore use a pre-built configuration as a starting point and selectively override its bindings:
+
+```csharp
+// Basic maps the down arrow to history navigation; this replaces that binding
+var config = ReadLineConfig.Basic
+    .AddKeyBehavior(ConsoleKey.DownArrow, CommonKeyBehaviors.Delete);
 ```
 
 #### Custom Key Behaviors
@@ -205,6 +225,136 @@ var config = ReadLineConfig.Empty
     .AddDeleteBackspace()
     .AddEnterToFinish();
 ```
+
+---
+
+### Cutting and Pasting
+
+The three cut behaviors store removed text in a cut buffer. `CommonKeyBehaviors.Paste` inserts that text at the cursor. `AddCtrlNavKeys()` binds all four behaviors:
+
+| Key | Behavior |
+| --- | --- |
+| Ctrl+K | cut from the cursor to the end of the line |
+| Ctrl+U | cut from the cursor to the start of the line |
+| Ctrl+W | cut the word before the cursor |
+| Ctrl+Y | paste the cut buffer at the cursor |
+
+To move text within a line, cut it, move the cursor, and paste it. Pasting does not empty the buffer, so you can insert the same text more than once.
+
+> **Why Ctrl+Y?** GNU Readline and many terminal applications conventionally use Ctrl+Y to paste. Ctrl+V conventionally inserts the next character literally, and many terminal emulators intercept it before the program receives it.
+
+**Consecutive cuts accumulate.** Cutting three words in a row with Ctrl+W collects all three in the buffer, so one paste restores them together. The buffer preserves the text's original order on the line. Pressing any other key ends the run, so the next cut starts a fresh buffer.
+
+The buffer belongs to a single read line operation and starts empty each time, so text cut on one line cannot be pasted onto the next.
+
+#### Cutting From a Custom Behavior
+
+A custom behavior can add text to the buffer. It must specify which side of the cursor the text came from so that consecutive cuts preserve the correct order:
+
+```csharp
+// Removing text from in front of the cursor
+target.CutForward(removedText);
+
+// Removing text from behind the cursor
+target.CutBackward(removedText);
+```
+
+Calling either method also marks the keypress as part of a cut run, so a custom cut accumulates with the built-in cuts.
+
+---
+
+### Canceling and Ending Input
+
+A user can end a read line operation in three ways. Enter typically finishes the line, Ctrl+C abandons it, and Ctrl+D on an empty line signals that the user has no more input.
+
+The `ReadLine()` method converts all three outcomes to strings. This convenient API cannot distinguish an abandoned line from an entered empty line:
+
+| The user pressed | `ReadLine()` returns |
+| --- | --- |
+| Enter | the text they entered |
+| Ctrl+C | an empty string |
+| Ctrl+D on an empty line | `null` |
+
+Returning `null` at the end of input matches GNU Readline and `Console.ReadLine()`, so an ordinary read loop terminates on Ctrl+D without special handling:
+
+```csharp
+string line;
+while ((line = ConsoleReadLine.ReadLine(config)) != null)
+{
+    Execute(line);
+}
+```
+
+When the distinction matters, use `Read()`. It returns a `ReadLineResult` containing the text and a `Kind` that describes how the interaction ended:
+
+```csharp
+var result = ConsoleReadLine.Read(config);
+
+switch (result.Kind)
+{
+    case ReadLineResultKind.Line:
+        Execute(result.Text);
+        break;
+    case ReadLineResultKind.Cancelled:
+        Console.WriteLine("Cancelled, nothing was run");
+        break;
+    case ReadLineResultKind.EndOfInput:
+        return;
+}
+```
+
+Abandoned lines and end-of-input signals are not recorded in history because their text is discarded.
+
+> **A note on Ctrl+C.** The console normally treats Ctrl+C as a request to terminate the program, so the keypress does not reach the application. To let a key behavior respond, the `ConsoleReadLine` provider temporarily configures the console to deliver Ctrl+C as an ordinary keypress. Therefore, **while a line is being read, Ctrl+C abandons the line instead of terminating the process**. The provider restores the previous console setting when the operation finishes. To make Ctrl+C have no effect during a read, build a configuration without `AddCancelKeys()`.
+
+#### Canceling From Code
+
+The user initiates each of the three outcomes above. A program can also cancel a read by passing a `CancellationToken`:
+
+```csharp
+using var source = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+try
+{
+    var line = ConsoleReadLine.ReadLine(config, source.Token);
+}
+catch (OperationCanceledException)
+{
+    Console.WriteLine("Timed out waiting for input");
+}
+```
+
+Canceling this way raises an `OperationCanceledException` instead of returning a result. User cancellation is ordinary input and produces a `Cancelled` result. Programmatic cancellation interrupts control flow and raises an exception. The provider is still disposed after programmatic cancellation, so it restores the console as it would after any other read.
+
+Because a console read cannot be interrupted after it starts, a cancelable read polls for an available keypress and checks the token between polls. The provider waits 15 milliseconds between checks while the prompt is idle. If you omit the token or pass `CancellationToken.None`, the provider uses the ordinary blocking path without polling.
+
+> **An interactive console is required.** Individual keypresses cannot be read from a pipe or file. Therefore, the `ConsoleReadLine` constructor throws an `InvalidOperationException` when standard input is redirected. Use `Console.ReadLine()` for redirected input or supply a custom `IReadLineProvider`. The provider checks the `IConsole.InputIsRedirected` property, so custom console implementations determine whether their input is redirected.
+
+---
+
+### Reading Asynchronously
+
+Every read method has an asynchronous counterpart. `ReadLineAsync()` returns the converted string, and `ReadAsync()` returns the full `ReadLineResult`. Both produce the same outcomes as their synchronous counterparts and differ only in how they wait:
+
+```csharp
+var line = await ConsoleReadLine.ReadLineAsync(config);
+
+var result = await ConsoleReadLine.ReadAsync(config, cancellationToken);
+```
+
+The asynchronous versions do not occupy a thread while waiting for a keypress. This is useful when other work must continue while a prompt remains open, such as in a server with a console or an application that writes progress messages through `InsertText` while the user types.
+
+Key behaviors, formatters, lexers, and auto-completion still run synchronously on the thread that resumes the wait. Configuration delegates do not require asynchronous implementations.
+
+#### Implementing an Asynchronous Provider
+
+`IReadLineProvider` requires both `ReadKey` and `ReadKeyAsync`. Because .NET Standard 2.0 has no default interface methods, each provider must implement both methods. The appropriate implementation depends on the backend:
+
+* A backend whose input arrives through an event or an already asynchronous API should implement `ReadKeyAsync` natively and build the synchronous version on top of it.
+* A backend whose `ReadKey` does not block, such as one draining a populated queue, can implement `ReadKeyAsync` as `Task.FromResult(ReadKey(cancellationToken))`.
+* A backend that can only block, like `System.Console`, should wait for input to become available rather than blocking, then read. This is what `ConsoleReadLine` does, polling every 15 milliseconds.
+
+Do not wrap a blocking read in `Task.Run`. That approach occupies a thread until the user presses a key, and the token cannot interrupt it. After cancellation, the abandoned read also remains queued and consumes the next keypress when it arrives.
 
 ---
 
@@ -277,7 +427,7 @@ var text = ConsoleReadLine.ReadLine(config);
 #### TokenizedLine Formatters
 As has been mentioned, a formatter can be either a function which recieves a `LineState` object, or a function which recieves a `TokenizedLine` object.  The `TokenizedLine` will be covered in more detail in the section on lexers, but this simple example shows how the lexer can be used to split the input text into tokens and a formatter can take advantage of that.
 
-The following code example can be seen in further detail in [this demo](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs), but effectively it searches for tokens which match a valid hexidecimal number (digits 0 to 9 and letters a through f) and simultaneously displays it as capitalized and cyan.  All other tokens are displayed exactly as they have been entered.
+The following code example can be seen in further detail in [this demo](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs), but effectively it searches for tokens which match a valid hexidecimal number (digits 0 to 9 and letters a through f) and simultaneously displays it as capitalized and cyan.  All other tokens are displayed exactly as they have been entered.
 
 ```csharp
 var pattern = new Regex(@"^[0-9a-fA-F]+$");

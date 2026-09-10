@@ -8,8 +8,16 @@ using RegexList = System.Collections.Generic.List<InteractiveReadLine.Tokenizing
 
 namespace InteractiveReadLine.Tokenizing
 {
+    /// <summary>
+    /// Provides ready-made lexers and components for creating custom lexers. A lexer splits a line into tokens
+    /// used by auto-completion and token-based formatters.
+    /// </summary>
     public static class CommonLexers
     {
+        /// <summary>
+        /// Creates an empty list of regular-expression token types. Add token patterns to the list, then convert
+        /// it to a lexer with ToLexer.
+        /// </summary>
         public static RegexList Regex => new RegexList();
 
         /// <summary>
@@ -30,12 +38,32 @@ namespace InteractiveReadLine.Tokenizing
             return list;
         }
 
+        /// <summary>
+        /// Adds a token type that matches a sequence of non-whitespace characters, which commonly represents
+        /// one word.
+        /// </summary>
+        /// <param name="list">The token type list to add to</param>
+        /// <param name="typeCode">A code identifying this token type in the resulting tokens</param>
+        /// <returns>The same list, for chaining</returns>
         public static RegexList AddAnyNonWhitespace(this RegexList list, int typeCode = 0) =>
             list.AddTokenType(@"^\S+", typeCode);
 
+        /// <summary>
+        /// Adds a token type that matches a double-quoted string and honors backslash escapes, so a quoted
+        /// phrase is treated as one token rather than split on its spaces.
+        /// </summary>
+        /// <param name="list">The token type list to add to</param>
+        /// <param name="typeCode">A code identifying this token type in the resulting tokens</param>
+        /// <returns>The same list, for chaining</returns>
         public static RegexList AddDoubleQuoteStringLiterals(this RegexList list, int typeCode = 0) =>
             list.AddTokenType(@"^""(?:[^""\\]|\\.)*""", typeCode);
 
+        /// <summary>
+        /// Adds a token type that matches a single-quoted string and honors backslash escapes.
+        /// </summary>
+        /// <param name="list">The token type list to add to</param>
+        /// <param name="typeCode">A code identifying this token type in the resulting tokens</param>
+        /// <returns>The same list, for chaining</returns>
         public static RegexList AddSingleQuoteStringLiterals(this RegexList list, int typeCode = 0) =>
             list.AddTokenType(@"^'(?:[^'\\]|\\.)*'", typeCode);
 
@@ -95,8 +123,9 @@ namespace InteractiveReadLine.Tokenizing
 
                 tokenized.Cursor = lineState.Cursor;
 
-                if (!tokenized.Any() ||
-                    (tokenized.Last.IsHidden && tokenized.Last.Cursor == tokenized.Last.Text.Length))
+                var last = tokenized.Last;
+                if (last == null ||
+                    (last.IsHidden && last.Cursor == last.Text.Length))
                 {
                     tokenized.Add(string.Empty, false, 0);
                 }
@@ -105,6 +134,9 @@ namespace InteractiveReadLine.Tokenizing
             };
         }
 
+        /// <summary>
+        /// Gets a lexer that splits a line into words at whitespace boundaries for use with auto-completion.
+        /// </summary>
         public static Lexer SplitOnWhitespace => Regex.AddAnyNonWhitespace().ToLexer();
 
     }

@@ -159,6 +159,147 @@ namespace InteractiveReadLine.Tests
             Assert.Equal(19, handler.LineState.Cursor);
         }
 
+        [Fact]
+        public void UpdatingHistory_SkipsEmptyLine()
+        {
+            var history = new List<string> {"existing entry"};
+            var keys = KeyBuilder.Create().Enter().Keys;
+            this.Fixture(keys, history, true).ReadLine();
+
+            Assert.Single(history);
+        }
+
+        [Fact]
+        public void UpdatingHistory_SkipsWhitespaceOnlyLine()
+        {
+            var history = new List<string> {"existing entry"};
+            var keys = KeyBuilder.Create().Add("   ").Enter().Keys;
+            this.Fixture(keys, history, true).ReadLine();
+
+            Assert.Single(history);
+        }
+
+        [Fact]
+        public void UpdatingHistory_SkipsLineMatchingMostRecentEntry()
+        {
+            var history = new List<string> {"item one", "repeated"};
+            var keys = KeyBuilder.Create().Add("repeated").Enter().Keys;
+            this.Fixture(keys, history, true).ReadLine();
+
+            Assert.Equal(2, history.Count);
+        }
+
+        /// <summary>
+        /// Only an immediately repeated line is skipped. A line that appears earlier in the history is still
+        /// recorded, which moves it to the most recent position.
+        /// </summary>
+        [Fact]
+        public void UpdatingHistory_KeepsLineMatchingAnOlderEntry()
+        {
+            var history = new List<string> {"repeated", "something else"};
+            var keys = KeyBuilder.Create().Add("repeated").Enter().Keys;
+            this.Fixture(keys, history, true).ReadLine();
+
+            Assert.Equal(3, history.Count);
+            Assert.Equal("repeated", history[2]);
+        }
+
+        /// <summary>
+        /// SetUpdatingHistorySource performs the filtering. The handler does not, so a directly supplied
+        /// update action still receives every finalized line, including empty lines.
+        /// </summary>
+        [Fact]
+        public void CustomHistoryUpdateAction_ReceivesEveryFinalizedLine()
+        {
+            var recorded = new List<string>();
+            var console = new TestConsole(500, 200, KeyBuilder.Create().Enter().Keys);
+            var config = ReadLineConfig.Empty
+                .SetDefaultKeyBehavior(CommonKeyBehaviors.InsertCharacter)
+                .AddEnterToFinish()
+                .SetHistoryUpdateAction(recorded.Add);
+
+            new ReadLineHandler(new ConsoleReadLine(console), config).ReadLine();
+
+            Assert.Single(recorded);
+            Assert.Equal(string.Empty, recorded[0]);
+        }
+
+        [Fact]
+        public void SetUpdatingHistorySource_WithNullList_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => ReadLineConfig.Empty.SetUpdatingHistorySource(null));
+        }
+
+        /// <summary>
+        /// The configuration holds a live reference to the history, so the collection can grow after the
+        /// handler is constructed and before the user navigates. HistoryNext then steps forward to the
+        /// pre-history state, which remains empty because HistoryPrevious was never called to populate it.
+        /// </summary>
+        [Fact]
+        public void HistoryNext_WhenHistoryGrewAfterConstruction_DoesNotThrow()
+        {
+            var handler = HandlerOverLiveHistory(out var history);
+            history.Add("four");
+
+            var exception = Record.Exception(() => handler.HistoryNext());
+
+            Assert.Null(exception);
+            Assert.Equal(string.Empty, handler.LineState.Text);
+        }
+
+        /// <summary>
+        /// The live reference also allows the history to shrink, which can leave the index past the end of the
+        /// collection. Both navigation directions would index out of range without clamping.
+        /// </summary>
+        [Fact]
+        public void HistoryNext_WhenHistoryShrankAfterConstruction_DoesNotThrow()
+        {
+            var handler = HandlerOverLiveHistory(out var history);
+            history.RemoveRange(1, 2);
+
+            var exception = Record.Exception(() => handler.HistoryNext());
+
+            Assert.Null(exception);
+            Assert.Equal(string.Empty, handler.LineState.Text);
+        }
+
+        [Fact]
+        public void HistoryPrevious_WhenHistoryShrankAfterConstruction_ShowsMostRecentRemainingEntry()
+        {
+            var handler = HandlerOverLiveHistory(out var history);
+            history.RemoveRange(1, 2);
+
+            var exception = Record.Exception(() => handler.HistoryPrevious());
+
+            Assert.Null(exception);
+            Assert.Equal("one", handler.LineState.Text);
+        }
+
+        /// <summary>
+        /// After the history shrinks, navigating backward and forward again must still restore the text that
+        /// the user entered instead of leaving the index stranded.
+        /// </summary>
+        [Fact]
+        public void HistoryNavigation_AfterHistoryShrank_StillRestoresEnteredText()
+        {
+            var history = new List<string> {"one", "two", "three"};
+            var keys = KeyBuilder.Create().Add("typed").UpArrow().DownArrow().Enter().Keys;
+            var handler = this.Fixture(keys, history);
+
+            history.RemoveRange(1, 2);
+            handler.ReadLine();
+
+            Assert.Equal("typed", handler.LineState.Text);
+        }
+
+        private ReadLineHandler HandlerOverLiveHistory(out List<string> history)
+        {
+            history = new List<string> {"one", "two", "three"};
+            var console = new TestConsole(500, 200, new ConsoleKeyInfo[0]);
+            var config = ReadLineConfig.Empty.SetHistorySource(history);
+            return new ReadLineHandler(new ConsoleReadLine(console), config);
+        }
+
         private ReadLineHandler FixtureWithHistory(ConsoleKeyInfo[] keys, bool update = false)
         {
             var history = new List<string> {"history0", "histor1", "histo2", "hist3"};

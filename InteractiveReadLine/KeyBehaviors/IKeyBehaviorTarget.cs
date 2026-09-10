@@ -46,11 +46,10 @@ namespace InteractiveReadLine.KeyBehaviors
         void InsertText(FormattedText text);
 
         /// <summary>
-        /// If the handler configuration has a tokenizer, this will get the tokenization result of the text
-        /// buffer
+        /// Gets the tokenized text buffer when the handler configuration has a lexer.
         /// </summary>
-        /// <returns>Returns null if there is no tokenizer, otherwise a Tokens result</returns>
-        TokenizedLine GetTextTokens();
+        /// <returns>The tokenized line, or null when the configuration has no lexer.</returns>
+        TokenizedLine? GetTextTokens();
 
         /// <summary>
         /// Invokes the history's "next" functionality, which replaces the entire line with the next element
@@ -66,8 +65,54 @@ namespace InteractiveReadLine.KeyBehaviors
         void HistoryPrevious();
 
         /// <summary>
+        /// Gets the text accumulated by the most recent run of cut operations. The paste behavior inserts this
+        /// text at the cursor. The value is empty when nothing has been cut.
+        /// </summary>
+        /// <remarks>
+        /// The buffer belongs to a single read line operation and does not carry over to the next one. It is
+        /// populated through CutForward and CutBackward, which accumulate consecutive cuts into one piece of
+        /// text that can be pasted.
+        /// </remarks>
+        string CutBuffer { get; }
+
+        /// <summary>
+        /// Records text removed from in front of the cursor, placing it at the end of the cut buffer.
+        /// </summary>
+        /// <remarks>
+        /// Cut text is stored in its original order on the line, so a run of cuts can be pasted back as the
+        /// original text. A behavior that removes text in front of the cursor, such as cutting to the end of
+        /// the line, should report it here.
+        /// </remarks>
+        /// <param name="text">The text that was removed from the line.</param>
+        void CutForward(string text);
+
+        /// <summary>
+        /// Records text removed from behind the cursor, placing it at the front of the cut buffer.
+        /// </summary>
+        /// <remarks>
+        /// A behavior that removes text from behind the cursor, such as cutting to the start of the line or
+        /// cutting the previous word, should report it here. Cutting three words backward one after
+        /// another therefore leaves the three words in the buffer in their original order.
+        /// </remarks>
+        /// <param name="text">The text that was removed from the line.</param>
+        void CutBackward(string text);
+
+        /// <summary>
         /// Tells the readline handler to finish this line of input and return it
         /// </summary>
         void Finish();
+
+        /// <summary>
+        /// Tells the ReadLine handler to abandon the current line and discard the entered text. This matches
+        /// conventional Ctrl+C behavior: the handler records nothing in history and completes without an error.
+        /// </summary>
+        void Cancel();
+
+        /// <summary>
+        /// Tells the ReadLine handler that the user has signaled the end of input, which is what Ctrl+D on an
+        /// empty line means to a shell. The line is discarded, and the caller is told that no
+        /// further input is coming.
+        /// </summary>
+        void EndOfInput();
     }
 }

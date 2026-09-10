@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using InteractiveReadLine.Tokenizing;
 
 namespace InteractiveReadLine.KeyBehaviors
@@ -89,7 +88,7 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <param name="message">A function which receives a Tokens object and uses it to create a string
         /// message, this is typically useful for providing help or hints to the user</param>
         /// <returns>A key behavior action which can be registered with the read line configuration</returns>
-        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine, string> message)
+        public static Action<IKeyBehaviorTarget> WriteMessageFromTokens(Func<TokenizedLine?, string> message)
         {
             return new Action<IKeyBehaviorTarget>(t => t.InsertText(message(t.GetTextTokens())));
         }
@@ -128,16 +127,45 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void Finish(IKeyBehaviorTarget target) => target.Finish();
 
         /// <summary>
+        /// Abandons the ReadLine input and discards the entered text. This behavior is conventionally
+        /// bound to Ctrl+C.
+        /// </summary>
+        public static void Cancel(IKeyBehaviorTarget target) => target.Cancel();
+
+        /// <summary>
+        /// Signals that the user has no more input and discards the entered text. This behavior is conventionally
+        /// behavior conventionally bound to Ctrl+D on an empty line.
+        /// </summary>
+        public static void EndOfInput(IKeyBehaviorTarget target) => target.EndOfInput();
+
+        /// <summary>
+        /// Deletes the character under the cursor, or signals the end of input if the line is empty. This
+        /// matches shell behavior for Ctrl+D: it deletes forward when a character is available and otherwise
+        /// ends the session.
+        /// </summary>
+        public static void DeleteOrEndOfInput(IKeyBehaviorTarget target)
+        {
+            if (target.TextBuffer.Length == 0)
+                target.EndOfInput();
+            else
+                Delete(target);
+        }
+
+        /// <summary>
         /// Removes all of the text between the cursor and the end of the line
         /// </summary>
         /// <param name="target"></param>
         public static void CutToEnd(IKeyBehaviorTarget target)
         {
             var cursor = target.CursorPosition;
-            var captured = target.TextBuffer.ToString().Substring(0, cursor);
+            var text = target.TextBuffer.ToString();
+            var captured = text.Substring(0, cursor);
+
             target.TextBuffer.Clear();
             target.TextBuffer.Append(captured);
             target.CursorPosition = cursor;
+
+            target.CutForward(text.Substring(cursor));
         }
 
         /// <summary>
@@ -147,11 +175,14 @@ namespace InteractiveReadLine.KeyBehaviors
         public static void CutToStart(IKeyBehaviorTarget target)
         {
             var cursor = target.CursorPosition;
-            var captured = target.TextBuffer.ToString()
-                .Substring(cursor, target.TextBuffer.Length - cursor);
+            var text = target.TextBuffer.ToString();
+            var captured = text.Substring(cursor, target.TextBuffer.Length - cursor);
+
             target.TextBuffer.Clear();
             target.TextBuffer.Append(captured);
             target.CursorPosition = 0;
+
+            target.CutBackward(text.Substring(0, cursor));
         }
 
         /// <summary>
@@ -161,12 +192,17 @@ namespace InteractiveReadLine.KeyBehaviors
         /// <param name="target"></param>
         public static void CutPreviousWord(IKeyBehaviorTarget target)
         {
+            var textBefore = target.TextBuffer.ToString();
+            var cursorBefore = target.CursorPosition;
+
             var tokens =
                 CommonLexers.SplitOnWhitespace(new LineState(target.TextBuffer.ToString(), target.CursorPosition));
-            int cursor = (int) tokens.CursorToken.Cursor;
-
             var token = tokens.CursorToken;
-            var previous = tokens.CursorToken.Previous;
+            if (token?.Cursor == null)
+                return;
+
+            int cursor = token.Cursor.Value;
+            var previous = token.Previous;
 
             if (cursor == 0 && previous?.IsHidden == true)
             {
@@ -194,6 +230,31 @@ namespace InteractiveReadLine.KeyBehaviors
             target.TextBuffer.Clear();
             target.TextBuffer.Append(tokens.Text);
             target.CursorPosition = tokens.Cursor;
+
+            // This behavior rebuilds the line from its tokens. Recover the removed text from the span crossed
+            // when the cursor moved backward.
+            var removedLength = cursorBefore - target.CursorPosition;
+            if (removedLength > 0 && cursorBefore <= textBefore.Length)
+                target.CutBackward(textBefore.Substring(target.CursorPosition, removedLength));
+            else
+                target.CutBackward(string.Empty);
+        }
+
+        /// <summary>
+        /// Inserts the text in the cut buffer at the cursor position and leaves the cursor at the end of
+        /// the inserted text. Does nothing when nothing has been cut.
+        /// </summary>
+        /// <remarks>
+        /// The buffer is not emptied by pasting, so the same text can be pasted repeatedly.
+        /// </remarks>
+        public static void Paste(IKeyBehaviorTarget target)
+        {
+            var text = target.CutBuffer;
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            target.TextBuffer.Insert(target.CursorPosition, text);
+            target.CursorPosition += text.Length;
         }
 
         /// <summary>

@@ -6,6 +6,10 @@ using TokenFormatter = System.Func<InteractiveReadLine.Tokenizing.TokenizedLine,
 
 namespace InteractiveReadLine.Formatting
 {
+    /// <summary>
+    /// Provides ready-made formatters that add a prompt, hide text, or apply colors before displaying a line.
+    /// A formatter does not alter the text that the user is editing.
+    /// </summary>
     public static class CommonFormatters
     {
         /// <summary>
@@ -14,7 +18,7 @@ namespace InteractiveReadLine.Formatting
         /// </summary>
         /// <param name="prompt">the prompt text to display</param>
         /// <param name="formatter"></param>
-        public static LineFormatter FixedPrompt(FormattedText prompt, LineFormatter formatter = null)
+        public static LineFormatter FixedPrompt(FormattedText prompt, LineFormatter? formatter = null)
         {
             return state =>
             {
@@ -32,15 +36,19 @@ namespace InteractiveReadLine.Formatting
             state => new LineDisplayState(string.Empty, string.Empty, string.Empty, 0);
 
         /// <summary>
-        /// A formatter that puts out a variable length bar based on the 1st and 10th bytes in a SHA256 hash
-        /// of the entered password. Provides repeatable visual feedback without revealing anything about the
-        /// password itself
+        /// A formatter that displays a variable-length bar based on the first and tenth bytes of a SHA256 hash
+        /// of the entered password's UTF-8 bytes. The bar provides repeatable visual feedback without revealing
+        /// the password itself.
         /// </summary>
         public static LineFormatter PasswordBar =>
             state =>
             {
-                var hash = SHA256.Create();
-                var result = hash.ComputeHash(Encoding.ASCII.GetBytes(state.Text));
+                byte[] result;
+                using (var hash = SHA256.Create())
+                {
+                    result = hash.ComputeHash(Encoding.UTF8.GetBytes(state.Text));
+                }
+
                 var l1 = (int) Math.Round(20.0 * result[0] / 255.0);
                 var l2 = (int) Math.Round(20.0 * result[10] / 255.0);
                 var builder = new StringBuilder("[");
