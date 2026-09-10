@@ -1,4 +1,5 @@
-![](https://github.com/mattj23/InteractiveReadLine/workflows/CI%20netcore/badge.svg)
+[![CI](https://github.com/mattj23/InteractiveReadLine/actions/workflows/ci.yml/badge.svg)](https://github.com/mattj23/InteractiveReadLine/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/InteractiveReadLine.svg)](https://www.nuget.org/packages/InteractiveReadLine/)
 [![Coverage](https://codecov.io/gh/mattj23/InteractiveReadLine/branch/master/graph/badge.svg)](https://codecov.io/gh/mattj23/InteractiveReadLine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
