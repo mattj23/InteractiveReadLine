@@ -1,6 +1,6 @@
 [![CI](https://github.com/mattj23/InteractiveReadLine/actions/workflows/ci.yml/badge.svg)](https://github.com/mattj23/InteractiveReadLine/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/InteractiveReadLine.svg)](https://www.nuget.org/packages/InteractiveReadLine/)
-[![Coverage](https://codecov.io/gh/mattj23/InteractiveReadLine/branch/master/graph/badge.svg)](https://codecov.io/gh/mattj23/InteractiveReadLine)
+[![Coverage](https://codecov.io/gh/mattj23/InteractiveReadLine/branch/main/graph/badge.svg)](https://codecov.io/gh/mattj23/InteractiveReadLine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Interactive ReadLine
@@ -32,7 +32,7 @@ However, practically every aspect of the system's behavior is configurable.  Con
 
 All of these above configurations are done by providing `Action<..>` and `Func<..>` style delegates to a configuration object, rather than use a zoo of custom interfaces.
 
-Below is a more complex example, the full code for which can be seen at [Demos/ComplexConfig.cs](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/Demos/ComplexConfig.cs)
+Below is a more complex example, the full code for which can be seen at [Demos/ComplexConfig.cs](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/ComplexConfig.cs)
 
 
 ```csharp
@@ -427,7 +427,7 @@ var text = ConsoleReadLine.ReadLine(config);
 #### TokenizedLine Formatters
 As has been mentioned, a formatter can be either a function which recieves a `LineState` object, or a function which recieves a `TokenizedLine` object.  The `TokenizedLine` will be covered in more detail in the section on lexers, but this simple example shows how the lexer can be used to split the input text into tokens and a formatter can take advantage of that.
 
-The following code example can be seen in further detail in [this demo](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs), but effectively it searches for tokens which match a valid hexidecimal number (digits 0 to 9 and letters a through f) and simultaneously displays it as capitalized and cyan.  All other tokens are displayed exactly as they have been entered.
+The following code example can be seen in further detail in [this demo](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/Demos/Formatters/TokenCustomFormatter.cs), but effectively it searches for tokens which match a valid hexidecimal number (digits 0 to 9 and letters a through f) and simultaneously displays it as capitalized and cyan.  All other tokens are displayed exactly as they have been entered.
 
 ```csharp
 var pattern = new Regex(@"^[0-9a-fA-F]+$");

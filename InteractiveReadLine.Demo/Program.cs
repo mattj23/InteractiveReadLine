@@ -132,7 +132,7 @@ namespace InteractiveReadLine.Demo
 
         private static string GetGithubLink(IDemo demo)
         {
-            const string rootUrl = "https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo/";
+            const string rootUrl = "https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo/";
             var typeInfo = demo.GetType();
             var path = typeInfo.FullName?.Replace("InteractiveReadLine.Demo.", "").Split(".");
             if (path != null)

@@ -17,7 +17,7 @@ var text = ConsoleReadLine.ReadLine();
   update behavior.
 * The [repository README](https://github.com/mattj23/InteractiveReadLine) has the full guide,
   including animated examples of each feature.
-* Run the repository's [demo program](https://github.com/mattj23/InteractiveReadLine/tree/master/InteractiveReadLine.Demo)
+* Run the repository's [demo program](https://github.com/mattj23/InteractiveReadLine/tree/main/InteractiveReadLine.Demo)
   to try each feature interactively.
 
 ## Starting points in the API
