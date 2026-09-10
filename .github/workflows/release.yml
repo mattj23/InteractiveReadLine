@@ -6,6 +6,9 @@ on:
 
 permissions:
   contents: write
+  # Required for trusted publishing. Without it the OIDC token request fails silently and the NuGet
+  # login step cannot obtain a key.
+  id-token: write
 
 jobs:
   release:
@@ -45,10 +48,19 @@ jobs:
             exit 1
           fi
 
+      # Trusted publishing: NuGet.org exchanges a short-lived GitHub OIDC token for a temporary API
+      # key, so there is no long-lived secret to store or rotate. The key lasts an hour and is good
+      # for a single exchange, so this runs immediately before the push rather than earlier.
+      - name: Log in to NuGet
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push to NuGet
         run: >
           dotnet nuget push "./artifacts/*.nupkg"
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
 
